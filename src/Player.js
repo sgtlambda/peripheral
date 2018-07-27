@@ -7,26 +7,39 @@ class Player {
         x,
         y,
         controller,
-        radius = 25,
-        jumpForce = 14,
-        jumpCooldown = 100,
         engine,
         terrainBodies,
         collisionCategory,
         collisionMask,
 
+        radius = 25,
+        moveForce = 10,
+        jumpForce = 12,
+        jumpBoost = .007,
+        jumpPressDown = 10,
+        jumpCooldown = 4,
+        friction = .0015,
+        density = .001,
+
     }) {
 
-        this.jumpForce    = jumpForce;
-        this.jumpCooldown = jumpCooldown;
-
+        // globals
         this.engine        = engine;
         this.controller    = controller;
         this.terrainBodies = terrainBodies;
 
+        // configuration
+        this.jumpForce     = jumpForce;
+        this.jumpBoost     = jumpBoost;
+        this.jumpPressDown = jumpPressDown;
+        this.jumpCooldown  = jumpCooldown;
+        this.moveForce     = moveForce;
+        this.friction      = friction;
+        this.density       = density;
+
+        // state
         this.supportLock = null;
-        this.airborne    = false;
-        this.landing     = true;
+        this.sinceJump   = 0;
 
         this.prepareBodies({x, y, radius, collisionCategory, collisionMask});
 
@@ -35,18 +48,21 @@ class Player {
         this.attachLoop();
     }
 
+    get landing() {
+        return this.sinceJump > this.jumpCooldown;
+    }
+
+
     prepareBodies({x, y, radius, collisionCategory, collisionMask}) {
 
         const pp = {x, y};
 
         this.player = Bodies.circle(pp.x, pp.y, radius, {
-            density:         .001,
-            friction:        .001,
+            density:         this.density,
+            friction:        this.friction,
             inertia:         Infinity,
             render:          {
-                fillStyle:   'none',
-                strokeStyle: 'black',
-                lineWidth:   2,
+                fillStyle: 'none',
             },
             collisionFilter: {
                 category: collisionCategory,
@@ -83,11 +99,9 @@ class Player {
 
         if (this.supportLock) return;
 
-        console.log('attaching support');
+        const collision = this.groundCollisions[0];
 
-        const collision = Query.collides(this.playerGroundSensor, this.terrainBodies)[0];
-
-        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== collision.axisBody.id);
+        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== this.playerGroundSensor.id);
 
         const parentBody     = supportingBody.parent ? supportingBody.parent : supportingBody;
         const absoluteOrigin = {
@@ -106,6 +120,7 @@ class Player {
             damping:   .05,
             render:    {
                 type: 'line',
+                visible: false,
             },
         });
 
@@ -123,27 +138,45 @@ class Player {
             (!this.controller.right && this.controller.left);
     }
 
+    getJumpBoost() {
+        return this.sinceJump < this.jumpPressDown ? this.jumpBoost : 0;
+    }
+
+    jump() {
+        this.detachSupport();
+        Body.setVelocity(this.player, {x: this.player.velocity.x, y: -this.jumpForce});
+        this.sinceJump = 0;
+    }
+
     beforeStep() {
 
+        this.sinceJump++;
+
+        if (this.controller.up) {
+            const boost = this.getJumpBoost();
+            if (boost) Body.applyForce(this.player, {x: 0, y: 0}, {x: 0, y: -boost})
+        }
+
         if (this.landing && this.controller.up && !this.airborne) {
-            this.detachSupport();
-            Body.setVelocity(this.player, {x: this.player.velocity.x, y: -this.jumpForce});
-            this.landing = false;
-            setTimeout(() => this.landing = true, this.jumpCooldown);
+            this.jump();
         }
 
         if (this.controllerHorizontalMovement) {
             this.detachSupport();
-            const targetVelocity = this.controller.left ? -12 : 12;
+            const targetVelocity = (this.controller.left ? -1 : 1) * this.moveForce;
             const force          = -(this.player.velocity.x - targetVelocity) * .0008 * (this.airborne ? .6 : 1);
             Body.applyForce(this.player, {x: 0, y: 0}, {x: force, y: 0});
         }
     }
 
+    get airborne() {
+        return !this.groundCollisions.length;
+    }
+
     afterStep() {
 
         // Update "airborne" state
-        this.airborne = !Query.collides(this.playerGroundSensor, this.terrainBodies).length;
+        this.groundCollisions = Query.collides(this.playerGroundSensor, this.terrainBodies);
 
         // Always detach from the ground constraint when we're not airborne
         if (this.airborne) this.detachSupport();

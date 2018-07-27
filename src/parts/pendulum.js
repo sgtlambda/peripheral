@@ -7,8 +7,8 @@ export default ({
     height = 16,
     ropeSeparation = 30,
     ropeLength = 100,
-    stiffness = .04,
-    damping = .2,
+    stiffness = .06,
+    damping = .3,
 }) => {
 
     const pendulum = Bodies.rectangle(x, y, width, height, {

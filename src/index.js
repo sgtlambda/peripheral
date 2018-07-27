@@ -6,9 +6,7 @@ import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
 import controller from './controller';
 
-import testTerrain from './shapes/testTerrain';
-
-import pendulum from './parts/pendulum';
+import testStage from './worlds/test';
 
 import Player from './Player';
 
@@ -16,9 +14,6 @@ import Player from './Player';
 const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
 if (window.lastStop) window.lastStop();
-
-// const width  = 800;
-const height = 400;
 
 const cTerrain    = 0x0001,
       cPlayerBody = 0x0002;
@@ -31,42 +26,17 @@ const cTerrain    = 0x0001,
 
     const world = engine.world;
 
-    world.gravity.scale = 0.002;
+    world.gravity.scale = 0.003;
 
-    const vertices = testTerrain;
-    const center   = Vertices.centre(vertices);
-
-    const terrain = Bodies.fromVertices(center.x, center.y + height, vertices, {
-        isStatic:        true,
-        render:          {
-            fillStyle:   '#2e2b44',
-            strokeStyle: '#2e2b44',
-            lineWidth:   1
-        },
-        collisionFilter: {
-            category: cTerrain,
-        }
-    });
-
-    const pendula = [0, 1, 2].map(x => pendulum({
-        x: x * 100 + 350, y: 360, width: 60, ropeSeparation: 20,
-    }));
-
-    const allTerrain = [
-        terrain,
-        ...pendula.map(p => p.body),
-    ];
-
-    World.add(world, allTerrain);
-    World.add(world, pendula.reduce((arr, p) => arr.concat(p.constraints), []));
+    const {terrainBodies} = testStage({world, collisionCategory: cTerrain});
 
     const {keysOn, destroy: destroyController} = controller();
 
-    const player = new Player({
+    new Player({
         x:                 200,
         y:                 200,
         engine,
-        terrainBodies:     allTerrain,
+        terrainBodies,
         collisionCategory: cPlayerBody,
         collisionMask:     cTerrain,
         controller:        keysOn,
