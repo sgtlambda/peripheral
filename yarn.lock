@@ -3108,7 +3108,7 @@ pluralize@^7.0.0:
 
 poly-decomp@^0.3.0:
   version "0.3.0"
-  resolved "https://registry.yarnpkg.com/poly-decomp/-/poly-decomp-0.3.0.tgz#aa499289bbc1a4ca2213e966587fa5bffc1ca5f5"
+  resolved "https://registry.yarnpkg.com/shapes-decomp/-/shapes-decomp-0.3.0.tgz#aa499289bbc1a4ca2213e966587fa5bffc1ca5f5"
 
 posix-character-classes@^0.1.0:
   version "0.1.1"
