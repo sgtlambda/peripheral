@@ -1,14 +1,16 @@
 import {Bodies, Constraint} from "matter-js";
 
 export default ({
+
     x,
     y,
     width = 140,
     height = 16,
     ropeSeparation = 30,
     ropeLength = 100,
-    stiffness = .06,
+    stiffness = .3,
     damping = .3,
+
 }) => {
 
     const pendulum = Bodies.rectangle(x, y, width, height, {

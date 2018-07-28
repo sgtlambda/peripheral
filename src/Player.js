@@ -57,7 +57,7 @@ class Player {
 
         const pp = {x, y};
 
-        this.player = Bodies.circle(pp.x, pp.y, radius, {
+        this.mainBody = Bodies.circle(pp.x, pp.y, radius, {
             density:         this.density,
             friction:        this.friction,
             inertia:         Infinity,
@@ -70,7 +70,7 @@ class Player {
             },
         });
 
-        this.playerGroundSensor = Bodies.circle(pp.x, pp.y + 18, 16, {
+        this.sensor = Bodies.circle(pp.x, pp.y + 18, 16, {
             isStatic: true,
             isSensor: true,
             render:   {
@@ -83,8 +83,8 @@ class Player {
 
     addBodies() {
         World.add(this.engine.world, [
-            this.player,
-            this.playerGroundSensor,
+            this.mainBody,
+            this.sensor,
         ]);
     }
 
@@ -101,18 +101,18 @@ class Player {
 
         const collision = this.groundCollisions[0];
 
-        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== this.playerGroundSensor.id);
+        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== this.sensor.id);
 
         const parentBody     = supportingBody.parent ? supportingBody.parent : supportingBody;
         const absoluteOrigin = {
-            x: this.player.position.x - this.player.velocity.x * .3,
-            y: this.player.position.y
+            x: this.mainBody.position.x - this.mainBody.velocity.x * .3,
+            y: this.mainBody.position.y
         };
         const relativeOrigin = Vector.sub(absoluteOrigin, parentBody.position);
 
         this.supportLock = Constraint.create({
-            length:    Math.abs(this.player.velocity.x * 4),
-            bodyA:     this.player,
+            length:    Math.abs(this.mainBody.velocity.x * 4),
+            bodyA:     this.mainBody,
             pointA:    {x: 0, y: 0},
             bodyB:     parentBody,
             pointB:    relativeOrigin,
@@ -144,7 +144,7 @@ class Player {
 
     jump() {
         this.detachSupport();
-        Body.setVelocity(this.player, {x: this.player.velocity.x, y: -this.jumpForce});
+        Body.setVelocity(this.mainBody, {x: this.mainBody.velocity.x, y: -this.jumpForce});
         this.sinceJump = 0;
     }
 
@@ -154,7 +154,7 @@ class Player {
 
         if (this.controller.up) {
             const boost = this.getJumpBoost();
-            if (boost) Body.applyForce(this.player, {x: 0, y: 0}, {x: 0, y: -boost})
+            if (boost) Body.applyForce(this.mainBody, {x: 0, y: 0}, {x: 0, y: -boost})
         }
 
         if (this.landing && this.controller.up && !this.airborne) {
@@ -164,8 +164,8 @@ class Player {
         if (this.controllerHorizontalMovement) {
             this.detachSupport();
             const targetVelocity = (this.controller.left ? -1 : 1) * this.moveForce;
-            const force          = -(this.player.velocity.x - targetVelocity) * .0008 * (this.airborne ? .6 : 1);
-            Body.applyForce(this.player, {x: 0, y: 0}, {x: force, y: 0});
+            const force          = -(this.mainBody.velocity.x - targetVelocity) * .0008 * (this.airborne ? .6 : 1);
+            Body.applyForce(this.mainBody, {x: 0, y: 0}, {x: force, y: 0});
         }
     }
 
@@ -176,14 +176,14 @@ class Player {
     afterStep() {
 
         // Update "airborne" state
-        this.groundCollisions = Query.collides(this.playerGroundSensor, this.terrainBodies);
+        this.groundCollisions = Query.collides(this.sensor, this.terrainBodies);
 
         // Always detach from the ground constraint when we're not airborne
         if (this.airborne) this.detachSupport();
 
-        Body.setPosition(this.playerGroundSensor, {
-            x: this.player.position.x - this.player.velocity.x * .4,
-            y: this.player.position.y + 18
+        Body.setPosition(this.sensor, {
+            x: this.mainBody.position.x - this.mainBody.velocity.x * .4,
+            y: this.mainBody.position.y + 18
         });
 
         if (!this.controllerHorizontalMovement && !this.airborne && this.landing) this.attachSupport();

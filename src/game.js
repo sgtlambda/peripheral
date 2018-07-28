@@ -6,9 +6,10 @@ import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
 import controller from './controller';
 
-import testStage from './worlds/test';
+import testStage from './worlds/tutorialStage';
 
 import Player from './Player';
+import Camera from './common/Camera';
 
 // cleanup
 const canvas = document.getElementsByTagName('canvas').item(0);
@@ -32,7 +33,7 @@ const cTerrain    = 0x0001,
 
     const {keysOn, destroy: destroyController} = controller();
 
-    new Player({
+    const player = new Player({
         x:                 200,
         y:                 200,
         engine,
@@ -40,6 +41,12 @@ const cTerrain    = 0x0001,
         collisionCategory: cPlayerBody,
         collisionMask:     cTerrain,
         controller:        keysOn,
+    });
+
+    new Camera({
+        engine,
+        render:    renderer,
+        trackBody: player.mainBody,
     });
 
     Render.run(renderer);

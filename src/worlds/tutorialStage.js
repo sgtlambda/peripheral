@@ -12,7 +12,7 @@ export default ({
     const vertices = testTerrain;
     const center   = Vertices.centre(vertices);
 
-    const terrain = Bodies.fromVertices(center.x, center.y + 400, vertices, {
+    const terrain = Bodies.fromVertices(center.x - 150, center.y + 420, vertices, {
         isStatic:        true,
         render:          {
             fillStyle:   '#2e2b44',
@@ -29,7 +29,7 @@ export default ({
     [0, 1, 2].forEach(i => {
         const x = i * 120 + 325;
         const p = pendulum({
-            x, y: 360, width: 60, ropeSeparation: 20,
+            x, y: 360, width: 80, ropeSeparation: 30,
         });
         terrainBodies.push(p.body);
         World.add(world, p.constraints);
