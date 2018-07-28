@@ -6,7 +6,8 @@ export default ({
     y,
     width = 140,
     height = 16,
-    ropeSeparation = 30,
+    ropeSeparationAtSwing = 30,
+    ropeSeparationAtMount = 0,
     ropeLength = 100,
     stiffness = .3,
     damping = .3,
@@ -33,12 +34,12 @@ export default ({
 
     const constraints = [
         Constraint.create(Object.assign({
-            pointA: {x: -ropeSeparation, y: 0},
-            pointB: {x: x - ropeSeparation, y: y - ropeLength},
+            pointA: {x: -ropeSeparationAtSwing, y: 0},
+            pointB: {x: x - ropeSeparationAtMount, y: y - ropeLength},
         }, common)),
         Constraint.create(Object.assign({
-            pointA: {x: ropeSeparation, y: 0},
-            pointB: {x: x + ropeSeparation, y: y - ropeLength},
+            pointA: {x: ropeSeparationAtSwing, y: 0},
+            pointB: {x: x + ropeSeparationAtMount, y: y - ropeLength},
         }, common)),
     ];
 

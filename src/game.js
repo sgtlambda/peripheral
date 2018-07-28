@@ -1,6 +1,6 @@
 window.decomp = require('poly-decomp');
 
-import {Engine, Runner, Events} from 'matter-js';
+import {Engine, Runner, Body, Events, Vector} from 'matter-js';
 
 import {cTerrain} from "./common/collisionGroups";
 
@@ -44,7 +44,7 @@ if (window.lastStop) window.lastStop();
         terrainBodies,
     });
 
-    new Camera({
+    const camera = new Camera({
         engine,
         render:    renderer,
         trackBody: player.collider,
@@ -53,6 +53,43 @@ if (window.lastStop) window.lastStop();
     Render.run(renderer);
 
     Runner.run(Runner.create(), engine);
+
+    let mouse = {x: 0, y: 0};
+
+    window.addEventListener('mousemove', e => {
+        mouse.x = e.pageX;
+        mouse.y = e.pageY;
+    });
+
+    const ingameMousePos = (mouse, camera) => {
+        return {
+            x: mouse.x + camera.panX,
+            y: mouse.y,
+        };
+    };
+
+    let aimAngle;
+
+    Events.on(renderer, 'afterRender', () => {
+        const ctx = renderer.context;
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle  = 'red';
+        const mountPos = player.weaponMount.position;
+        const mousePos = ingameMousePos(mouse, camera);
+        aimAngle       = Vector.angle(mountPos, mousePos);
+        ctx.translate(mountPos.x - camera.panX, mountPos.y);
+        ctx.rotate(aimAngle);
+        ctx.fillRect(0, -5, 40, 10);
+        ctx.setTransform(2, 0, 0, 2, 0, 0);
+    });
+
+    window.addEventListener('mousedown', e => {
+        const vector = Vector.rotate({x: -.05, y: 0}, aimAngle);
+        // player.collider.applyForce()
+        Body.applyForce(player.collider, {x: 0, y: 0}, vector);
+    });
 
     window.lastStop = () => {
         Render.stop(renderer);

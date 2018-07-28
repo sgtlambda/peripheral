@@ -1,6 +1,6 @@
 import {Bodies, Body, Constraint, Query, Vector, World, Events} from "matter-js";
 
-import {cThrust, cTerrain, cPlayer} from "./common/collisionGroups";
+import {cTerrain, cPlayer} from "./common/collisionGroups";
 
 class Player {
 
@@ -15,8 +15,9 @@ class Player {
         radius = 25,
         moveForce = 10,
         jumpForce = 12,
-        jumpBoost = .007,
-        jumpPressDown = 10,
+        terrainRecoilForce = .005,
+        jumpBoost = .005,
+        jumpPressDown = 8,
         jumpCooldown = 4,
         friction = .0015,
         density = .001,
@@ -29,13 +30,14 @@ class Player {
         this.terrainBodies = terrainBodies;
 
         // configuration
-        this.jumpForce     = jumpForce;
-        this.jumpBoost     = jumpBoost;
-        this.jumpPressDown = jumpPressDown;
-        this.jumpCooldown  = jumpCooldown;
-        this.moveForce     = moveForce;
-        this.friction      = friction;
-        this.density       = density;
+        this.jumpForce          = jumpForce;
+        this.jumpBoost          = jumpBoost;
+        this.jumpPressDown      = jumpPressDown;
+        this.jumpCooldown       = jumpCooldown;
+        this.moveForce          = moveForce;
+        this.terrainRecoilForce = terrainRecoilForce;
+        this.friction           = friction;
+        this.density            = density;
 
         // state
         this.supportLock = null;
@@ -83,12 +85,34 @@ class Player {
                 lineWidth:   1,
             }
         });
+
+        this.weaponMount = Bodies.circle(pp.x, pp.y, 10, {
+            isSensor: true,
+            density:  this.density,
+            inertia:  Infinity,
+            render:   {
+                fillStyle:   'transparent',
+                strokeStyle: 'rgba(0,0,255,0.9)',
+                lineWidth:   1,
+            }
+        });
+
+        this.weaponMountConstraint = Constraint.create({
+            bodyA:     this.collider,
+            bodyB:     this.weaponMount,
+            pointA:    {x: 0, y: 0},
+            pointB:    {x: 0, y: 0},
+            length:    0,
+            // stiffness: .1,
+        });
     }
 
     addBodies() {
         World.add(this.engine.world, [
             this.collider,
             this.sensor,
+            this.weaponMount,
+            this.weaponMountConstraint,
         ]);
     }
 
@@ -99,26 +123,30 @@ class Player {
         Events.on(this.engine, 'afterUpdate', this._eAfterStep);
     }
 
+    getSupportingBody() {
+        const collision      = this.groundCollisions[0];
+        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== this.sensor.id);
+        return supportingBody.parent ? supportingBody.parent : supportingBody;
+    }
+
     attachSupport() {
 
         if (this.supportLock) return;
 
-        const collision = this.groundCollisions[0];
+        const supportingBody = this.getSupportingBody();
 
-        const supportingBody = [collision.bodyB, collision.bodyA].find(({id}) => id !== this.sensor.id);
-
-        const parentBody     = supportingBody.parent ? supportingBody.parent : supportingBody;
         const absoluteOrigin = {
             x: this.collider.position.x - this.collider.velocity.x * .3,
             y: this.collider.position.y
         };
-        const relativeOrigin = Vector.sub(absoluteOrigin, parentBody.position);
+
+        const relativeOrigin = Vector.sub(absoluteOrigin, supportingBody.position);
 
         this.supportLock = Constraint.create({
             length:    Math.abs(this.collider.velocity.x * 4),
             bodyA:     this.collider,
             pointA:    {x: 0, y: 0},
-            bodyB:     parentBody,
+            bodyB:     supportingBody,
             pointB:    relativeOrigin,
             stiffness: .005,
             damping:   .05,
@@ -149,51 +177,23 @@ class Player {
     jump() {
         this.detachSupport();
 
-        this.destroyPreviousThrusters();
+        Body.setVelocity(this.collider, {x: this.collider.velocity.x, y: -this.jumpForce});
 
-        this.thrusters = [];
 
-        for (let i = 0; i < 2; i++) {
-            const dx = ((i * 2) - 1) * 15;
-            const t  = Bodies.rectangle(this.collider.position.x + dx, this.collider.position.y, 30, 50, {
-                inertia: Infinity,
-                // density: .00001,
-                collisionFilter: {
-                    category: cThrust,
-                    mask:     cTerrain,
-                },
-                render:          {
-                    fillStyle:   'transparent',
-                    strokeStyle: 'rgba(255,255,255,0.7)',
-                    lineWidth:   1,
-                }
-            });
-            const c  = Constraint.create({
-                bodyA:     this.collider,
-                pointA:    {x: dx, y: 50},
-                bodyB:     t,
-                pointB:    {x: 0, y: 0},
-                length:    0,
-                stiffness: 0.2,
-            });
-            this.thrusters.push(t, c);
-        }
+        // apply "recoil"
 
-        World.add(this.engine.world, this.thrusters);
+        // const supportingBody = this.getSupportingBody();
+
+        // const relative = Vector.sub({
+        //     x: this.collider.position.x,
+        //     y: this.collider.position.y + 40,
+        // }, supportingBody.position);
+
+        // Body.applyForce(supportingBody, relative, {x: 0, y: this.terrainRecoilForce});
 
         this.sinceJump = 0;
     }
 
-    destroyPreviousThrusters() {
-        // if (this.thruster) {
-        //     World.remove(this.engine.world, this.thruster);
-        //     this.thruster = null;
-        // }
-        if (this.thrusters && this.thrusters.length) {
-            World.remove(this.engine.world, this.thrusters);
-            this.thrusters = [];
-        }
-    }
 
     beforeStep() {
 
@@ -201,11 +201,7 @@ class Player {
 
         if (this.controller.up) {
             const boost = this.getJumpBoost();
-            // if (boost) Body.applyForce(this.collider, {x: 0, y: 0}, {x: 0, y: -boost})
-        }
-
-        if (this.landing) {
-            this.destroyPreviousThrusters();
+            if (boost) Body.applyForce(this.collider, {x: 0, y: 0}, {x: 0, y: -boost})
         }
 
         if (this.landing && this.controller.up && !this.airborne) {

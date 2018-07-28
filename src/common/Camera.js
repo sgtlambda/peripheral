@@ -32,6 +32,8 @@ class Camera {
         this.render    = render;
         this.trackBody = trackBody;
 
+        this.panX = 0;
+
         this.attachEvents();
     }
 
@@ -74,6 +76,8 @@ class Camera {
         const actualX = this.render.bounds.min.x;
 
         const shiftTo = (targetX + actualX * this.smooth) / (this.smooth + 1);
+
+        this.panX = shiftTo;
 
         Bounds.shift(this.render.bounds, {x: shiftTo, y: this.y});
     }

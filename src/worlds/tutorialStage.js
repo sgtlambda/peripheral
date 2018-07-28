@@ -27,10 +27,11 @@ export default ({
 
     const terrainBodies = [terrain];
 
-    [0, 1, 2].forEach(i => {
-        const x = i * 120 + 325;
+    [0, 1].forEach(i => {
+        const x = i * 180 + 360;
         const p = pendulum({
-            x, y: 360, width: 80, ropeSeparation: 30,
+            x, y: 360, width: 80,
+            ropeSeparationAtSwing: 30, ropeLength: 250,
         });
         terrainBodies.push(p.body);
         World.add(world, p.constraints);
