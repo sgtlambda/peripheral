@@ -2,10 +2,11 @@ import {Bodies, Vertices, World} from "matter-js";
 import pendulum from "../parts/pendulum";
 import testTerrain from "../shapes/testTerrain";
 
+import {cTerrain} from "../common/collisionGroups";
+
 export default ({
 
     world,
-    collisionCategory,
 
 }) => {
 
@@ -20,7 +21,7 @@ export default ({
             lineWidth:   1
         },
         collisionFilter: {
-            category: collisionCategory,
+            category: cTerrain,
         }
     });
 

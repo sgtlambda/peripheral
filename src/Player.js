@@ -1,5 +1,7 @@
 import {Bodies, Body, Constraint, Query, Vector, World, Events} from "matter-js";
 
+import {cThrust, cTerrain, cPlayer} from "./common/collisionGroups";
+
 class Player {
 
     constructor({
@@ -9,8 +11,6 @@ class Player {
         controller,
         engine,
         terrainBodies,
-        collisionCategory,
-        collisionMask,
 
         radius = 25,
         moveForce = 10,
@@ -41,23 +41,27 @@ class Player {
         this.supportLock = null;
         this.sinceJump   = 0;
 
-        this.prepareBodies({x, y, radius, collisionCategory, collisionMask});
+        this.prepareBodies({x, y, radius});
 
         this.addBodies();
 
         this.attachLoop();
     }
 
+    /**
+     * Whether it's been at least "jumpCooldown" ticks since
+     * the last jump
+     * @returns {boolean}
+     */
     get landing() {
         return this.sinceJump > this.jumpCooldown;
     }
 
-
-    prepareBodies({x, y, radius, collisionCategory, collisionMask}) {
+    prepareBodies({x, y, radius}) {
 
         const pp = {x, y};
 
-        this.mainBody = Bodies.circle(pp.x, pp.y, radius, {
+        this.collider = Bodies.circle(pp.x, pp.y, radius, {
             density:         this.density,
             friction:        this.friction,
             inertia:         Infinity,
@@ -65,8 +69,8 @@ class Player {
                 fillStyle: 'none',
             },
             collisionFilter: {
-                category: collisionCategory,
-                mask:     collisionMask,
+                category: cPlayer,
+                mask:     cTerrain,
             },
         });
 
@@ -83,7 +87,7 @@ class Player {
 
     addBodies() {
         World.add(this.engine.world, [
-            this.mainBody,
+            this.collider,
             this.sensor,
         ]);
     }
@@ -105,21 +109,21 @@ class Player {
 
         const parentBody     = supportingBody.parent ? supportingBody.parent : supportingBody;
         const absoluteOrigin = {
-            x: this.mainBody.position.x - this.mainBody.velocity.x * .3,
-            y: this.mainBody.position.y
+            x: this.collider.position.x - this.collider.velocity.x * .3,
+            y: this.collider.position.y
         };
         const relativeOrigin = Vector.sub(absoluteOrigin, parentBody.position);
 
         this.supportLock = Constraint.create({
-            length:    Math.abs(this.mainBody.velocity.x * 4),
-            bodyA:     this.mainBody,
+            length:    Math.abs(this.collider.velocity.x * 4),
+            bodyA:     this.collider,
             pointA:    {x: 0, y: 0},
             bodyB:     parentBody,
             pointB:    relativeOrigin,
             stiffness: .005,
             damping:   .05,
             render:    {
-                type: 'line',
+                type:    'line',
                 visible: false,
             },
         });
@@ -144,8 +148,51 @@ class Player {
 
     jump() {
         this.detachSupport();
-        Body.setVelocity(this.mainBody, {x: this.mainBody.velocity.x, y: -this.jumpForce});
+
+        this.destroyPreviousThrusters();
+
+        this.thrusters = [];
+
+        for (let i = 0; i < 2; i++) {
+            const dx = ((i * 2) - 1) * 15;
+            const t  = Bodies.rectangle(this.collider.position.x + dx, this.collider.position.y, 30, 50, {
+                inertia: Infinity,
+                // density: .00001,
+                collisionFilter: {
+                    category: cThrust,
+                    mask:     cTerrain,
+                },
+                render:          {
+                    fillStyle:   'transparent',
+                    strokeStyle: 'rgba(255,255,255,0.7)',
+                    lineWidth:   1,
+                }
+            });
+            const c  = Constraint.create({
+                bodyA:     this.collider,
+                pointA:    {x: dx, y: 50},
+                bodyB:     t,
+                pointB:    {x: 0, y: 0},
+                length:    0,
+                stiffness: 0.2,
+            });
+            this.thrusters.push(t, c);
+        }
+
+        World.add(this.engine.world, this.thrusters);
+
         this.sinceJump = 0;
+    }
+
+    destroyPreviousThrusters() {
+        // if (this.thruster) {
+        //     World.remove(this.engine.world, this.thruster);
+        //     this.thruster = null;
+        // }
+        if (this.thrusters && this.thrusters.length) {
+            World.remove(this.engine.world, this.thrusters);
+            this.thrusters = [];
+        }
     }
 
     beforeStep() {
@@ -154,7 +201,11 @@ class Player {
 
         if (this.controller.up) {
             const boost = this.getJumpBoost();
-            if (boost) Body.applyForce(this.mainBody, {x: 0, y: 0}, {x: 0, y: -boost})
+            // if (boost) Body.applyForce(this.collider, {x: 0, y: 0}, {x: 0, y: -boost})
+        }
+
+        if (this.landing) {
+            this.destroyPreviousThrusters();
         }
 
         if (this.landing && this.controller.up && !this.airborne) {
@@ -164,8 +215,8 @@ class Player {
         if (this.controllerHorizontalMovement) {
             this.detachSupport();
             const targetVelocity = (this.controller.left ? -1 : 1) * this.moveForce;
-            const force          = -(this.mainBody.velocity.x - targetVelocity) * .0008 * (this.airborne ? .6 : 1);
-            Body.applyForce(this.mainBody, {x: 0, y: 0}, {x: force, y: 0});
+            const force          = -(this.collider.velocity.x - targetVelocity) * .0008 * (this.airborne ? .6 : 1);
+            Body.applyForce(this.collider, {x: 0, y: 0}, {x: force, y: 0});
         }
     }
 
@@ -182,8 +233,8 @@ class Player {
         if (this.airborne) this.detachSupport();
 
         Body.setPosition(this.sensor, {
-            x: this.mainBody.position.x - this.mainBody.velocity.x * .4,
-            y: this.mainBody.position.y + 18
+            x: this.collider.position.x - this.collider.velocity.x * .4,
+            y: this.collider.position.y + 18
         });
 
         if (!this.controllerHorizontalMovement && !this.airborne && this.landing) this.attachSupport();
