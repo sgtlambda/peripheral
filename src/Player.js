@@ -159,17 +159,6 @@ class Player {
 
         Body.setVelocity(this.collider, {x: this.collider.velocity.x, y: -this.jumpForce});
 
-        // apply "recoil"
-
-        // const supportingBody = this.getSupportingBody();
-        //
-        // const relative = Vector.sub({
-        //     x: this.collider.position.x,
-        //     y: this.collider.position.y + 40,
-        // }, supportingBody.position);
-        //
-        // Body.applyForce(supportingBody, relative, {x: 0, y: this.terrainRecoilForce});
-
         this.sinceJump = 0;
     }
 
