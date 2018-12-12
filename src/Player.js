@@ -1,6 +1,6 @@
 import {Bodies, Body, Constraint, Query, Vector, World, Events} from "matter-js";
 
-import {cTerrain, cPlayer} from "./common/collisionGroups";
+import {cTerrain, cPlayer} from "./constants/collisionGroups";
 
 class Player {
 
@@ -68,7 +68,9 @@ class Player {
             friction:        this.friction,
             inertia:         Infinity,
             render:          {
-                fillStyle: 'none',
+                fillStyle:   'transparent',
+                strokeStyle: 'rgba(255,255,255,0.8)',
+                lineWidth:   1,
             },
             collisionFilter: {
                 category: cPlayer,
@@ -98,11 +100,11 @@ class Player {
         });
 
         this.weaponMountConstraint = Constraint.create({
-            bodyA:     this.collider,
-            bodyB:     this.weaponMount,
-            pointA:    {x: 0, y: 0},
-            pointB:    {x: 0, y: 0},
-            length:    0,
+            bodyA:  this.collider,
+            bodyB:  this.weaponMount,
+            pointA: {x: 0, y: 0},
+            pointB: {x: 0, y: 0},
+            length: 0,
             // stiffness: .1,
         });
     }

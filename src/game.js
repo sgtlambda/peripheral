@@ -2,8 +2,6 @@ window.decomp = require('poly-decomp');
 
 import {Engine, Runner, Body, Events, Vector} from 'matter-js';
 
-import {cTerrain} from "./common/collisionGroups";
-
 import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
 import controller from './controller';
@@ -18,6 +16,25 @@ const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
 if (window.lastStop) window.lastStop();
 
+
+const ingameMousePos = (mouse, camera) => ({
+    x: mouse.x + camera.panX,
+    y: mouse.y,
+});
+
+const updateAimAngle = ({ctx, player, camera, mouse}) => {
+    const mountPos = player.weaponMount.position;
+    const mousePos = ingameMousePos(mouse, camera);
+    const aimAngle = Vector.angle(mountPos, mousePos);
+    // ctx.translate(mountPos.x - camera.panX, mountPos.y);
+    // ctx.rotate(aimAngle);
+    // ctx.fillStyle   = 'transparent';
+    // ctx.strokeStyle = 'white';
+    // ctx.strokeWidth = '.5px';
+    // ctx.strokeRect(0, -5, 40, 10);
+    // ctx.setTransform(2, 0, 0, 2, 0, 0);
+    return aimAngle;
+};
 
 (() => {
 
@@ -34,12 +51,9 @@ if (window.lastStop) window.lastStop();
     const {keysOn, destroy: destroyController} = controller();
 
     const player = new Player({
-
-        x: 200,
-        y: 200,
-
+        x:          100,
+        y:          200,
         controller: keysOn,
-
         engine,
         terrainBodies,
     });
@@ -61,13 +75,6 @@ if (window.lastStop) window.lastStop();
         mouse.y = e.pageY;
     });
 
-    const ingameMousePos = (mouse, camera) => {
-        return {
-            x: mouse.x + camera.panX,
-            y: mouse.y,
-        };
-    };
-
     let aimAngle;
 
     Events.on(renderer, 'afterRender', () => {
@@ -75,19 +82,13 @@ if (window.lastStop) window.lastStop();
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.fillStyle  = 'red';
-        const mountPos = player.weaponMount.position;
-        const mousePos = ingameMousePos(mouse, camera);
-        aimAngle       = Vector.angle(mountPos, mousePos);
-        ctx.translate(mountPos.x - camera.panX, mountPos.y);
-        ctx.rotate(aimAngle);
-        ctx.fillRect(0, -5, 40, 10);
-        ctx.setTransform(2, 0, 0, 2, 0, 0);
+        ctx.fillStyle = 'red';
+
+        aimAngle = updateAimAngle({player, camera, mouse, ctx});
     });
 
     window.addEventListener('mousedown', e => {
         const vector = Vector.rotate({x: -.05, y: 0}, aimAngle);
-        // player.collider.applyForce()
         Body.applyForce(player.collider, {x: 0, y: 0}, vector);
     });
 
