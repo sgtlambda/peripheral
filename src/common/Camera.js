@@ -31,10 +31,11 @@ class Camera {
         this.trackBody = trackBody;
 
         this.attachEvents();
+
+        Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
     }
 
     getBoundsTarget() {
-
         return {
             x: this.trackBody.position.x - this.width / 2,
             y: this.trackBody.position.y - this.height / 2,

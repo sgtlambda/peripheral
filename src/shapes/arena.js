@@ -18,7 +18,7 @@ export default ({
     bezelH = 80,
 } = {}) => {
 
-    const topHalf = [
+    const topHalf = Vertices.translate([
         {x: 0, y: 0},
         {x: width, y: 0},
         {x: width, y: height / 2 - halfwayGap},
@@ -29,9 +29,11 @@ export default ({
         {x: walls, y: walls + bezelH},
         {x: walls, y: height / 2 - halfwayGap},
         {x: 0, y: height / 2 - halfwayGap},
-    ];
+    ], {
+        x: -width / 2, y: -height / 2
+    });
 
-    const bottomHalf = Vertices.rotate(cloneDeep(topHalf), Math.PI, {x: width / 2, y: height / 2});
+    const bottomHalf = Vertices.rotate(cloneDeep(topHalf), Math.PI, {x: 0, y: 0});
 
     return [
         topHalf,

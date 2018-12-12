@@ -47,6 +47,7 @@ export default ({
         const b = Bodies.rectangle(
             180 + bx * boxSize,
             300 - boxSize * 3.5 + by * boxSize, boxSize - 1, boxSize - 1, {
+                isStatic: true,
                 render: {
                     fillStyle:   'none',
                     strokeStyle: '#eee',

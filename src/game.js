@@ -23,6 +23,8 @@ if (window.lastStop) window.lastStop();
     const runner   = Runner.create();
     const renderer = createRenderer({element: document.body, engine});
 
+    // renderer.bounds.min = {x: -render}
+
     const world = engine.world;
 
     world.gravity.scale = 0;
@@ -32,8 +34,8 @@ if (window.lastStop) window.lastStop();
     const {keysOn, destroy: destroyController} = controller();
 
     const player = new Player({
-        x:          120,
-        y:          200,
+        x:          0,
+        y:          0,
         controller: keysOn,
         engine,
         terrainBodies,
