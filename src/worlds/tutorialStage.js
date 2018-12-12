@@ -56,17 +56,6 @@ export default ({
         terrainBodies.push(b);
     });
 
-    const rootIndicator = Bodies.rectangle(0, 0, 20, 20, {
-        render:   {
-            fillStyle:   '#000000',
-            strokeStyle: '#ffffff',
-            lineWidth:   1
-        },
-        isStatic: true,
-    });
-
-    World.add(world, rootIndicator);
-
     World.add(world, terrainBodies);
 
     return {world, terrainBodies};
