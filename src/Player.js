@@ -69,7 +69,7 @@ class Player {
             inertia:         Infinity,
             render:          {
                 fillStyle:   'transparent',
-                strokeStyle: 'rgba(255,255,255,0.8)',
+                strokeStyle: 'rgba(255,255,255,0.3)',
                 lineWidth:   1,
             },
             collisionFilter: {
@@ -83,7 +83,7 @@ class Player {
             isSensor: true,
             render:   {
                 fillStyle:   'transparent',
-                strokeStyle: 'rgba(255,255,255,0.7)',
+                strokeStyle: 'rgba(255,255,255,0.3)',
                 lineWidth:   1,
             }
         });
