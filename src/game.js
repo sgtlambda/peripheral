@@ -68,29 +68,29 @@ const updateAimAngle = ({ctx, player, camera, mouse}) => {
 
     Runner.run(Runner.create(), engine);
 
-    let mouse = {x: 0, y: 0};
+    // let mouse = {x: 0, y: 0};
+    //
+    // window.addEventListener('mousemove', e => {
+    //     mouse.x = e.pageX;
+    //     mouse.y = e.pageY;
+    // });
 
-    window.addEventListener('mousemove', e => {
-        mouse.x = e.pageX;
-        mouse.y = e.pageY;
-    });
+    // let aimAngle;
 
-    let aimAngle;
+    // Events.on(renderer, 'afterRender', () => {
+    //     const ctx = renderer.context;
+    //     ctx.beginPath();
+    //     ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
+    //     ctx.stroke();
+    //     ctx.fillStyle = 'red';
 
-    Events.on(renderer, 'afterRender', () => {
-        const ctx = renderer.context;
-        ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, 5, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = 'red';
+        // aimAngle = updateAimAngle({player, camera, mouse, ctx});
+    // });
 
-        aimAngle = updateAimAngle({player, camera, mouse, ctx});
-    });
-
-    window.addEventListener('mousedown', e => {
-        const vector = Vector.rotate({x: -.05, y: 0}, aimAngle);
-        Body.applyForce(player.collider, {x: 0, y: 0}, vector);
-    });
+    // window.addEventListener('mousedown', e => {
+    //     const vector = Vector.rotate({x: -.05, y: 0}, aimAngle);
+    //     Body.applyForce(player.collider, {x: 0, y: 0}, vector);
+    // });
 
     window.lastStop = () => {
         Render.stop(renderer);
