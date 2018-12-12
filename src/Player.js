@@ -87,34 +87,12 @@ class Player {
                 lineWidth:   1,
             }
         });
-
-        this.weaponMount = Bodies.circle(pp.x, pp.y, 10, {
-            isSensor: true,
-            density:  this.density,
-            inertia:  Infinity,
-            render:   {
-                fillStyle:   'transparent',
-                strokeStyle: 'rgba(0,0,255,0.9)',
-                lineWidth:   1,
-            }
-        });
-
-        this.weaponMountConstraint = Constraint.create({
-            bodyA:  this.collider,
-            bodyB:  this.weaponMount,
-            pointA: {x: 0, y: 0},
-            pointB: {x: 0, y: 0},
-            length: 0,
-            // stiffness: .1,
-        });
     }
 
     addBodies() {
         World.add(this.engine.world, [
             this.collider,
             this.sensor,
-            this.weaponMount,
-            this.weaponMountConstraint,
         ]);
     }
 
@@ -181,16 +159,15 @@ class Player {
 
         Body.setVelocity(this.collider, {x: this.collider.velocity.x, y: -this.jumpForce});
 
-
         // apply "recoil"
 
         // const supportingBody = this.getSupportingBody();
-
+        //
         // const relative = Vector.sub({
         //     x: this.collider.position.x,
         //     y: this.collider.position.y + 40,
         // }, supportingBody.position);
-
+        //
         // Body.applyForce(supportingBody, relative, {x: 0, y: this.terrainRecoilForce});
 
         this.sinceJump = 0;
