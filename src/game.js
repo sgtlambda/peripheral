@@ -17,11 +17,6 @@ if (canvas) canvas.remove();
 if (window.lastStop) window.lastStop();
 
 
-// const ingameMousePos = (mouse, camera) => ({
-//     x: mouse.x + camera.panX,
-//     y: mouse.y,
-// });
-
 (() => {
 
     const engine   = Engine.create();
