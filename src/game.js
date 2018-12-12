@@ -6,7 +6,7 @@ import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
 import controller from './controller';
 
-import testStage from './worlds/tutorialStage';
+import testStage from './stages/testStage';
 
 import Player from './Player';
 import Camera from './common/Camera';
@@ -30,14 +30,14 @@ if (window.lastStop) window.lastStop();
 
     const world = engine.world;
 
-    world.gravity.scale = 0.003;
+    world.gravity.scale = 0;
 
     const {terrainBodies} = testStage({world});
 
     const {keysOn, destroy: destroyController} = controller();
 
     const player = new Player({
-        x:          100,
+        x:          120,
         y:          200,
         controller: keysOn,
         engine,

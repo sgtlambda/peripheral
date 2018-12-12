@@ -32,7 +32,7 @@ class Camera {
         this.render    = render;
         this.trackBody = trackBody;
 
-        this.panX = 0;
+        // this.panX = 0;
 
         this.attachEvents();
     }
@@ -41,25 +41,32 @@ class Camera {
     //     return this.render.bounds;
     // }
 
-    get paddingAbs() {
-        return this.width * this.pad;
-    }
+    // get paddingAbs() {
+    //     return this.width * this.pad;
+    // }
 
     getBoundsTarget() {
 
-        let currentX = this.render.bounds.min.x;
+        // let currentX = this.render.bounds.min.x;
+
         // make sure the "track body" doesn't disappear towards the right
         // side of the screen
-        currentX = Math.max(currentX, this.trackBody.position.x + this.paddingAbs - this.width);
+        // currentX = Math.max(currentX, this.trackBody.position.x + this.paddingAbs - this.width);
+
         // make sure the "track body" doesn't disappear off the left side
         // of the screen either
-        currentX = Math.min(currentX, this.trackBody.position.x - this.paddingAbs);
+        // currentX = Math.min(currentX, this.trackBody.position.x - this.paddingAbs);
+
         // return Bounds.shift()
         // return Bounds.create({
         //     min: {x: currentX, y: this.y},
         //     max: {x: currentX + this.width, y: this.y + this.height},
         // });
-        return currentX;
+
+        return {
+            x: this.trackBody.position.x - this.width / 2,
+            y: this.trackBody.position.y - this.height / 2,
+        };
     }
 
     attachEvents() {
@@ -72,14 +79,17 @@ class Camera {
         // console.log(this.render);
 
         // Bounds.translate(this.render.bounds, {x: 1, y: 0});
-        const targetX = this.getBoundsTarget();
-        const actualX = this.render.bounds.min.x;
+        const {x: targetX, y: targetY} = this.getBoundsTarget();
 
-        const shiftTo = (targetX + actualX * this.smooth) / (this.smooth + 1);
+        const {x: actualX, y: actualY} = this.render.bounds.min;
 
-        this.panX = shiftTo;
+        const shiftToX = (targetX + actualX * this.smooth) / (this.smooth + 1);
+        const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
-        Bounds.shift(this.render.bounds, {x: shiftTo, y: this.y});
+        // this.panX = shiftToX;
+        // this.panY = shiftToY;
+
+        Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
     }
 }
 

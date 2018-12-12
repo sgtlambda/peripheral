@@ -1,6 +1,6 @@
 import {Bodies, World} from 'matter-js';
 import pendulum from '../parts/pendulum';
-import testTerrain from '../shapes/testTerrain';
+import arena from '../shapes/arena';
 
 import {cTerrain} from '../constants/collisionGroups';
 
@@ -12,13 +12,13 @@ export default ({
 
 }) => {
 
-    const terrainBodies = testTerrain.map(vertices => {
+    const terrainBodies = arena().map(vertices => {
         const offset = getBodyOffset(vertices);
         return Bodies.fromVertices(offset.x, offset.y, vertices, {
             isStatic:        true,
             render:          {
-                fillStyle:   '#2e2b44',
-                strokeStyle: '#2e2b44',
+                fillStyle:   'none',
+                strokeStyle: '#eee',
                 lineWidth:   1
             },
             collisionFilter: {
@@ -27,17 +27,17 @@ export default ({
         });
     });
 
-    [0, 1].forEach(i => {
-        const x = 382 + i * 85;
-        const p = pendulum({
-            x, y:                  305,
-            width:                 80,
-            ropeSeparationAtSwing: 30,
-            ropeLength:            200,
-        });
-        terrainBodies.push(p.body);
-        World.add(world, p.constraints);
-    });
+    // [0, 1].forEach(i => {
+    //     const x = 382 + i * 85;
+    //     const p = pendulum({
+    //         x, y:                  305,
+    //         width:                 80,
+    //         ropeSeparationAtSwing: 30,
+    //         ropeLength:            200,
+    //     });
+    //     terrainBodies.push(p.body);
+    //     World.add(world, p.constraints);
+    // });
 
     const boxSize = 32;
     [
@@ -48,8 +48,8 @@ export default ({
             180 + bx * boxSize,
             300 - boxSize * 3.5 + by * boxSize, boxSize - 1, boxSize - 1, {
                 render: {
-                    fillStyle:   '#4b3e35',
-                    strokeStyle: '#130f0e',
+                    fillStyle:   'none',
+                    strokeStyle: '#eee',
                     lineWidth:   1
                 }
             });

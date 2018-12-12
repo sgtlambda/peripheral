@@ -8,7 +8,7 @@ module.exports = ({element, engine}) => {
         engine:  engine,
         options: {
             width:               800,
-            height:              400,
+            height:              600,
             pixelRatio:          2,
             background:          '#000',
             wireframeBackground: '#fff',
