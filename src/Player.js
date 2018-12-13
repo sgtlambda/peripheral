@@ -1,4 +1,4 @@
-import {Bodies, Body, World, Events} from "matter-js";
+import {Bodies, Body, World, Events, Vector} from "matter-js";
 
 import {cTerrain, cPlayer} from "./constants/collisionGroups";
 
@@ -6,9 +6,9 @@ class Player {
 
     constructor({
 
-        x, y,
+        x, y, angle = 0,
 
-        controller,
+        keys, mouse,
         terrainBodies,
 
         radius = 25,
@@ -18,8 +18,11 @@ class Player {
 
     }) {
 
+        this.angle = 0;
+
         // globals
-        this.controller    = controller;
+        this.keys          = keys;
+        this.mouse         = mouse;
         this.terrainBodies = terrainBodies;
 
         // configuration
@@ -52,28 +55,31 @@ class Player {
     }
 
     get controllerHorizontalMovement() {
-        return (this.controller.right && !this.controller.left) ||
-            (!this.controller.right && this.controller.left);
+        return (this.keys.right && !this.keys.left) ||
+            (!this.keys.right && this.keys.left);
     }
 
     get controllerVerticalMovement() {
-        return (this.controller.up && !this.controller.down) ||
-            (!this.controller.up && this.controller.down);
+        return (this.keys.up && !this.keys.down) ||
+            (!this.keys.up && this.keys.down);
     }
 
     beforeStep() {
-
-        const targetXVelocity = this.controllerHorizontalMovement ? (this.controller.left ? -1 : 1) * this.moveForce : 0;
+        const targetXVelocity = this.controllerHorizontalMovement ? (this.keys.left ? -1 : 1) * this.moveForce : 0;
         const xForce          = -(this.collider.velocity.x - targetXVelocity) * .0008;
 
-        const targetYVelocity = this.controllerVerticalMovement ? (this.controller.up ? -1 : 1) * this.moveForce : 0;
+        const targetYVelocity = this.controllerVerticalMovement ? (this.keys.up ? -1 : 1) * this.moveForce : 0;
         const yForce          = -(this.collider.velocity.y - targetYVelocity) * .0008;
 
         Body.applyForce(this.collider, {x: 0, y: 0}, {x: xForce, y: yForce});
     }
 
-    afterStep() {
+    get position() {
+        return this.collider.position;
+    }
 
+    afterStep() {
+        this.angle = Vector.angle(this.position, this.mouse);
     }
 
     provision(world) {

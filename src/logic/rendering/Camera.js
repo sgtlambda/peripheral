@@ -3,13 +3,12 @@ import {Events, Bounds} from 'matter-js';
 const boundsWidth  = bounds => bounds.max.x - bounds.min.x;
 const boundsHeight = bounds => bounds.max.y - bounds.min.y;
 
-
 class Camera {
 
     constructor({
 
         render,
-        trackBody,
+        trackBody = null,
 
         width = null,
         height = null,
@@ -31,6 +30,14 @@ class Camera {
         Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
     }
 
+    get bounds() {
+        return this.render.bounds;
+    }
+
+    track(body) {
+        this.trackBody = body;
+    }
+
     getBoundsTarget() {
         return {
             x: this.trackBody.position.x - this.width / 2,
@@ -39,6 +46,8 @@ class Camera {
     }
 
     beforeTick() {
+        if (!this.trackBody) return;
+
         const {x: targetX, y: targetY} = this.getBoundsTarget();
 
         const {x: actualX, y: actualY} = this.render.bounds.min;

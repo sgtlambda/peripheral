@@ -1,5 +1,7 @@
 import {World} from 'matter-js';
 
+import {without} from 'lodash';
+
 class Stage {
 
     constructor({
@@ -16,6 +18,10 @@ class Stage {
      */
     addItem(strayItem) {
         this.strayItems.push(strayItem);
+    }
+
+    removeItem(strayItem) {
+        this.strayItems = without(this.strayItems, strayItem);
     }
 
     /**

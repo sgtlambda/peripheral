@@ -4,15 +4,21 @@ import {Engine, Runner} from 'matter-js';
 
 import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
-import controller from './controller';
+import playerController from './playerController';
+import mouseController from './mouseController';
+import uiController from './uiController';
+import interactionController from './interactionController';
 
 import practiceStage from './stages/practiceStage';
-import StageRenderer from './logic/StageRenderer';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
+import StageRenderer from './logic/rendering/StageRenderer';
+import UiRenderer from './logic/rendering/UiRenderer';
+import PlayerInteractionRenderer from './logic/rendering/PlayerInteractionRenderer';
+
 import Player from './Player';
-import Camera from './common/Camera';
+import Camera from './logic/rendering/Camera';
 
 // cleanup
 const canvas = document.getElementsByTagName('canvas').item(0);
@@ -23,25 +29,40 @@ if (window.lastStop) window.lastStop();
 
     const engine = Engine.create();
     const runner = Runner.create();
+    const world  = engine.world;
     const render = createRenderer({element: document.body, engine});
+
+    const camera = new Camera({render});
 
     const playerState = new PlayerState();
 
-    const world = engine.world;
-
     world.gravity.scale = 0;
 
-    const stage = practiceStage().provision(world);
+    const {keysOn, destroy: destroyPlayerController}   = playerController();
+    const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
+    const {destroy: destroyUiController}               = uiController({playerState});
 
-    const {keysOn, destroy: destroyController} = controller();
+    const stage = practiceStage();
 
-    const player = new Player({x: 0, y: 0, controller: keysOn, terrainBodies: stage.terrainBodies});
+    const player = new Player({x: 0, y: 0, keys: keysOn, mouse: gameMouse, terrainBodies: stage.terrainBodies});
 
-    player.provision(world).attach(engine);
+    camera.track(player.collider);
 
-    const stageRenderer      = new StageRenderer({stage, render}).attach();
-    const interactionHandler = new InteractionHandler({engine, player, playerState}).attach(engine);
-    const camera             = new Camera({render, trackBody: player.collider}).attach(engine);
+    const interactionHandler = new InteractionHandler({stage, player, playerState});
+
+    const stageRenderer             = new StageRenderer(stage);
+    const uiRenderer                = new UiRenderer(playerState);
+    const playerInteractionRenderer = new PlayerInteractionRenderer({player, playerState});
+
+    const {destroy: destroyInteractionController} = interactionController({interactionHandler});
+
+    const worldParts  = [stage, player];
+    const engineHooks = [player, interactionHandler, camera];
+    const renderHooks = [stageRenderer, uiRenderer, playerInteractionRenderer];
+
+    worldParts.forEach(p => p.provision(world));
+    engineHooks.forEach(e => e.attach(engine));
+    renderHooks.forEach(r => r.attach(render));
 
     Render.run(render);
     Runner.run(runner, engine);
@@ -51,12 +72,11 @@ if (window.lastStop) window.lastStop();
         Render.stop(render);
         Runner.stop(runner);
 
-        player.detach(engine);
+        engineHooks.forEach(e => e.detach(engine));
+        renderHooks.forEach(r => r.detach(render));
 
-        stageRenderer.detach();
-        interactionHandler.detach(engine);
-        camera.detach(engine);
-
-        destroyController();
+        destroyPlayerController();
+        destroyUiController();
+        destroyInteractionController();
     };
 })();
