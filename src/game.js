@@ -1,12 +1,15 @@
 window.decomp = require('poly-decomp');
 
-import {Engine, Runner, Events} from 'matter-js';
+import {Engine, Runner} from 'matter-js';
 
 import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
 import controller from './controller';
 
-import testStage from './stages/testStage';
+import practiceStage from './stages/practiceStage';
+import StageRenderer from './logic/StageRenderer';
+import InteractionHandler from './logic/InteractionHandler';
+import PlayerState from './logic/PlayerState';
 
 import Player from './Player';
 import Camera from './common/Camera';
@@ -16,46 +19,47 @@ const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
 if (window.lastStop) window.lastStop();
 
-
 (() => {
 
-    const engine   = Engine.create();
-    const runner   = Runner.create();
-    const renderer = createRenderer({element: document.body, engine});
+    const engine = Engine.create();
+    const runner = Runner.create();
+    const render = createRenderer({element: document.body, engine});
 
-    // renderer.bounds.min = {x: -render}
+    const playerState = new PlayerState();
 
     const world = engine.world;
 
     world.gravity.scale = 0;
 
-    const {terrainBodies} = testStage({world});
+    const stage = practiceStage().provision(world);
 
     const {keysOn, destroy: destroyController} = controller();
 
-    const player = new Player({
-        x:          0,
-        y:          0,
-        controller: keysOn,
-        engine,
-        terrainBodies,
-    });
+    const player = new Player({x: 0, y: 0, controller: keysOn, terrainBodies: stage.terrainBodies});
 
-    const camera = new Camera({
-        engine,
-        render:    renderer,
-        trackBody: player.collider,
-    });
+    player.provision(world).attach(engine);
 
-    Render.run(renderer);
+    const stageRenderer      = new StageRenderer({stage, render}).attach();
+    const interactionHandler = new InteractionHandler({engine, player, playerState}).attach(engine);
+    const camera             = new Camera({render, trackBody: player.collider}).attach(engine);
 
-    Runner.run(Runner.create(), engine);
+    Render.run(render);
+    Runner.run(runner, engine);
 
     window.lastStop = () => {
-        Render.stop(renderer);
+
+        Render.stop(render);
         Runner.stop(runner);
-        Events.off(engine);
-        Events.off(renderer);
+
+        // Events.off(engine);
+        // Events.off(render);
+
+        player.detach(engine);
+
+        stageRenderer.detach();
+        interactionHandler.detach(engine);
+        camera.detach(engine);
+
         destroyController();
     };
 })();

@@ -1,4 +1,4 @@
-import {Bodies, Body, Constraint, Query, Vector, World, Events} from "matter-js";
+import {Bodies, Body, World, Events} from "matter-js";
 
 import {cTerrain, cPlayer} from "./constants/collisionGroups";
 
@@ -6,10 +6,9 @@ class Player {
 
     constructor({
 
-        x,
-        y,
+        x, y,
+
         controller,
-        engine,
         terrainBodies,
 
         radius = 25,
@@ -20,7 +19,6 @@ class Player {
     }) {
 
         // globals
-        this.engine        = engine;
         this.controller    = controller;
         this.terrainBodies = terrainBodies;
 
@@ -30,10 +28,6 @@ class Player {
         this.density   = density;
 
         this.prepareBodies({x, y, radius});
-
-        this.addBodies();
-
-        this.attachLoop();
     }
 
     prepareBodies({x, y, radius}) {
@@ -55,19 +49,6 @@ class Player {
             },
         });
 
-    }
-
-    addBodies() {
-        World.add(this.engine.world, [
-            this.collider,
-        ]);
-    }
-
-    attachLoop() {
-        this._eBeforeStep = this.beforeStep.bind(this);
-        this._eAfterStep  = this.afterStep.bind(this);
-        Events.on(this.engine, 'beforeUpdate', this._eBeforeStep);
-        Events.on(this.engine, 'afterUpdate', this._eAfterStep);
     }
 
     get controllerHorizontalMovement() {
@@ -93,6 +74,28 @@ class Player {
 
     afterStep() {
 
+    }
+
+    provision(world) {
+        World.add(world, [
+            this.collider,
+        ]);
+        return this;
+    }
+
+    attach(engine) {
+        this._eBeforeStep = this.beforeStep.bind(this);
+        this._eAfterStep  = this.afterStep.bind(this);
+        Events.on(engine, 'beforeUpdate', this._eBeforeStep);
+        Events.on(engine, 'afterUpdate', this._eAfterStep);
+        return this;
+    }
+
+    detach(engine) {
+        Events.off(engine, 'beforeUpdate', this._eBeforeStep);
+        Events.off(engine, 'afterUpdate', this._eAfterStep);
+        this._eBeforeStep = null;
+        this._eAfterStep  = null;
     }
 }
 

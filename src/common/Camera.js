@@ -8,7 +8,6 @@ class Camera {
 
     constructor({
 
-        engine,
         render,
         trackBody,
 
@@ -26,11 +25,8 @@ class Camera {
 
         this.smooth = smooth;
 
-        this.engine    = engine;
         this.render    = render;
         this.trackBody = trackBody;
-
-        this.attachEvents();
 
         Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
     }
@@ -42,12 +38,6 @@ class Camera {
         };
     }
 
-    attachEvents() {
-
-        this._eBeforeTick = this.beforeTick.bind(this);
-        Events.on(this.engine, 'beforeTick', this._eBeforeTick);
-    }
-
     beforeTick() {
         const {x: targetX, y: targetY} = this.getBoundsTarget();
 
@@ -57,6 +47,17 @@ class Camera {
         const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
         Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
+    }
+
+    attach(engine) {
+        this._callback = this.beforeTick.bind(this);
+        Events.on(engine, 'beforeTick', this._callback);
+        return this;
+    }
+
+    detach(engine) {
+        if (this._callback) Events.off(engine, 'beforeTick', this._callback);
+        this._callback = null;
     }
 }
 

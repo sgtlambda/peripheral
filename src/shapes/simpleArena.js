@@ -1,13 +1,6 @@
 import {cloneDeep} from 'lodash';
 
-import {Vector, Vertices} from 'matter-js';
-
-// const baseY     = 300 - 8;
-// const rampWidth = 50;
-// const gapDepth  = 200;
-// const gapX      = 290;
-// const gapWidth  = 320;
-// const gapStep   = 20;
+import {Vertices} from 'matter-js';
 
 export default ({
     width = 800,
