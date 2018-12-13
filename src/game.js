@@ -51,9 +51,6 @@ if (window.lastStop) window.lastStop();
         Render.stop(render);
         Runner.stop(runner);
 
-        // Events.off(engine);
-        // Events.off(render);
-
         player.detach(engine);
 
         stageRenderer.detach();
