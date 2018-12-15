@@ -56,7 +56,7 @@ const renderIntents = ({context, x, y, itemType}) => {
         context.textBaseline = 'top';
 
         context.fillStyle = `white`;
-        renderTextWithShadow({context, text: `[q] drop ${itemType.name}`, x, y});
+        renderTextWithShadow({context, text: `drop ${itemType.name} [q]`, x, y});
 
         itemType.availableIntents.forEach(itemIntent => {
             y += 20;

@@ -7,6 +7,6 @@ export default ({
 }) => new ItemIntent({
     keyBind,
     name:        'build',
-    description: `[${keyBind}] build ${buildable.name}`,
+    description: `build ${buildable.name} [${keyBind}]`,
     options:     {requires, buildable},
 });
