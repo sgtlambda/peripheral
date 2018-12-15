@@ -30,12 +30,32 @@ class InteractionHandler {
     }
 
     dropItem() {
-        const itemType = this.playerState.removeFromActiveSlot();
+        const itemType = this.playerState.removeFromInventory();
         if (itemType) {
             const position = {x: this.player.position.x, y: this.player.position.y};
             const cooldown = InteractionHandler.itemDropCooldown;
             const speed    = Vector.rotate({x: 10, y: 0}, this.player.angle);
             this.stage.addItem(new StrayItem({itemType, position, speed, cooldown}));
+        }
+    }
+
+    getPlayerBuildPosition(offset = 35 + 16) {
+        return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.angle));
+    }
+
+    buildItem() {
+        const slot     = this.playerState.getActiveSlot();
+        const itemType = slot.itemType;
+        if (!itemType) return;
+        const buildIntent = itemType.getBuildIntent();
+        if (buildIntent) {
+            if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
+                const position = this.getPlayerBuildPosition();
+                this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
+                    angle: this.player.angle,
+                    ...position,
+                }));
+            }
         }
     }
 

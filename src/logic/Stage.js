@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import {World} from 'matter-js';
 
 import {without} from 'lodash';
@@ -7,9 +9,11 @@ class Stage {
     constructor({
         strayItems = [],
         terrainBodies = [],
+        buildings = [],
     } = {}) {
         this.strayItems    = strayItems;
         this.terrainBodies = terrainBodies;
+        this.buildings     = buildings;
     }
 
     /**
@@ -32,13 +36,21 @@ class Stage {
         this.terrainBodies.push(terrainBody);
     }
 
+    addBuilding(building) {
+        this.buildings.push(building);
+        World.add(this._world, [building.body])
+    }
+
     /**
      * Add all terrain bodies belonging to this stage
      * to the given physics world
      * @param world
      */
     provision(world) {
+        assert(!this.provisioned, 'Cannot provision Stage twice.');
+        this.provisioned = true;
         World.add(world, this.terrainBodies);
+        this._world = world;
         return this;
     }
 }

@@ -1,6 +1,6 @@
-import {Bodies, Body, World, Events, Vector} from "matter-js";
+import {Bodies, Body, World, Events, Vector} from 'matter-js';
 
-import {cTerrain, cPlayer} from "./constants/collisionGroups";
+import {cTerrain, cPlayer} from './data/collisionGroups';
 
 class Player {
 
@@ -83,9 +83,7 @@ class Player {
     }
 
     provision(world) {
-        World.add(world, [
-            this.collider,
-        ]);
+        World.add(world, [this.collider]);
         return this;
     }
 

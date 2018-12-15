@@ -1,6 +1,6 @@
 import {times, find} from 'lodash';
 
-import inventoryKeyBinds from './../constants/inventoryKeyBinds';
+import inventoryKeyBinds from './../data/inventoryKeyBinds';
 
 class InventorySlot {
     constructor({itemType = null, amount = 0, keyBind = null} = {}) {
@@ -23,8 +23,8 @@ class PlayerState {
         activeInventorySlot = 0,
         angle = 0,
     } = {}) {
-        this.inventory           = inventory === null ? createInventory() : inventory;
-        this.activeInventorySlot = activeInventorySlot;
+        this.inventory = inventory === null ? createInventory() : inventory;
+        this.selectSlot(activeInventorySlot);
     }
 
     firstEmptySlot() {
@@ -35,16 +35,25 @@ class PlayerState {
         this.activeInventorySlot = index;
     }
 
+    /**
+     * @returns {InventorySlot}
+     */
     getActiveSlot() {
         return this.inventory[this.activeInventorySlot];
     }
 
-    removeFromActiveSlot(amount = 1) {
-        const activeSlot = this.getActiveSlot();
-        if (activeSlot.itemType === null || !activeSlot.amount) return false;
+    /**
+     * Remove the given amount from the inventory slot at the given index (defaults to active slot)
+     * @param amount
+     * @param slot
+     * @returns {*}
+     */
+    removeFromInventory(amount = 1, slot = null) {
+        const activeSlot = slot === null ? this.getActiveSlot() : slot;
+        if (activeSlot.itemType === null || activeSlot.amount < amount) return false;
         else {
             const removedItemType = activeSlot.itemType;
-            activeSlot.amount -= 1;
+            activeSlot.amount -= amount;
             if (activeSlot.amount === 0) activeSlot.itemType = null;
             return removedItemType;
         }

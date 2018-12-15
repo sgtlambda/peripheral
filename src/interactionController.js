@@ -2,16 +2,18 @@ export default ({
     emitter = document,
     interactionHandler,
     keyMap = {
-        q: 'drop',
+        // The values here map to methods in the InteractionHandler class
+        q: 'dropItem',
+        b: 'buildItem',
     },
 } = {}) => {
 
     const keysOn = {};
 
     const press = e => {
-        if (keyMap[e.key] === 'drop') {
-            interactionHandler.dropItem();
-        }
+        const method = keyMap[e.key];
+        if (method && interactionHandler[method])
+            interactionHandler[method].call(interactionHandler);
     };
 
     emitter.addEventListener('keydown', press);

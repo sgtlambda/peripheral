@@ -4,9 +4,9 @@ import Stage from '../logic/Stage';
 import StrayItem from '../logic/StrayItem';
 
 import arena from '../shapes/simpleArena';
-import banana from '../constants/itemTypes/banana';
-import log from '../constants/itemTypes/log';
-import {cTerrain} from '../constants/collisionGroups';
+import banana from '../data/itemTypes/banana';
+import log from '../data/itemTypes/log';
+import {cTerrain} from '../data/collisionGroups';
 
 import getBodyOffset from './../common/getBodyOffset';
 
@@ -40,8 +40,8 @@ export default () => {
         stage.addBody(Bodies.rectangle(
             180 + bx * boxSize,
             300 - boxSize * 3.5 + by * boxSize, boxSize - 1, boxSize - 1, {
-                isStatic: true,
-                render:   {
+                density: 15,
+                render:  {
                     fillStyle:   'none',
                     strokeStyle: '#eee',
                     lineWidth:   1
@@ -49,11 +49,13 @@ export default () => {
             }));
     });
 
+    for (let i = 0; i < 50; i++) {
+        const x = Math.random() * 600 - 300;
+        const y = Math.random() * 700 - 350;
+        stage.addItem(new StrayItem({itemType: log, position: {x, y}}));
+    }
+
     stage.addItem(new StrayItem({itemType: banana, position: {x: -100, y: 100}}));
-
-    stage.addItem(new StrayItem({itemType: log, position: {x: -110, y: 40}}));
-
-    stage.addItem(new StrayItem({itemType: log, position: {x: -190, y: 20}}));
 
     return stage;
 }
