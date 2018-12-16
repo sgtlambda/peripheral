@@ -1,8 +1,8 @@
 import assert from 'assert';
-
 import {World} from 'matter-js';
-
 import {without} from 'lodash';
+
+import StageGraphics from './StageGraphics';
 
 class Stage {
 
@@ -10,10 +10,14 @@ class Stage {
         strayItems = [],
         terrainBodies = [],
         buildings = [],
+        graphics = null,
+        initialPlayerPos = {x: 0, y: 0},
     } = {}) {
-        this.strayItems    = strayItems;
-        this.terrainBodies = terrainBodies;
-        this.buildings     = buildings;
+        this.strayItems       = strayItems;
+        this.terrainBodies    = terrainBodies;
+        this.buildings        = buildings;
+        this.graphics         = graphics === null ? new StageGraphics() : graphics;
+        this.initialPlayerPos = initialPlayerPos;
     }
 
     /**

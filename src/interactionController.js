@@ -1,4 +1,5 @@
 export default ({
+    mouseEmitter = window,
     emitter = document,
     interactionHandler,
     keyMap = {
@@ -16,12 +17,19 @@ export default ({
             interactionHandler[method].call(interactionHandler);
     };
 
+    const mouseDown = () => {
+        interactionHandler.triggerPrimary();
+    };
+
     emitter.addEventListener('keydown', press);
+
+    mouseEmitter.addEventListener('mousedown', mouseDown);
 
     return {
         keysOn,
         destroy() {
             emitter.removeEventListener('keydown', press);
+            mouseEmitter.removeEventListener('mousedown', mouseDown);
         },
     };
 };

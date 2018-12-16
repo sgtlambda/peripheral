@@ -9,7 +9,7 @@ import mouseController from './mouseController';
 import uiController from './uiController';
 import interactionController from './interactionController';
 
-import practiceStage from './stages/practiceStage';
+import forestStage from './stages/forest';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
@@ -19,6 +19,8 @@ import PlayerInteractionRenderer from './logic/rendering/PlayerInteractionRender
 
 import Player from './Player';
 import Camera from './logic/rendering/Camera';
+
+import debugDraw from './data/itemTypes/debugDraw.js';
 
 // cleanup
 const canvas = document.getElementsByTagName('canvas').item(0);
@@ -36,29 +38,37 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
+    playerState.addToInventory({itemType: debugDraw, amount: Math.Infinity});
+
     world.gravity.scale = 0;
 
     const {keysOn, destroy: destroyPlayerController}   = playerController();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
     const {destroy: destroyUiController}               = uiController({playerState});
 
-    const stage = practiceStage();
+    const stage = forestStage();
 
-    const player = new Player({x: 0, y: 0, keys: keysOn, mouse: gameMouse, terrainBodies: stage.terrainBodies});
+    const player = new Player({
+        x:    stage.initialPlayerPos.x, y: stage.initialPlayerPos.y,
+        keys: keysOn, mouse: gameMouse, terrainBodies: stage.terrainBodies
+    });
 
     camera.track(player.collider);
 
-    const interactionHandler = new InteractionHandler({stage, player, playerState});
+    const interactionHandler = new InteractionHandler({gameMouse, stage, player, playerState});
 
     const stageRenderer             = new StageRenderer(stage);
-    const uiRenderer                = new UiRenderer(playerState);
+    const uiRenderer                = new UiRenderer({gameMouse, player, playerState});
     const playerInteractionRenderer = new PlayerInteractionRenderer({player, playerState});
 
-    const {destroy: destroyInteractionController} = interactionController({interactionHandler});
+    const {destroy: destroyInteractionController} = interactionController({
+        mouseEmitter: render.canvas,
+        interactionHandler
+    });
 
     const worldParts  = [stage, player];
     const engineHooks = [player, interactionHandler, camera];
-    const renderHooks = [stageRenderer, uiRenderer, playerInteractionRenderer];
+    const renderHooks = [playerInteractionRenderer, stageRenderer, uiRenderer];
 
     worldParts.forEach(p => p.provision(world));
     engineHooks.forEach(e => e.attach(engine));
@@ -77,6 +87,7 @@ if (window.lastStop) window.lastStop();
 
         destroyPlayerController();
         destroyUiController();
+        destroyMouseController();
         destroyInteractionController();
     };
 })();

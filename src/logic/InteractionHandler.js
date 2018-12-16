@@ -5,17 +5,18 @@ class InteractionHandler {
 
     static itemDropCooldown = 45;
 
+    static itemPickupDist = 50;
+
     constructor({
         stage,
         player,
         playerState,
-        pickupDist = 50,
+        gameMouse,
     }) {
         this.stage       = stage;
         this.player      = player;
         this.playerState = playerState;
-
-        this.pickupDist = pickupDist;
+        this.gameMouse   = gameMouse;
     }
 
     step() {
@@ -25,17 +26,18 @@ class InteractionHandler {
             if (strayItem.cooldown > 1) return;
             const ipos = strayItem.position;
             const dist = Vector.magnitude({x: Math.abs(ipos.x - ppos.x), y: Math.abs(ipos.y - ppos.y)});
-            if (dist < this.pickupDist) this.pickup(strayItem);
+            if (dist < InteractionHandler.itemPickupDist) this.pickup(strayItem);
         });
     }
 
     dropItem() {
-        const itemType = this.playerState.removeFromInventory();
-        if (itemType) {
+        const itemType = this.playerState.getActiveItemType();
+        if (itemType && itemType.droppable) {
+            const dropped  = this.playerState.removeFromInventory();
             const position = {x: this.player.position.x, y: this.player.position.y};
             const cooldown = InteractionHandler.itemDropCooldown;
             const speed    = Vector.rotate({x: 10, y: 0}, this.player.angle);
-            this.stage.addItem(new StrayItem({itemType, position, speed, cooldown}));
+            this.stage.addItem(new StrayItem({itemType: dropped, position, speed, cooldown}));
         }
     }
 
@@ -44,8 +46,7 @@ class InteractionHandler {
     }
 
     buildItem() {
-        const slot     = this.playerState.getActiveSlot();
-        const itemType = slot.itemType;
+        const itemType = this.playerState.getActiveItemType();
         if (!itemType) return;
         const buildIntent = itemType.getBuildIntent();
         if (buildIntent) {
@@ -57,6 +58,15 @@ class InteractionHandler {
                 }));
             }
         }
+    }
+
+    triggerPrimary() {
+        const itemType = this.playerState.getActiveItemType();
+        if (!itemType) return;
+        const primaryIntent = itemType.getPrimaryIntent();
+        if (!primaryIntent) return;
+        if (primaryIntent.name === 'build') return this.buildItem();
+        else if (primaryIntent.trigger) return primaryIntent.trigger(this);
     }
 
     pickup(strayItem) {

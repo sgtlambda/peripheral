@@ -10,7 +10,7 @@ module.exports = ({element, engine}) => {
             width:               900,
             height:              600,
             pixelRatio:          2,
-            background:          '#000',
+            background:          'transparent',
             wireframeBackground: '#fff',
             hasBounds:           true,
             enabled:             true,

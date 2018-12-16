@@ -9,10 +9,9 @@ export const makeDefaultCollider = ({x, y, angle, w = defaultSize, h = defaultSi
         density,
         angle,
         render: {
-            fillStyle:   'none',
+            fillStyle:   'transparent',
             strokeStyle: '#eee',
             lineWidth:   1,
-            // sprite,
         }
     });
 };

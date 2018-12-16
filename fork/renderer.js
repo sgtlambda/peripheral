@@ -313,10 +313,10 @@ const Mouse     = require('matter-js/src/core/Mouse');
             _applyBackground(render, background);
 
         // clear the canvas with a transparent fill, to allow the canvas background to show
-        context.globalCompositeOperation = 'source-in';
-        context.fillStyle                = "transparent";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.globalCompositeOperation = 'source-over';
+        // context.globalCompositeOperation = 'source-in';
+        // context.fillStyle                = "transparent";
+        // context.fillRect(0, 0, canvas.width, canvas.height);
+        // context.globalCompositeOperation = 'source-over';
 
         // handle bounds
         if (options.hasBounds) {

@@ -11,7 +11,7 @@ class Player {
         keys, mouse,
         terrainBodies,
 
-        radius = 25,
+        radius = 20,
         moveForce = 10,
         friction = .0015,
         density = .001,
@@ -42,8 +42,8 @@ class Player {
             friction:        this.friction,
             inertia:         Infinity,
             render:          {
-                fillStyle:   'none',
-                strokeStyle: '#eee',
+                fillStyle:   'transparent',
+                strokeStyle: 'rgba(255,0,0,0.4)',
                 lineWidth:   1,
             },
             collisionFilter: {
