@@ -21,7 +21,7 @@ class Player {
         // acceleration = .0004,
         frictionWhileMoving = .0015,
         friction = .1,
-        density = .001,
+        density = .002,
 
     }) {
 
