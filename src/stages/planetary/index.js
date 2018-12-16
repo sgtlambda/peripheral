@@ -42,18 +42,16 @@ export default () => {
     stage.addPlanet(Planet.create({name: 'meteor', radius: meteorRadius, density: 15e-4, x: 0, y: meteorY}));
 
     const boxes = [
-        [-10, meteorY + meteorRadius + 20]
+        // [-10, meteorY + meteorRadius + 20]
     ];
 
     // Add a bunch of boxes...
     const boxSize = 24;
     [
-        [2, 0], [3, 0],
-        [2, 1], [3, 1],
-        [2, 2], [3, 2],
+        [-.5, 1], [.5, 1],
     ].forEach(([bx, by]) => {
-        boxes.push([-110 + bx * boxSize, -radius - 100 - boxSize * 3.5 + by * boxSize]);
-
+        boxes.push([bx * boxSize,
+            -radius - 238.4820728 + by * boxSize]);
     });
 
     boxes.forEach(([x, y]) => {

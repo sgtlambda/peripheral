@@ -116,7 +116,6 @@ const renderDebugPath = ({context, gameMouse}) => {
         });
         context.lineTo(gameMouse.x, gameMouse.y);
         context.stroke();
-
     }
 };
 
@@ -148,7 +147,7 @@ export default ({gameMouse, player, playerState}) => [
         }
     }),
     new Layer({
-        hud: true,
+        // hud: true,
         render(context) {
             renderDebugPath({context, gameMouse: gameMouse});
         }
