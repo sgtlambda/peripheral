@@ -65,9 +65,10 @@ class Player {
             (!this.keys.right && this.keys.left);
     }
 
-    get controllerVerticalMovement() {
-        return (this.keys.up && !this.keys.down) ||
-            (!this.keys.up && this.keys.down);
+    rotateVector(point) {
+        if (!this.currentPlanet) return point;
+        const angle = Vector.angle(this.currentPlanet.position, this.position);
+        console.log(angle);
     }
 
     beforeStep() {

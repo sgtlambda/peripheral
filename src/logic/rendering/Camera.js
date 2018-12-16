@@ -37,7 +37,7 @@ class Camera {
     getTargetAngle() {
         if (!this.player) return this.currentAngle;
         if (!this.player.currentPlanet) return this.currentAngle;
-        return Vector.angle(this.player.currentPlanet.position, this.player.position) - Math.PI / 2;
+        return Vector.angle(this.player.currentPlanet.position, this.player.position) + Math.PI / 2;
     }
 
     trackPlayer(player) {
@@ -57,8 +57,10 @@ class Camera {
         return this.render.bounds.min;
     }
 
-    rotate({context}) {
-        context.rotate(this.currentAngle);
+    rotate(context) {
+        context.translate(this.render.options.width / 2, this.render.options.height / 2);
+        context.rotate(-this.currentAngle);
+        context.translate(-this.render.options.width / 2, -this.render.options.height / 2);
     }
 
     beforeTick() {
@@ -69,12 +71,14 @@ class Camera {
         const shiftToX                 = (targetX + actualX * this.smooth) / (this.smooth + 1);
         const shiftToY                 = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
-        const targetAngle = this.getTargetAngle();
+        // const targetAngle = this.getTargetAngle();
+
+        // console.log(targetAngle);
 
         // const actualAngle = this.currentAngle;
         // const newAngle    = (targetAngle + actualAngle * this.smooth) / (this.smooth + 1);
 
-        this.currentAngle = targetAngle;
+        this.currentAngle = this.getTargetAngle();
 
         // console.log(this.currentAngle);
 

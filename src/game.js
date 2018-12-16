@@ -11,15 +11,16 @@ import mouseController from './mouseController';
 import uiController from './uiController';
 import interactionController from './interactionController';
 
-import forestStage from './stages/forest';
+import planetaryStage from './stages/planetary';
 
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
-// import BuildPlaceholderCollider from './logic/BuildPlaceholderCollider';
+
 import backgroundLayer from './logic/rendering/layers/backgroundLayer.js';
 import stageLayers from './logic/rendering/layers/stageLayers';
 import uiLayers from './logic/rendering/layers/uiLayers';
 import playerInteractionLayer from './logic/rendering/layers/playerInteractionLayer';
+import rotateContext from './logic/rendering/layers/rotateContext';
 
 import Player from './Player';
 import Camera from './logic/rendering/Camera';
@@ -53,14 +54,12 @@ if (window.lastStop) window.lastStop();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
     const {destroy: destroyUiController}               = uiController({playerState});
 
-    const stage = forestStage();
+    const stage = planetaryStage();
 
     const player = new Player({
         stage, keys: keysOn, mouse: gameMouse,
         ...stage.initialPlayerPos,
     });
-
-    // const buildPlaceholderCollider = new BuildPlaceholderCollider({player});
 
     camera.trackPlayer(player);
 
@@ -73,16 +72,22 @@ if (window.lastStop) window.lastStop();
 
     const worldParts  = [stage, player];
     const engineHooks = [player, interactionHandler, camera];
-    const layers      = [
+
+    const {before: rotate, after: unrotate} = rotateContext();
+
+    const layers = [
+        unrotate,
         backgroundLayer(),
         playerInteractionLayer({player, playerState}),
         ...stageLayers({stage}),
         ...uiLayers({gameMouse, player, playerState}),
+        rotate,
     ];
 
     worldParts.forEach(p => p.provision(world));
     engineHooks.forEach(e => e.attach(engine));
-    layers.forEach(r => r.attach(render));
+
+    layers.forEach(r => r.attach(render, camera));
 
     Render.run(render);
     Runner.run(runner, engine);
