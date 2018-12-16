@@ -1,6 +1,8 @@
 window.decomp = require('poly-decomp');
 
-import {Engine, Runner} from 'matter-js';
+import Matter, {Engine, Runner} from 'matter-js';
+
+import MatterAttractors from 'matter-attractors';
 
 import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
@@ -10,12 +12,14 @@ import uiController from './uiController';
 import interactionController from './interactionController';
 
 import forestStage from './stages/forest';
+
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
-import BuildPlaceholderCollider from './logic/BuildPlaceholderCollider';
-import StageRenderer from './logic/rendering/StageRenderer';
-import UiRenderer from './logic/rendering/UiRenderer';
-import PlayerInteractionRenderer from './logic/rendering/PlayerInteractionRenderer';
+// import BuildPlaceholderCollider from './logic/BuildPlaceholderCollider';
+import backgroundLayer from './logic/rendering/layers/backgroundLayer.js';
+import stageLayers from './logic/rendering/layers/stageLayers';
+import uiLayers from './logic/rendering/layers/uiLayers';
+import playerInteractionLayer from './logic/rendering/layers/playerInteractionLayer';
 
 import Player from './Player';
 import Camera from './logic/rendering/Camera';
@@ -28,6 +32,9 @@ if (canvas) canvas.remove();
 if (window.lastStop) window.lastStop();
 
 (() => {
+
+    // Set up the "Matter" engine to use attractors (point-based gravity)
+    Matter.use(MatterAttractors);
 
     const engine = Engine.create();
     const runner = Runner.create();
@@ -49,19 +56,15 @@ if (window.lastStop) window.lastStop();
     const stage = forestStage();
 
     const player = new Player({
-        x:    stage.initialPlayerPos.x, y: stage.initialPlayerPos.y,
-        keys: keysOn, mouse: gameMouse, terrainBodies: stage.terrainBodies
+        stage, keys: keysOn, mouse: gameMouse,
+        ...stage.initialPlayerPos,
     });
 
-    const buildPlaceholderCollider = new BuildPlaceholderCollider({player});
+    // const buildPlaceholderCollider = new BuildPlaceholderCollider({player});
 
-    camera.track(player.collider);
+    camera.trackPlayer(player);
 
     const interactionHandler = new InteractionHandler({gameMouse, stage, player, playerState});
-
-    const stageRenderer             = new StageRenderer(stage);
-    const uiRenderer                = new UiRenderer({gameMouse, player, playerState});
-    const playerInteractionRenderer = new PlayerInteractionRenderer({player, playerState});
 
     const {destroy: destroyInteractionController} = interactionController({
         mouseEmitter: render.canvas,
@@ -70,11 +73,16 @@ if (window.lastStop) window.lastStop();
 
     const worldParts  = [stage, player];
     const engineHooks = [player, interactionHandler, camera];
-    const renderHooks = [playerInteractionRenderer, stageRenderer, uiRenderer];
+    const layers      = [
+        backgroundLayer(),
+        playerInteractionLayer({player, playerState}),
+        ...stageLayers({stage}),
+        ...uiLayers({gameMouse, player, playerState}),
+    ];
 
     worldParts.forEach(p => p.provision(world));
     engineHooks.forEach(e => e.attach(engine));
-    renderHooks.forEach(r => r.attach(render));
+    layers.forEach(r => r.attach(render));
 
     Render.run(render);
     Runner.run(runner, engine);
@@ -85,7 +93,7 @@ if (window.lastStop) window.lastStop();
         Runner.stop(runner);
 
         engineHooks.forEach(e => e.detach(engine));
-        renderHooks.forEach(r => r.detach(render));
+        layers.forEach(r => r.detach(render));
 
         destroyPlayerController();
         destroyUiController();

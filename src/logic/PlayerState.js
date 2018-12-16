@@ -1,6 +1,6 @@
 import {times, find} from 'lodash';
 
-import inventoryKeyBinds from './../data/inventoryKeyBinds';
+import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
 
 class InventorySlot {
     constructor({itemType = null, amount = 0, keyBind = null} = {}) {
@@ -10,9 +10,9 @@ class InventorySlot {
     }
 }
 
-const createInventory = (slots = 8) => {
+const createInventory = (slots = defaultInventorySize) => {
     return times(slots, x => {
-        return new InventorySlot({keyBind: inventoryKeyBinds[x]});
+        return new InventorySlot({keyBind: keyBinds[x]});
     });
 };
 

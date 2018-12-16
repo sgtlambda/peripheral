@@ -6,10 +6,12 @@ const defaultSize = 32;
 
 export const makeDefaultCollider = ({
     x, y, angle, w = defaultSize, h = defaultSize,
-    density = .01, frictionAir = .3, sprite
+    density = .01,
+    // frictionAir = .3,
+    sprite
 }) => {
     return Bodies.rectangle(x, y, w, h, {
-        density, frictionAir,
+        density, africtionAir,
         angle,
         render: {
             fillStyle:   'transparent',

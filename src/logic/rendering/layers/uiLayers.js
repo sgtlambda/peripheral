@@ -1,12 +1,15 @@
-import {Events} from 'matter-js';
+import renderItem from '../renderItem';
 
-import renderItem from './renderItem';
+import roundRect from '../../../common/roundrect';
 
-import roundRect from './../../common/roundrect';
+import Layer from '../Layer';
 
-import renderTextWithShadow from './../../common/renderTextWithShadow';
+import renderTextWithShadow from '../../../common/renderTextWithShadow';
 
-import {debugDrawGlobal} from '../../data/intents/debugDrawIntent';
+import {debugDrawGlobal} from '../../../data/intents/debugDrawIntent';
+
+const inventoryPadding  = 4;
+const inventorySlotSize = 48;
 
 const renderSlot = ({context, active = false, x, y, w, h}) => {
     context.strokeStyle = `rgba(255,255,255,${active ? '.8' : '.1'})`;
@@ -42,11 +45,7 @@ function renderInventory({context, padding, size, inventory, activeSlot, x = 0, 
             y: padding + y * (size + padding),
             w: size, h: size,
         });
-        x++;
-        if (x >= UiRenderer.inventoryColumns) {
-            x = 0;
-            y++;
-        }
+        y++;
     })
 }
 
@@ -86,10 +85,19 @@ const renderDebugz = ({context, player, gameMouse, x, y}) => {
     const playerPosDebug    = `player x ${Math.round(ppos.x)} y ${Math.round(ppos.y)}`;
     const playerMotionDebug = `player motion ${Math.round(player.collider.speed * 10) / 10}`;
     const mouseDebug        = `igm x ${Math.round(gameMouse.x)} y ${Math.round(gameMouse.y)}`;
-    renderTextWithShadow({context, text: playerPosDebug, x, y});
-    renderTextWithShadow({context, text: playerMotionDebug, x, y: y + 20});
-    renderTextWithShadow({context, text: mouseDebug, x, y: y + 40});
 
+    const line = 16;
+
+    renderTextWithShadow({context, text: mouseDebug, x, y});
+    renderTextWithShadow({context, text: playerPosDebug, x, y: y + line});
+    renderTextWithShadow({context, text: playerMotionDebug, x, y: y + line * 2});
+
+    if (player.currentPlanet) {
+        const planetInfo   = `planet [${player.currentPlanet.name}]`;
+        const altitudeInfo = `altitude [${Math.round(player.currentPlanet.getPointAltitude(player.position))}]`;
+        renderTextWithShadow({context, text: planetInfo, x, y: y + line * 3});
+        renderTextWithShadow({context, text: altitudeInfo, x, y: y + line * 4});
+    }
 };
 
 const renderDebugPath = ({context, gameMouse}) => {
@@ -112,67 +120,37 @@ const renderDebugPath = ({context, gameMouse}) => {
     }
 };
 
-class UiRenderer {
+export default ({gameMouse, player, playerState}) => [
+    new Layer({
+        hud: true,
+        render(context, renderer) {
 
-    static inventoryColumns = 1;
+            renderInventory({
+                context,
+                padding:    inventoryPadding,
+                size:       inventorySlotSize,
+                inventory:  playerState.inventory,
+                activeSlot: playerState.activeInventorySlot,
+            });
 
-    static inventoryPadding = 4;
+            const rightMargin = renderer.options.width - 20;
 
-    static inventorySlotSize = 48;
+            renderControls({
+                context, x: rightMargin, y: 20,
+                itemType:   playerState.getActiveSlot().itemType,
+            });
 
-    constructor({gameMouse, player, playerState}) {
-        this.gameMouse   = gameMouse;
-        this.player      = player;
-        this.playerState = playerState;
-    }
-
-    render(renderer) {
-
-        const {context} = renderer;
-
-        const padding = UiRenderer.inventoryPadding;
-        const size    = UiRenderer.inventorySlotSize;
-
-        context.save();
-
-        renderInventory({
-            context, padding, size,
-            inventory:  this.playerState.inventory,
-            activeSlot: this.playerState.activeInventorySlot,
-        });
-
-        const rightMargin = renderer.options.width - 20;
-
-        renderControls({
-            context, x: rightMargin, y: 20,
-            itemType:   this.playerState.getActiveSlot().itemType,
-        });
-
-        renderDebugz({
-            context, x: rightMargin, y: renderer.options.height - 60,
-            player:     this.player, playerState: this.playerState,
-            gameMouse:  this.gameMouse,
-        });
-
-        const translate = renderer.bounds.min;
-        context.translate(-translate.x, -translate.y);
-
-        renderDebugPath({context, gameMouse: this.gameMouse});
-
-        context.restore();
-    }
-
-    attach(renderer) {
-        this._callback = () => this.render(renderer);
-        Events.on(renderer, 'afterRender', this._callback);
-        return this;
-    }
-
-    detach(renderer) {
-        if (this._callback) Events.off(renderer, 'afterRender', this._callback);
-        this._callback = null;
-        return this;
-    }
-}
-
-export default UiRenderer;
+            renderDebugz({
+                context, x: rightMargin, y: renderer.options.height - 80,
+                player:     player, playerState: playerState,
+                gameMouse:  gameMouse,
+            });
+        }
+    }),
+    new Layer({
+        hud: true,
+        render(context) {
+            renderDebugPath({context, gameMouse: gameMouse});
+        }
+    })
+];

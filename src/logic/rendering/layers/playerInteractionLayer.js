@@ -1,6 +1,8 @@
-import {Events, Vertices} from 'matter-js';
+import {Vertices} from 'matter-js';
 
-import circle from '../../common/circle';
+import Layer from '../Layer';
+
+import circle from '../../../common/circle';
 
 export const arrowVertices = ({angle, x, y}) => {
     const vertices = [
@@ -41,48 +43,19 @@ export const drawVertices = ({context, vertices, fillStyle = null, strokeStyle =
     }
 };
 
-class PlayerInteractionRenderer {
-
-    constructor({player, playerState}) {
-        this.player      = player;
-        this.playerState = playerState;
-    }
-
-    render({context, translate}) {
-
-        context.save();
-
-        context.translate(-translate.x, -translate.y);
-
-        const itemType = this.playerState.getActiveSlot().itemType;
-
+export default ({player, playerState}) => new Layer({
+    render(context) {
+        const itemType = playerState.getActiveSlot().itemType;
         if (itemType && itemType.getBuildIntent()) {
             const buildable = itemType.getBuildIntent().options.buildable;
-            const vertices  = buildableVertices({buildable, angle: this.player.angle, ...this.player.position});
+            const vertices  = buildableVertices({buildable, angle: player.angle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         } else {
-            const vertices = arrowVertices({angle: this.player.angle, ...this.player.position});
+            const vertices = arrowVertices({angle: player.angle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         }
-
         context.strokeStyle = 'rgba(255,255,255,.6)';
         context.strokeWidth = '1px';
-        circle(context, this.player.position.x, this.player.position.y, 16, false, true);
-
-        context.restore();
-    }
-
-    attach(renderer) {
-        this._callback = () => this.render({context: renderer.context, translate: renderer.bounds.min});
-        Events.on(renderer, 'afterRender', this._callback);
-        return this;
-    }
-
-    detach(renderer) {
-        if (this._callback) Events.off(renderer, 'afterRender', this._callback);
-        this._callback = null;
-        return this;
-    }
-}
-
-export default PlayerInteractionRenderer;
+        circle(context, player.position.x, player.position.y, 16, false, true);
+    },
+});

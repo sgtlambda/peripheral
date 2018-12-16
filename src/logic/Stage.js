@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {World} from 'matter-js';
-import {without} from 'lodash';
+import {without, minBy} from 'lodash';
 
 import StageGraphics from './StageGraphics';
 
@@ -18,17 +18,34 @@ class Stage {
         this.buildings        = buildings;
         this.graphics         = graphics === null ? new StageGraphics() : graphics;
         this.initialPlayerPos = initialPlayerPos;
+        this.planets          = [];
+    }
+
+    /**
+     * Please note: don't call "addTerrainBody" for the planet body,
+     * that is already taken care of internally
+     * @param {Planet} planet
+     */
+    addPlanet(planet) {
+        this.planets.push(planet);
+        this.addTerrainBody(planet.body);
+    }
+
+    getClosestPlanet(point) {
+        return minBy(this.planets, planet => {
+            return planet.getPointAltitude(point);
+        });
     }
 
     /**
      * Add a stray (floating) item to this stage (builder phase)
      * @param {StrayItem} strayItem
      */
-    addItem(strayItem) {
+    addStrayItem(strayItem) {
         this.strayItems.push(strayItem);
     }
 
-    removeItem(strayItem) {
+    removeStrayItem(strayItem) {
         this.strayItems = without(this.strayItems, strayItem);
     }
 
@@ -36,7 +53,7 @@ class Stage {
      * Add a terrain body to this stage (builder phase)
      * @param {Body} terrainBody
      */
-    addBody(terrainBody) {
+    addTerrainBody(terrainBody) {
         this.terrainBodies.push(terrainBody);
     }
 

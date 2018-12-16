@@ -11,30 +11,37 @@ class Player {
         x, y, angle = 0,
 
         keys, mouse,
-        terrainBodies,
+        stage,
 
         radius = 16,
         moveForce = 5,
+        jetpackForce = 9,
         acceleration = .0004,
         friction = .0015,
         density = .001,
 
     }) {
 
-        this.angle = 0;
+        this.angle         = 0;
+        this.currentPlanet = null;
 
         // globals
-        this.keys          = keys;
-        this.mouse         = mouse;
-        this.terrainBodies = terrainBodies;
+        this.keys  = keys;
+        this.mouse = mouse;
+        this.stage = stage;
 
         // configuration
         this.acceleration = acceleration;
         this.moveForce    = moveForce;
+        this.jetpackForce = jetpackForce;
         this.friction     = friction;
         this.density      = density;
 
         this.prepareBodies({x, y, radius});
+    }
+
+    get body() {
+        return this.collider;
     }
 
     prepareBodies({x, y, radius}) {
@@ -65,15 +72,10 @@ class Player {
 
     beforeStep() {
         let targetXVelocity = this.controllerHorizontalMovement ? (this.keys.left ? -1 : 1) * this.moveForce : 0;
-        let targetYVelocity = this.controllerVerticalMovement ? (this.keys.up ? -1 : 1) * this.moveForce : 0;
-
-        if (this.controllerVerticalMovement && this.controllerHorizontalMovement) {
-            targetXVelocity *= .71;
-            targetYVelocity *= .71;
-        }
+        // let targetYVelocity = this.keys.up ? -this.jetpackForce : 0;
 
         let xForce = -(this.collider.velocity.x - targetXVelocity) * this.acceleration;
-        let yForce = -(this.collider.velocity.y - targetYVelocity) * this.acceleration;
+        let yForce = this.keys.up ? -(this.collider.velocity.y + this.jetpackForce) * this.acceleration : 0;
 
         Body.applyForce(this.collider, {x: 0, y: 0}, {x: xForce, y: yForce});
     }
@@ -83,7 +85,8 @@ class Player {
     }
 
     afterStep() {
-        this.angle = Vector.angle(this.position, this.mouse);
+        this.angle         = Vector.angle(this.position, this.mouse);
+        this.currentPlanet = this.stage.getClosestPlanet(this.position);
     }
 
     provision(world) {
