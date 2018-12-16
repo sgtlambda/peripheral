@@ -1,4 +1,4 @@
-import {Events} from 'matter-js';
+import {Events, Vector} from 'matter-js';
 
 export default ({
     emitter = window,
@@ -15,8 +15,13 @@ export default ({
 
     const updateGameMouse = () => {
         const bounds = camera.bounds;
-        gameMouse.x  = screenMouse.x + bounds.min.x;
-        gameMouse.y  = screenMouse.y + bounds.min.y;
+
+        const _gameMouseRotate = Vector.rotateAbout(screenMouse, camera.currentAngle, camera.onscreenCenter);
+
+        const _gameMouse = Vector.add(_gameMouseRotate, bounds.min);
+
+        gameMouse.x = _gameMouse.x;
+        gameMouse.y = _gameMouse.y;
     };
 
     Events.on(engine, 'afterUpdate', updateGameMouse);

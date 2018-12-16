@@ -42,7 +42,7 @@ export default class Planet {
         return distanceFromCore - this.radius;
     }
 
-    static create({name, radius, resolution = 128, gravity = 5e-7, x = 0, y = 0}) {
+    static create({name, radius, resolution = 200, gravity = 5e-7, x = 0, y = 0}) {
         const vertices = planetVertices(radius, resolution);
         const offset   = getBodyOffset(vertices);
         const body     = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {

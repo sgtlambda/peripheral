@@ -72,7 +72,10 @@ class Player {
     beforeStep() {
 
         let force = this.rotateVectorToSurface({
-            x: this.keys.left ? -this.moveForce : 0 + this.keys.right ? this.moveForce : 0,
+            x:
+                (this.keys.left ? -this.moveForce : 0) +
+                (this.keys.right ? this.moveForce : 0),
+
             y: this.keys.up ? -this.jetpackForce : 0,
         });
 

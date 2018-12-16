@@ -57,10 +57,18 @@ class Camera {
         return this.render.bounds.min;
     }
 
+    get onscreenCenter() {
+        return {
+            x: this.render.options.width / 2,
+            y: this.render.options.height / 2,
+        };
+    }
+
     rotate(context) {
-        context.translate(this.render.options.width / 2, this.render.options.height / 2);
+        const center = this.onscreenCenter;
+        context.translate(center.x, center.y);
         context.rotate(-this.currentAngle);
-        context.translate(-this.render.options.width / 2, -this.render.options.height / 2);
+        context.translate(-center.x, -center.y);
     }
 
     beforeTick() {
