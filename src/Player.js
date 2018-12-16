@@ -13,8 +13,9 @@ class Player {
         keys, mouse,
         terrainBodies,
 
-        radius = 20,
-        moveForce = 10,
+        radius = 16,
+        moveForce = 5,
+        acceleration = .0004,
         friction = .0015,
         density = .001,
 
@@ -28,9 +29,10 @@ class Player {
         this.terrainBodies = terrainBodies;
 
         // configuration
-        this.moveForce = moveForce;
-        this.friction  = friction;
-        this.density   = density;
+        this.acceleration = acceleration;
+        this.moveForce    = moveForce;
+        this.friction     = friction;
+        this.density      = density;
 
         this.prepareBodies({x, y, radius});
     }
@@ -62,11 +64,16 @@ class Player {
     }
 
     beforeStep() {
-        const targetXVelocity = this.controllerHorizontalMovement ? (this.keys.left ? -1 : 1) * this.moveForce : 0;
-        const xForce          = -(this.collider.velocity.x - targetXVelocity) * .0008;
+        let targetXVelocity = this.controllerHorizontalMovement ? (this.keys.left ? -1 : 1) * this.moveForce : 0;
+        let targetYVelocity = this.controllerVerticalMovement ? (this.keys.up ? -1 : 1) * this.moveForce : 0;
 
-        const targetYVelocity = this.controllerVerticalMovement ? (this.keys.up ? -1 : 1) * this.moveForce : 0;
-        const yForce          = -(this.collider.velocity.y - targetYVelocity) * .0008;
+        if (this.controllerVerticalMovement && this.controllerHorizontalMovement) {
+            targetXVelocity *= .71;
+            targetYVelocity *= .71;
+        }
+
+        let xForce = -(this.collider.velocity.x - targetXVelocity) * this.acceleration;
+        let yForce = -(this.collider.velocity.y - targetYVelocity) * this.acceleration;
 
         Body.applyForce(this.collider, {x: 0, y: 0}, {x: xForce, y: yForce});
     }

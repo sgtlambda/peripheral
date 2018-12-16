@@ -50,13 +50,17 @@ function renderInventory({context, padding, size, inventory, activeSlot, x = 0, 
     })
 }
 
-const renderIntents = ({context, x, y, itemType}) => {
-    if (itemType) {
+const renderControls = ({context, x, y, itemType}) => {
 
-        context.font         = '12px monospace';
-        context.textAlign    = 'right';
-        context.textBaseline = 'top';
-        context.fillStyle    = `white`;
+    context.font         = '12px monospace';
+    context.textAlign    = 'right';
+    context.textBaseline = 'top';
+    context.fillStyle    = `white`;
+
+    renderTextWithShadow({context, text: `move [w,a,s,d]`, x, y});
+    y += 20;
+
+    if (itemType) {
 
         if (itemType.droppable) {
             renderTextWithShadow({context, text: `drop ${itemType.name} [q]`, x, y});
@@ -78,15 +82,17 @@ const renderDebugz = ({context, player, gameMouse, x, y}) => {
 
     context.fillStyle = `white`;
 
-    const ppos        = player.collider.position;
-    const playerDebug = `player x ${Math.round(ppos.x)} y ${Math.round(ppos.y)}`;
-    const mouseDebug  = `igm x ${Math.round(gameMouse.x)} y ${Math.round(gameMouse.y)}`;
-    renderTextWithShadow({context, text: playerDebug, x, y});
-    renderTextWithShadow({context, text: mouseDebug, x, y: y + 20});
+    const ppos              = player.collider.position;
+    const playerPosDebug    = `player x ${Math.round(ppos.x)} y ${Math.round(ppos.y)}`;
+    const playerMotionDebug = `player motion ${Math.round(player.collider.speed * 10) / 10}`;
+    const mouseDebug        = `igm x ${Math.round(gameMouse.x)} y ${Math.round(gameMouse.y)}`;
+    renderTextWithShadow({context, text: playerPosDebug, x, y});
+    renderTextWithShadow({context, text: playerMotionDebug, x, y: y + 20});
+    renderTextWithShadow({context, text: mouseDebug, x, y: y + 40});
 
 };
 
-const renderDebugPath = ({context}) => {
+const renderDebugPath = ({context, gameMouse}) => {
 
     if (!debugDrawGlobal) return;
     const debugPath = debugDrawGlobal.path;
@@ -100,7 +106,9 @@ const renderDebugPath = ({context}) => {
             context.fillRect(p.x - 2, p.y - 2, 4, 4);
             context.lineTo(p.x, p.y);
         });
+        context.lineTo(gameMouse.x, gameMouse.y);
         context.stroke();
+
     }
 };
 
@@ -110,7 +118,7 @@ class UiRenderer {
 
     static inventoryPadding = 4;
 
-    static inventorySlotSize = 56;
+    static inventorySlotSize = 48;
 
     constructor({gameMouse, player, playerState}) {
         this.gameMouse   = gameMouse;
@@ -135,7 +143,7 @@ class UiRenderer {
 
         const rightMargin = renderer.options.width - 20;
 
-        renderIntents({
+        renderControls({
             context, x: rightMargin, y: 20,
             itemType:   this.playerState.getActiveSlot().itemType,
         });
@@ -149,7 +157,7 @@ class UiRenderer {
         const translate = renderer.bounds.min;
         context.translate(-translate.x, -translate.y);
 
-        renderDebugPath({context});
+        renderDebugPath({context, gameMouse: this.gameMouse});
 
         context.restore();
     }

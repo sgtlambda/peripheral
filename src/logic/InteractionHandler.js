@@ -5,7 +5,9 @@ class InteractionHandler {
 
     static itemDropCooldown = 45;
 
-    static itemPickupDist = 50;
+    static itemPickupDist = 30;
+
+    static itemDropForce = 5;
 
     constructor({
         stage,
@@ -36,7 +38,7 @@ class InteractionHandler {
             const dropped  = this.playerState.removeFromInventory();
             const position = {x: this.player.position.x, y: this.player.position.y};
             const cooldown = InteractionHandler.itemDropCooldown;
-            const speed    = Vector.rotate({x: 10, y: 0}, this.player.angle);
+            const speed    = Vector.rotate({x: InteractionHandler.itemDropForce, y: 0}, this.player.angle);
             this.stage.addItem(new StrayItem({itemType: dropped, position, speed, cooldown}));
         }
     }

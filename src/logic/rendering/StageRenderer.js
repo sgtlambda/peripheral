@@ -1,8 +1,14 @@
 import {Events} from 'matter-js';
 
+import Img from '../../common/Img';
+
+import paperTexture from '../../white-linen-paper-texture.jpg';
+
 import renderItem from './renderItem';
 
 const debugItemSize = 20;
+
+const paper = new Img({src: paperTexture, w: 1500, h: 1000});
 
 const renderBuilding = (context, building) => {
     const position       = building.body.position;
@@ -24,7 +30,6 @@ class StageRenderer {
         context.fillStyle                = "transparent";
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = 'source-over';
-
         context.save();
         context.translate(-translate.x, -translate.y);
         this.stage.graphics.renderBaseLayers(context);
@@ -42,6 +47,12 @@ class StageRenderer {
         });
         this.stage.graphics.renderOverLayers(context);
         context.restore();
+
+        // context.globalCompositeOperation = 'overlay';
+        // context.globalAlpha              = .3;
+        // paper.drawTo({context});
+        // context.globalCompositeOperation = 'source-over';
+        // context.globalAlpha              = 1;
     }
 
     attach(renderer) {

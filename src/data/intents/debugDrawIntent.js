@@ -4,6 +4,10 @@ export const debugDrawGlobal = window.debugDrawGlobal ? window.debugDrawGlobal :
 window.debugDrawGlobal       = debugDrawGlobal;
 
 const element                 = document.createElement('textarea');
+
+element.style.top             = '0px';
+element.style.right           = '0px';
+element.style.position        = 'absolute';
 element.style.height          = '600px';
 element.style.width           = '200px';
 element.style.backgroundColor = 'transparent';
@@ -24,7 +28,7 @@ export default ({
     primary = true,
 } = {}) => new ItemIntent({
     primary, name,
-    description: `debugDraw [lmb]`,
+    description: `draw [lmb]`,
     trigger({gameMouse}) {
         debugDrawGlobal.path.push({
             x: Math.round(gameMouse.x * 10) / 10,

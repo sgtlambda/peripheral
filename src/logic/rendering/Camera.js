@@ -35,7 +35,9 @@ class Camera {
     }
 
     track(body) {
-        this.trackBody = body;
+        this.trackBody     = body;
+        const boundsTarget = this.getBoundsTarget();
+        Bounds.shift(this.render.bounds, boundsTarget);
     }
 
     getBoundsTarget() {

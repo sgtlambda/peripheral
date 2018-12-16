@@ -12,7 +12,7 @@ import interactionController from './interactionController';
 import forestStage from './stages/forest';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
-
+import BuildPlaceholderCollider from './logic/BuildPlaceholderCollider';
 import StageRenderer from './logic/rendering/StageRenderer';
 import UiRenderer from './logic/rendering/UiRenderer';
 import PlayerInteractionRenderer from './logic/rendering/PlayerInteractionRenderer';
@@ -38,7 +38,7 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: debugDraw, amount: Math.Infinity});
+    playerState.addToInventory({itemType: debugDraw, amount: Math.Infinity, slot: 7});
 
     world.gravity.scale = 0;
 
@@ -52,6 +52,8 @@ if (window.lastStop) window.lastStop();
         x:    stage.initialPlayerPos.x, y: stage.initialPlayerPos.y,
         keys: keysOn, mouse: gameMouse, terrainBodies: stage.terrainBodies
     });
+
+    const buildPlaceholderCollider = new BuildPlaceholderCollider({player});
 
     camera.track(player.collider);
 

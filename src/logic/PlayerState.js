@@ -65,11 +65,11 @@ class PlayerState {
         }
     }
 
-    addToInventory({itemType, amount = 1}) {
+    addToInventory({itemType, amount = 1, slot: overrideSlot = null}) {
         const slot = find(this.inventory, {itemType});
         if (slot) slot.amount += amount;
         else {
-            const emptySlot = this.firstEmptySlot();
+            const emptySlot = overrideSlot ? this.inventory[overrideSlot] : this.firstEmptySlot();
             if (!emptySlot) return false;
             else {
                 emptySlot.itemType = itemType;

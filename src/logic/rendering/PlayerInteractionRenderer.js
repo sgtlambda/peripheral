@@ -67,7 +67,7 @@ class PlayerInteractionRenderer {
 
         context.strokeStyle = 'rgba(255,255,255,.6)';
         context.strokeWidth = '1px';
-        circle(context, this.player.position.x, this.player.position.y, 24, false, true);
+        circle(context, this.player.position.x, this.player.position.y, 16, false, true);
 
         context.restore();
     }

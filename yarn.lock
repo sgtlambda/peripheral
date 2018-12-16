@@ -1925,6 +1925,11 @@ encodeurl@~1.0.2:
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=
 
+ender-events@*:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/ender-events/-/ender-events-0.0.3.tgz#c0d4284ca40a4841def2e6ebd965adbe856db626"
+  integrity sha1-wNQoTKQKSEHe8ubr2WWtvoVttiY=
+
 entities@^1.1.1, entities@~1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
@@ -2981,6 +2986,13 @@ levn@^0.3.0, levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+line@^0.1.8:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/line/-/line-0.1.8.tgz#eb756eafdc97345f1782abfa506788dc4da54c7c"
+  integrity sha1-63Vur9yXNF8Xgqv6UGeI3E2lTHw=
+  dependencies:
+    ender-events "*"
 
 lodash.clone@^4.5.0:
   version "4.5.0"
