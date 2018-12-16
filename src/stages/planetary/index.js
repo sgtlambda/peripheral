@@ -32,7 +32,18 @@ export default () => {
         initialPlayerPos: {x: 0, y: -radius - 40},
     });
 
+    const meteorRadius = 200;
+    const meteorDist   = 300;
+
+    const meteorY = -radius - meteorDist - meteorRadius;
+
     stage.addPlanet(Planet.create({name: 'moon', radius}));
+
+    stage.addPlanet(Planet.create({name: 'meteor', radius: meteorRadius, density: 15e-4, x: 0, y: meteorY}));
+
+    const boxes = [
+        [-10, meteorY + meteorRadius + 20]
+    ];
 
     // Add a bunch of boxes...
     const boxSize = 24;
@@ -41,12 +52,15 @@ export default () => {
         [2, 1], [3, 1],
         [2, 2], [3, 2],
     ].forEach(([bx, by]) => {
-        stage.addTerrainBody(Bodies.rectangle(
-            -110 + bx * boxSize,
-            -radius - 100 - boxSize * 3.5 + by * boxSize, boxSize, boxSize, {
-                density: .001,
-                render:  {fillStyle: '#b2b2b0',}
-            }));
+        boxes.push([-110 + bx * boxSize, -radius - 100 - boxSize * 3.5 + by * boxSize]);
+
+    });
+
+    boxes.forEach(([x, y]) => {
+        stage.addTerrainBody(Bodies.rectangle(x, y, boxSize, boxSize, {
+            density: .001,
+            render:  {fillStyle: '#b2b2b0',}
+        }));
     });
 
     return stage;

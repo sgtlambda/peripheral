@@ -13,10 +13,14 @@ const planetVertices = (radius, points = 64) => {
 
 const planetAttractor = (gravity) => ({
     plugin: {
-        attractors: [(bodyA, bodyB) => ({
-            x: (bodyA.position.x - bodyB.position.x) * 5e-7,
-            y: (bodyA.position.y - bodyB.position.y) * 5e-7,
-        })],
+        attractors: [(bodyA, bodyB) => {
+            const angle    = Vector.angle(bodyA.position, bodyB.position);
+            const distance = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
+
+            const force = gravity / Math.pow(distance, 2);
+
+            return Vector.rotate({x: -force, y: 0}, angle);
+        }],
     }
 });
 
@@ -42,7 +46,8 @@ export default class Planet {
         return distanceFromCore - this.radius;
     }
 
-    static create({name, radius, resolution = 200, gravity = 5e-7, x = 0, y = 0}) {
+    static create({name, radius, resolution = 200, density = 9e-4, x = 0, y = 0}) {
+        const gravity  = Math.pow(radius, 2) * density;
         const vertices = planetVertices(radius, resolution);
         const offset   = getBodyOffset(vertices);
         const body     = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {
