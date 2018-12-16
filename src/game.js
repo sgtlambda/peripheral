@@ -76,12 +76,14 @@ if (window.lastStop) window.lastStop();
     const {before: rotate, after: unrotate} = rotateContext();
 
     const layers = [
-        unrotate,
+        unrotate, // Note this layer MUST be first
+
         backgroundLayer(),
         playerInteractionLayer({player, playerState}),
         ...stageLayers({stage}),
         ...uiLayers({gameMouse, player, playerState}),
-        rotate,
+
+        rotate, // Note this layer MUST be last
     ];
 
     worldParts.forEach(p => p.provision(world));

@@ -8,7 +8,6 @@ export default () => ({
         render(context, renderer, camera) {
             context.save();
             camera.rotate(context);
-            console.log(context);
         },
     }),
     after:  new Layer({

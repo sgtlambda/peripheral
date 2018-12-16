@@ -24,7 +24,6 @@ import Planet from '../../logic/Planet';
 //     baseBorderLeft, baseBorderRight, ruinsMainTower, ruinsCompound, waterLeft, waterRight, logPos, logPos2
 // } from "./vectors";
 
-
 export default () => {
 
     const radius = 2000;
@@ -33,7 +32,7 @@ export default () => {
         initialPlayerPos: {x: 0, y: -radius - 40},
     });
 
-    stage.addPlanet(Planet.create({name: 'Mainland', radius}));
+    stage.addPlanet(Planet.create({name: 'moon', radius}));
 
     // Add a bunch of boxes...
     const boxSize = 24;
@@ -43,8 +42,8 @@ export default () => {
         [2, 2], [3, 2],
     ].forEach(([bx, by]) => {
         stage.addTerrainBody(Bodies.rectangle(
-            -100 + bx * boxSize,
-            -radius - 100 - boxSize * 3.5 + by * boxSize, boxSize - 1, boxSize - 1, {
+            -110 + bx * boxSize,
+            -radius - 100 - boxSize * 3.5 + by * boxSize, boxSize, boxSize, {
                 density: .001,
                 render:  {fillStyle: '#b2b2b0',}
             }));

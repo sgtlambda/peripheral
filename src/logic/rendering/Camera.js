@@ -72,15 +72,11 @@ class Camera {
         const shiftToY                 = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
         // const targetAngle = this.getTargetAngle();
-
         // console.log(targetAngle);
-
         // const actualAngle = this.currentAngle;
         // const newAngle    = (targetAngle + actualAngle * this.smooth) / (this.smooth + 1);
 
         this.currentAngle = this.getTargetAngle();
-
-        // console.log(this.currentAngle);
 
         Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
     }

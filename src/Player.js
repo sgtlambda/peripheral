@@ -14,10 +14,13 @@ class Player {
         stage,
 
         radius = 16,
-        moveForce = 5,
-        jetpackForce = 9,
-        acceleration = .0004,
-        friction = .0015,
+
+        moveForce = .001,
+        jetpackForce = .004,
+
+        // acceleration = .0004,
+        frictionWhileMoving = .0015,
+        friction = .1,
         density = .001,
 
     }) {
@@ -31,11 +34,11 @@ class Player {
         this.stage = stage;
 
         // configuration
-        this.acceleration = acceleration;
-        this.moveForce    = moveForce;
-        this.jetpackForce = jetpackForce;
-        this.friction     = friction;
-        this.density      = density;
+        this.moveForce           = moveForce;
+        this.jetpackForce        = jetpackForce;
+        this.frictionWhileMoving = frictionWhileMoving;
+        this.friction            = friction;
+        this.density             = density;
 
         this.prepareBodies({x, y, radius});
     }
@@ -60,25 +63,22 @@ class Player {
         });
     }
 
-    get controllerHorizontalMovement() {
-        return (this.keys.right && !this.keys.left) ||
-            (!this.keys.right && this.keys.left);
-    }
-
-    rotateVector(point) {
+    rotateVectorToSurface(point) {
         if (!this.currentPlanet) return point;
-        const angle = Vector.angle(this.currentPlanet.position, this.position);
-        console.log(angle);
+        const angle = Vector.angle(this.currentPlanet.position, this.position) + Math.PI / 2;
+        return Vector.rotate(point, angle);
     }
 
     beforeStep() {
-        let targetXVelocity = this.controllerHorizontalMovement ? (this.keys.left ? -1 : 1) * this.moveForce : 0;
-        // let targetYVelocity = this.keys.up ? -this.jetpackForce : 0;
 
-        let xForce = -(this.collider.velocity.x - targetXVelocity) * this.acceleration;
-        let yForce = this.keys.up ? -(this.collider.velocity.y + this.jetpackForce) * this.acceleration : 0;
+        let force = this.rotateVectorToSurface({
+            x: this.keys.left ? -this.moveForce : 0 + this.keys.right ? this.moveForce : 0,
+            y: this.keys.up ? -this.jetpackForce : 0,
+        });
 
-        Body.applyForce(this.collider, {x: 0, y: 0}, {x: xForce, y: yForce});
+        this.collider.friction = this.keys.left || this.keys.right ? this.frictionWhileMoving : this.friction;
+
+        Body.applyForce(this.collider, {x: 0, y: 0}, force);
     }
 
     get position() {
