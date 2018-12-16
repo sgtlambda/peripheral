@@ -2,6 +2,8 @@ import {Bodies, Body, World, Events, Vector} from 'matter-js';
 
 import {cTerrain, cPlayer} from './data/collisionGroups';
 
+import debugRender from './data/debugRender';
+
 class Player {
 
     constructor({
@@ -41,17 +43,12 @@ class Player {
             density:         this.density,
             friction:        this.friction,
             inertia:         Infinity,
-            render:          {
-                fillStyle:   'transparent',
-                strokeStyle: 'rgba(255,0,0,0.4)',
-                lineWidth:   1,
-            },
+            render:          debugRender,
             collisionFilter: {
                 category: cPlayer,
                 mask:     cTerrain,
             },
         });
-
     }
 
     get controllerHorizontalMovement() {
