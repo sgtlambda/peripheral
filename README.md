@@ -4,3 +4,7 @@
 
 ![screencast](screencast.gif)
 
+```bash
+yarn install
+yarn start
+```
