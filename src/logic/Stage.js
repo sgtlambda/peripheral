@@ -42,12 +42,6 @@ class Stage {
         }
     }
 
-    getClosestPlanet(point) {
-        return minBy(this.planets, planet => {
-            return planet.getPointAltitude(point);
-        });
-    }
-
     /**
      * Please note: don't call "addTerrainBody" for the planet body,
      * that is already taken care of internally
@@ -103,6 +97,11 @@ class Stage {
     removeThrowable(throwable) {
         this.throwables = without(this.throwables, throwable);
         this.removeBody(throwable.collider);
+    }
+
+    removePlanet(planet) {
+        this.planets = without(this.planets, planet);
+        this.removeBody(planet.body);
     }
 
     /**

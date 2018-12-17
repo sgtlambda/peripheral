@@ -1,5 +1,7 @@
 import {Body, Vector, Vertices} from 'matter-js';
 
+import Planet from '../Planet';
+
 import circleVertices from '../../common/circleVertices';
 
 import {subtract} from "../../common/terrainOps";
@@ -20,10 +22,25 @@ export default ({stage, x, y, radius, force}) => {
     const explosionVertices = Vertices.translate(circleVertices(radius, 12, .7), pos);
 
     stage.planets.forEach(planet => {
-        const newTerrain = subtract(planet.sourceVertices, explosionVertices);
-        stage.removeBody(planet.body);
-        const {main, parts = []} = planet.replace(newTerrain);
-        stage.addTerrainBody(main);
-        parts.forEach(part => stage.addTerrainBody(part));
+
+        const currentVertices = planet.getCurrentVertices();
+
+        stage.removePlanet(planet);
+
+        const paths = subtract(currentVertices, explosionVertices);
+
+        console.log(paths);
+
+        paths.map((path, index) => {
+            console.log(index);
+            const name      = `${planet.name}.${index}`;
+            const newPlanet = new Planet({
+                vertices: path,
+                name:     name,
+                density:  planet.density,
+                radius:   planet.radius,
+            });
+            stage.addPlanet(newPlanet);
+        });
     });
 };

@@ -39,6 +39,8 @@ class Player {
         this.frictionWhileMoving = frictionWhileMoving;
         this.friction            = friction;
 
+        this.lastSurfaceAngle = -Math.PI / 2;
+
         this.prepareBodies({x, y, radius});
     }
 
@@ -59,7 +61,10 @@ class Player {
     }
 
     get surfaceAngle() {
-        return this.gravityForce ? Vector.angle(this.gravityForce, {x: 0, y: 0}) : -Math.PI / 2;
+        if (this.gravityForce && Vector.magnitude(this.gravityForce) > 5e-4) {
+            this.lastSurfaceAngle = Vector.angle(this.gravityForce, {x: 0, y: 0});
+        }
+        return this.lastSurfaceAngle;
     }
 
     rotateVectorToSurface(point) {

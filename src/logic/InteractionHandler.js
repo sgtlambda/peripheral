@@ -18,8 +18,6 @@ class InteractionHandler {
     static itemDropForce    = 5;
     static itemThrowForce   = 12;
 
-    // static itemThrowForce   = 2;
-
     constructor({
         stage,
         player,
