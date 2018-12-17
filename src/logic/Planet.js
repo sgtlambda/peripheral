@@ -1,7 +1,7 @@
-import {Bodies, Body, Vector, Vertices} from "matter-js";
+import {Bodies, Vector, Vertices} from "matter-js";
 import getBodyOffset from "../common/getBodyOffset";
 import circleVertices from '../common/circleVertices';
-import debugRender, {planetDebugRender} from "../data/debugRender";
+import {planetDebugRender} from "../data/debugRender";
 import {cTerrain} from "../data/collisionGroups";
 
 export const gravityConstant = 6e-1;
@@ -17,30 +17,30 @@ export const getPlanetaryGravity = (bodyA, bodyB, epicenter) => {
 
 export default class Planet {
 
-    constructor({name, body, originalVertices, radius, density, parent = null, rps = 0}) {
-        this.name             = name;
-        this.body             = body;
-        this.originalVertices = originalVertices;
-        this.radius           = radius;
-        this.density          = density;
-        this.parent           = parent;
-        this.rps              = rps;
+    constructor({name, body, sourceVertices, sourceVerticesOffset = null, radius, density}) {
+
+        this.name = name;
+        this.body = body;
+
+        this.sourceVertices       = sourceVertices;
+        this.sourceVerticesOffset = sourceVerticesOffset ? sourceVerticesOffset : getBodyOffset(sourceVertices);
+
+        this.radius  = radius;
+        this.density = density;
 
         // For static bodies, the mass is set to "Infinity" which breaks the gravitational
         // formula so we have to manually define the mass of the planet
         this.computeMass();
 
-        this.originalBodyOffset = {x: 0, y: 0};
-        this.planetaryParts     = [];
-        // setTimeout(() => console.log(thi))
+        this.planetaryParts = [];
     }
 
     computeMass() {
-        this.computedMass = Vertices.area(this.originalVertices) * this.density;
+        this.computedMass = Vertices.area(this.sourceVertices) * this.density;
     }
 
     get position() {
-        return Vector.sub(this.body.position, this.originalBodyOffset);
+        return Vector.sub(this.body.position, this.sourceVerticesOffset);
     }
 
     getGravityForce(body) {
@@ -51,9 +51,7 @@ export default class Planet {
     }
 
     step() {
-        if (this.parent) {
-            Body.setPosition(this.body, Vector.rotateAbout(this.position, this.rps, this.parent.position));
-        }
+        // do something
     }
 
     /**
@@ -66,25 +64,22 @@ export default class Planet {
         return distanceFromCore - this.radius;
     }
 
-    static create({name, radius, parent = null, rps = 0, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {
+    static create({name, radius, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {
         const vertices = circleVertices(radius, resolution, rand);
         const offset   = getBodyOffset(vertices);
 
-        const body = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {
+        const body    = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {
             isStatic:        true,
             render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
         });
+        body.isPlanet = true;
 
-        const planet = new Planet({
-            name, body, density,
-            originalVertices: vertices,
-            radius, parent, rps
+        return new Planet({
+            name, body, density, radius,
+            sourceVertices:       vertices,
+            sourceVerticesOffset: offset,
         });
-
-        planet.originalBodyOffset = offset;
-
-        return planet;
     }
 
     replace({main: vertices, parts = []}) {
@@ -92,15 +87,14 @@ export default class Planet {
         const offset           = getBodyOffset(vertices);
         const newPos           = Vector.add(originalPosition, offset);
 
-        const main              = Bodies.fromVertices(newPos.x, newPos.y, vertices, {
+        const main                = Bodies.fromVertices(newPos.x, newPos.y, vertices, {
             isStatic:        true,
             render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
-            // ...this.attractor,
         });
-        this.body               = main;
-        this.originalVertices   = vertices;
-        this.originalBodyOffset = offset;
+        this.body                 = main;
+        this.sourceVertices       = vertices;
+        this.sourceVerticesOffset = offset;
         this.computeMass();
 
         const planetaryParts = parts.map(partVertices => {

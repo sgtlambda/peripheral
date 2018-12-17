@@ -4,6 +4,13 @@ import StrayItem from './StrayItem';
 import {INTENT_BUILD} from '../data/intents/buildIntent';
 import {INTENT_THROW} from "../data/intents/throwIntent";
 
+const doPlanetGravity = (planet, otherBodies) => {
+    otherBodies.forEach(body => {
+        const force = planet.getGravityForce(body);
+        Body.applyForce(body, body.position, force);
+    });
+};
+
 class InteractionHandler {
 
     static itemDropCooldown = 45;
@@ -48,20 +55,11 @@ class InteractionHandler {
         this.playerState.potentialPickup = this.getNearbyStrayItem();
     }
 
-    doPlanetGravity(planet, allBodies) {
-        allBodies.forEach(body => {
-            if (body !== planet.body) {
-                const force = planet.getGravityForce(body);
-                Body.applyForce(body, body.position, force);
-            }
-        });
-    }
-
     beforeUpdate(engine) {
         this.updatePotentialPickup();
-        const allBodies = Composite.allBodies(engine.world);
+        const nonPlanetBodies = Composite.allBodies(engine.world).filter(body => !body.isPlanet);
         this.stage.planets.forEach(planet => {
-            this.doPlanetGravity(planet, allBodies);
+            doPlanetGravity(planet, nonPlanetBodies);
             // Do planetary motion (rotation around other planets)
             planet.step();
         });

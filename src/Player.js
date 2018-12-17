@@ -69,13 +69,10 @@ class Player {
 
     beforeStep() {
 
-        let force = this.rotateVectorToSurface({
-            x:
-                (this.keys.left ? -this.moveForce : 0) +
-                (this.keys.right ? this.moveForce : 0),
+        const xForce = (this.keys.left ? -this.moveForce : 0) + (this.keys.right ? this.moveForce : 0);
+        const yForce = this.keys.up ? -this.jetpackForce : 0;
 
-            y: this.keys.up ? -this.jetpackForce : 0,
-        });
+        let force = this.rotateVectorToSurface({x: xForce, y: yForce});
 
         this.collider.friction = this.keys.left || this.keys.right ? this.frictionWhileMoving : this.friction;
 
