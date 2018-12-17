@@ -16,14 +16,8 @@ export default ({stage, x, y, radius, force}) => {
     });
     const explosionVertices = Vertices.translate(circleVertices(radius, 20), pos);
     stage.planets.forEach(planet => {
-        // console.log(planet.originalVertices);
-        // console.log(explosionVertices);
         const newTerrain = subtract(planet.originalVertices, explosionVertices);
-
-        console.log({newTerrain});
-        // console.log(newTerrain);
         stage.removeBody(planet.body);
-        // const newBody = planet.replace(newTerrain);
         const {main, parts = []} = planet.replace(newTerrain);
         stage.addTerrainBody(main);
         parts.forEach(part => stage.addTerrainBody(part));

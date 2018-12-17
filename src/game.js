@@ -1,8 +1,6 @@
 window.decomp = require('poly-decomp');
 
-import Matter, {Engine, Runner} from 'matter-js';
-
-import MatterAttractors from 'matter-attractors';
+import {Engine, Runner} from 'matter-js';
 
 import Render from '../fork/renderer';
 import createRenderer from './createRenderer';
@@ -35,9 +33,6 @@ if (window.lastStop) window.lastStop();
 
 (() => {
 
-    // Set up the "Matter" engine to use attractors (point-based gravity)
-    Matter.use(MatterAttractors);
-
     const engine = Engine.create();
     const runner = Runner.create();
     const world  = engine.world;
@@ -47,7 +42,7 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: grenade, amount: 90, slot: 0});
+    playerState.addToInventory({itemType: grenade, amount: 160, slot: 0});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;

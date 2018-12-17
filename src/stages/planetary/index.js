@@ -30,7 +30,7 @@ import {bananas, grenades} from "./vectors";
 
 export default () => {
 
-    const radius = 2000;
+    const radius = 1000;
 
     const stage = new Stage({
         initialPlayerPos: {x: 50, y: -radius - 40},
@@ -70,8 +70,8 @@ export default () => {
         }));
     });
 
-    bananas.forEach(pos => stage.addStrayItem(new StrayItem({itemType: banana, ...pos})));
-    grenades.forEach(pos => stage.addStrayItem(new StrayItem({itemType: grenade, ...pos})));
+    // bananas.forEach(pos => stage.addStrayItem(new StrayItem({itemType: banana, ...pos})));
+    // grenades.forEach(pos => stage.addStrayItem(new StrayItem({itemType: grenade, ...pos})));
     // stage.addStrayItem(new StrayItem({itemType: banana, x: -100, y: -radius - 40}));
 
     return stage;

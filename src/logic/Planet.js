@@ -1,7 +1,7 @@
 import {Bodies, Body, Vector, Vertices} from "matter-js";
 import getBodyOffset from "../common/getBodyOffset";
 import circleVertices from '../common/circleVertices';
-import debugRender from "../data/debugRender";
+import debugRender, {planetDebugRender} from "../data/debugRender";
 import {cTerrain} from "../data/collisionGroups";
 
 export const gravityConstant = 6e-1;
@@ -37,7 +37,6 @@ export default class Planet {
 
     computeMass() {
         this.computedMass = Vertices.area(this.originalVertices) * this.density;
-        console.log('new mass is ', this.computedMass);
     }
 
     get position() {
@@ -67,13 +66,13 @@ export default class Planet {
         return distanceFromCore - this.radius;
     }
 
-    static create({name, radius, parent = null, rps = 0, density = .001, resolution = 200, x = 0, y = 0}) {
+    static create({name, radius, parent = null, rps = 0, density = .001, resolution = 124, x = 0, y = 0}) {
         const vertices = circleVertices(radius, resolution);
         const offset   = getBodyOffset(vertices);
 
         const body = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {
             isStatic:        true,
-            render:          debugRender,
+            render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
         });
 
@@ -95,7 +94,7 @@ export default class Planet {
 
         const main              = Bodies.fromVertices(newPos.x, newPos.y, vertices, {
             isStatic:        true,
-            render:          debugRender,
+            render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
             // ...this.attractor,
         });
@@ -108,7 +107,7 @@ export default class Planet {
             const offset  = getBodyOffset(partVertices);
             const partPos = Vector.add(originalPosition, offset);
             return Bodies.fromVertices(partPos.x, partPos.y, partVertices, {
-                render:          debugRender,
+                render:          planetDebugRender,
                 collisionFilter: {category: cTerrain},
             });
         });

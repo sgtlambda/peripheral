@@ -26,7 +26,6 @@ const fromPaperPath = path => {
         const children = path._children;
         const main     = maxBy(children, 'area');
         const rest     = without(children, main);
-        console.log({rest});
         return {
             main:  mapSegments(main),
             parts: rest.map(path => mapSegments(path))
@@ -34,11 +33,7 @@ const fromPaperPath = path => {
     }
 };
 
-let i = 0;
-
 export const subtract = (from, remove) => {
-    console.log(`start subtract ${i}`);
-    i++;
     const path1      = toPaperPath(from);
     const path2      = toPaperPath(remove);
     const subtracted = path1.subtract(path2);

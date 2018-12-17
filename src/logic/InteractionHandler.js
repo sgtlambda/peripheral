@@ -10,6 +10,7 @@ class InteractionHandler {
     static itemPickupDist   = 30;
     static itemDropForce    = 5;
     static itemThrowForce   = 12;
+
     // static itemThrowForce   = 2;
 
     constructor({
@@ -47,20 +48,20 @@ class InteractionHandler {
         this.playerState.potentialPickup = this.getNearbyStrayItem();
     }
 
+    doPlanetGravity(planet, allBodies) {
+        allBodies.forEach(body => {
+            if (body !== planet.body) {
+                const force = planet.getGravityForce(body);
+                Body.applyForce(body, body.position, force);
+            }
+        });
+    }
+
     beforeUpdate(engine) {
         this.updatePotentialPickup();
+        const allBodies = Composite.allBodies(engine.world);
         this.stage.planets.forEach(planet => {
-
-            // console.log(engine);
-            const allBodies = Composite.allBodies(engine.world);
-            // console.log(allBodies);
-            allBodies.forEach(body => {
-                if (body !== planet.body) {
-                    const force = planet.getGravityForce(body);
-                    Body.applyForce(body, body.position, force);
-                }
-            });
-
+            this.doPlanetGravity(planet, allBodies);
             // Do planetary motion (rotation around other planets)
             planet.step();
         });
