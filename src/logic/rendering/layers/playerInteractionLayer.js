@@ -4,11 +4,11 @@ import Layer from '../Layer';
 
 import circle from '../../../common/circle';
 
-export const arrowVertices = ({angle, x, y}) => {
+export const arrowVertices = ({offset = 20, length = 10, width = 5, angle, x, y}) => {
     const vertices = [
-        {x: 30, y: 5},
-        {x: 30, y: -5},
-        {x: 40, y: 0},
+        {x: offset, y: width},
+        {x: offset, y: -width},
+        {x: offset + length, y: 0},
     ];
     Vertices.rotate(vertices, angle, {x: 0, y: 0});
     Vertices.translate(vertices, {x, y});
