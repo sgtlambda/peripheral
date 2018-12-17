@@ -11,7 +11,7 @@ export const makeDefaultCollider = ({
     sprite
 }) => {
     return Bodies.rectangle(x, y, w, h, {
-        density, africtionAir,
+        density, frictionAir,
         angle,
         render: {
             fillStyle:   'transparent',

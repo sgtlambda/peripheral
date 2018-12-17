@@ -1,13 +1,15 @@
-export default (context, {position, itemType, amount = null}, size = 20) => {
+import circle from '../../common/circle';
 
-    context.fillStyle = itemType.color;
-    context.fillRect(position.x - size / 2, position.y - size / 2,
-        size, size);
+export default (context, {position, itemType, amount = null}, size = 10) => {
+
+    context.strokeStyle = itemType.color;
+    circle(context, position.x, position.y, size, false, true);
+
     context.font         = '10px monospace';
     context.fillStyle    = 'white';
     context.textAlign    = 'center';
     context.textBaseline = 'top';
-    context.fillText(itemType.name, position.x, position.y + size / 2);
+    context.fillText(itemType.name, position.x, position.y + size / 2 + 6);
 
     if (amount) {
         context.fillStyle    = 'black';

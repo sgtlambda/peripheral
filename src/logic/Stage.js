@@ -1,5 +1,5 @@
 import assert from 'assert';
-import {World} from 'matter-js';
+import {Composite} from 'matter-js';
 import {without, minBy} from 'lodash';
 
 import StageGraphics from './StageGraphics';
@@ -19,6 +19,31 @@ class Stage {
         this.graphics         = graphics === null ? new StageGraphics() : graphics;
         this.initialPlayerPos = initialPlayerPos;
         this.planets          = [];
+        this.bodyQueue        = [];
+    }
+
+    addBody(body) {
+        if (this._world) {
+            // Add body post-provision phase
+            Composite.add(this._world, [body]);
+        } else {
+            // Add body pre-provision phase
+            this.bodyQueue.push(body);
+        }
+    }
+
+    removeBody(body) {
+        if (this._world) {
+            Composite.remove(this._world, [body]);
+        } else {
+            this.bodyQueue = without(this.bodyQueue, body);
+        }
+    }
+
+    getClosestPlanet(point) {
+        return minBy(this.planets, planet => {
+            return planet.getPointAltitude(point);
+        });
     }
 
     /**
@@ -31,46 +56,47 @@ class Stage {
         this.addTerrainBody(planet.body);
     }
 
-    getClosestPlanet(point) {
-        return minBy(this.planets, planet => {
-            return planet.getPointAltitude(point);
-        });
-    }
-
     /**
      * Add a stray (floating) item to this stage (builder phase)
      * @param {StrayItem} strayItem
      */
     addStrayItem(strayItem) {
         this.strayItems.push(strayItem);
-    }
-
-    removeStrayItem(strayItem) {
-        this.strayItems = without(this.strayItems, strayItem);
+        this.addBody(strayItem.collider);
     }
 
     /**
-     * Add a terrain body to this stage (builder phase)
+     * Add a terrain body to this stage
      * @param {Body} terrainBody
      */
     addTerrainBody(terrainBody) {
         this.terrainBodies.push(terrainBody);
-    }
-
-    addBuilding(building) {
-        this.buildings.push(building);
-        World.add(this._world, [building.body])
+        this.addBody(terrainBody);
     }
 
     /**
-     * Add all terrain bodies belonging to this stage
-     * to the given physics world
+     * Add a building to this stage
+     * @param building
+     */
+    addBuilding(building) {
+        this.buildings.push(building);
+        this.addBody(building.body);
+    }
+
+    removeStrayItem(strayItem) {
+        this.strayItems = without(this.strayItems, strayItem);
+        this.removeBody(strayItem.collider);
+    }
+
+    /**
+     * Add all terrain bodies belonging to this stage to the given physics world
+     * and "link up" the world with this Stage so that bodies can be added at runtime
      * @param world
      */
     provision(world) {
         assert(!this.provisioned, 'Cannot provision Stage twice.');
         this.provisioned = true;
-        World.add(world, this.terrainBodies);
+        Composite.add(world, this.bodyQueue);
         this._world = world;
         return this;
     }

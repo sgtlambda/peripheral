@@ -2,8 +2,6 @@ import Layer from '../Layer';
 
 import renderItem from '../renderItem';
 
-const debugItemSize = 20;
-
 const renderBuilding = (context, building) => {
     const position       = building.body.position;
     context.font         = '10px monospace';
@@ -23,7 +21,7 @@ export default ({stage}) => [
     new Layer({
         render(context) {
             stage.strayItems.forEach(item => {
-                renderItem(context, item, debugItemSize);
+                renderItem(context, item);
             });
             stage.buildings.forEach(building => {
                 renderBuilding(context, building);

@@ -38,8 +38,8 @@ class InteractionHandler {
             const dropped  = this.playerState.removeFromInventory();
             const position = {x: this.player.position.x, y: this.player.position.y};
             const cooldown = InteractionHandler.itemDropCooldown;
-            const speed    = Vector.rotate({x: InteractionHandler.itemDropForce, y: 0}, this.player.angle);
-            this.stage.addStrayItem(new StrayItem({itemType: dropped, position, speed, cooldown}));
+            const velocity = Vector.rotate({x: InteractionHandler.itemDropForce, y: 0}, this.player.angle);
+            this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
         }
     }
 

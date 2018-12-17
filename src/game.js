@@ -46,7 +46,7 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: debugDraw, amount: Math.Infinity, slot: 7});
+    playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;
 

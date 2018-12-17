@@ -4,9 +4,10 @@ import Stage from '../../logic/Stage';
 
 import Planet from '../../logic/Planet';
 
-// import StrayItem from '../../logic/StrayItem';
-//
-// import banana from '../../data/itemTypes/banana';
+import StrayItem from '../../logic/StrayItem';
+
+import banana from '../../data/itemTypes/banana';
+
 // import log from '../../data/itemTypes/log';
 // import {cTerrain} from '../../data/collisionGroups';
 //
@@ -60,6 +61,8 @@ export default () => {
             render:  {fillStyle: '#b2b2b0',}
         }));
     });
+
+    stage.addStrayItem(new StrayItem({itemType: banana, x: -100, y: -radius - 40}));
 
     return stage;
 }
