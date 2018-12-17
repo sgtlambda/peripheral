@@ -321,9 +321,10 @@ const Mouse     = require('matter-js/src/core/Mouse');
         // handle bounds
         if (options.hasBounds) {
             // filter out bodies that are not in view
+
             for (i = 0; i < allBodies.length; i++) {
                 var body = allBodies[i];
-                if (Bounds.overlaps(body.bounds, render.bounds))
+                // if (Bounds.overlaps(body.bounds, render.bounds))
                     bodies.push(body);
             }
 
