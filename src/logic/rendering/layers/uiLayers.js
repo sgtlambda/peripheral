@@ -73,7 +73,7 @@ const renderControls = ({context, x, y, itemType}) => {
     }
 };
 
-const renderDebugz = ({context, player, gameMouse, x, y}) => {
+const renderDebugText = ({context, player, gameMouse, x, y}) => {
 
     context.font         = '12px monospace';
     context.textAlign    = 'right';
@@ -139,7 +139,7 @@ export default ({gameMouse, player, playerState}) => [
                 itemType:   playerState.getActiveSlot().itemType,
             });
 
-            renderDebugz({
+            renderDebugText({
                 context, x: rightMargin, y: renderer.options.height - 80,
                 player:     player, playerState: playerState,
                 gameMouse:  gameMouse,
