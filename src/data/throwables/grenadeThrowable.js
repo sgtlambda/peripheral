@@ -7,8 +7,8 @@ export default ({x, y, velocity}) => new Throwable({
     trigger({position, interactionHandler}) {
         boom({stage: interactionHandler.stage, ...position,
             radius: 60,
-            // force: 1.5e-2,
-            force: 0,
+            force: 1.5e-2,
+            // force: 0,
         });
     }
 })

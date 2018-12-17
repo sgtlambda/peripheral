@@ -9,7 +9,8 @@ export const gravityConstant = 8e-1;
 
 export const getPlanetaryGravity = (bodyA, bodyB, epicenter) => {
     const angle       = Vector.angle(bodyA.position, bodyB.position);
-    let distance      = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position)) + epicenter;
+    let distance      = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
+    distance          = Math.max(distance, epicenter);
     const massProduct = bodyA.mass * bodyB.mass;
     const force       = gravityConstant * massProduct / Math.pow(distance, 2);
     return Vector.rotate({x: -force, y: 0}, angle);
@@ -30,13 +31,16 @@ export default class Planet {
 
         const pos = Vector.add({x, y}, this.centroid);
 
-        this.body = Bodies.fromVertices(pos.x, pos.y, vertices, {
+        this.body          = Bodies.fromVertices(pos.x, pos.y, vertices, {
             render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
             density,
         });
-
         this.body.isPlanet = true;
+
+        // For descendent planets
+        this.radius  = radius;
+        this.density = density;
 
         // For static bodies, the mass is set to 'Infinity' which breaks the gravitational
         // formula so we have to manually define the mass of the planet
@@ -49,7 +53,8 @@ export default class Planet {
     }
 
     lockEpicenter() {
-        this.epicenter = Math.sqrt(this.body.area) / 2;
+        this.epicenter = Math.sqrt(this.body.area) / 1.5;
+        // console.log(this.epicenter);
     }
 
     getCurrentVertices() {

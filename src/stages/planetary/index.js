@@ -6,7 +6,7 @@ import Planet from '../../logic/Planet';
 
 export default () => {
 
-    const radius = 400;
+    const radius = 1600;
 
     const stage = new Stage({
         initialPlayerPos: {x: 0, y: -radius - 100},
@@ -15,8 +15,8 @@ export default () => {
     stage.addPlanet(Planet.createCircular({
         name:       'moon',
         radius,
-        resolution: 32,
-        rand:       .2
+        resolution: 120,
+        rand:       .02,
     }));
 
     const boxes = [];

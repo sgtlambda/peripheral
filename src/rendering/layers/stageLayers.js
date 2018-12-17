@@ -32,9 +32,9 @@ export default ({stage}) => [
             });
             stage.graphics.renderOverLayers(context);
             stage.planets.forEach(planet => {
+                renderVertices(context, planet.getCurrentVertices());
                 context.strokeStyle = 'white';
-                const planetPos = planet.centerOfMass;
-                circle(context, planetPos.x, planetPos.y, 4, false, true);
+                context.stroke();
             });
         }
     }),

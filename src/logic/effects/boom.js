@@ -22,17 +22,11 @@ export default ({stage, x, y, radius, force}) => {
     const explosionVertices = Vertices.translate(circleVertices(radius, 12, .7), pos);
 
     stage.planets.forEach(planet => {
-
         const currentVertices = planet.getCurrentVertices();
-
         stage.removePlanet(planet);
-
         const paths = subtract(currentVertices, explosionVertices);
-
-        console.log(paths);
-
         paths.map((path, index) => {
-            console.log(index);
+            if(Vertices.area(path) < 40) return;
             const name      = `${planet.name}.${index}`;
             const newPlanet = new Planet({
                 vertices: path,
