@@ -25,6 +25,8 @@ import banana from '../../data/itemTypes/banana';
 //     baseBorderLeft, baseBorderRight, ruinsMainTower, ruinsCompound, waterLeft, waterRight, logPos, logPos2
 // } from "./vectors";
 
+import {bananas} from "./vectors";
+
 export default () => {
 
     const radius = 2000;
@@ -62,7 +64,8 @@ export default () => {
         }));
     });
 
-    stage.addStrayItem(new StrayItem({itemType: banana, x: -100, y: -radius - 40}));
+    bananas.forEach(pos => stage.addStrayItem(new StrayItem({itemType: banana, ...pos})));
+    // stage.addStrayItem(new StrayItem({itemType: banana, x: -100, y: -radius - 40}));
 
     return stage;
 }

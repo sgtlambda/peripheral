@@ -25,6 +25,7 @@ class PlayerState {
     } = {}) {
         this.inventory = inventory === null ? createInventory() : inventory;
         this.selectSlot(activeInventorySlot);
+        this.potentialPickup = null;
     }
 
     firstEmptySlot() {

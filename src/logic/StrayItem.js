@@ -19,7 +19,7 @@ class StrayItem {
             render:          debugRender,
             collisionFilter: {
                 category: cItems,
-                mask:     cTerrain,
+                mask:     cTerrain | cItems,
             }
         });
         if (velocity) {

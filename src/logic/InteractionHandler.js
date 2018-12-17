@@ -21,15 +21,38 @@ class InteractionHandler {
         this.gameMouse   = gameMouse;
     }
 
-    step() {
-        const ppos = this.player.position;
+    getNearbyStrayItem() {
+        const ppos  = this.player.position;
+        let result  = null;
+        let minDist = -1;
         this.stage.strayItems.forEach(strayItem => {
             strayItem.step();
             if (strayItem.cooldown > 1) return;
             const ipos = strayItem.position;
             const dist = Vector.magnitude({x: Math.abs(ipos.x - ppos.x), y: Math.abs(ipos.y - ppos.y)});
-            if (dist < InteractionHandler.itemPickupDist) this.pickup(strayItem);
+            if (dist < InteractionHandler.itemPickupDist) {
+                if (dist < minDist || minDist === -1) {
+                    result  = strayItem;
+                    minDist = dist;
+                }
+            }
         });
+        return result;
+    }
+
+    updatePotentialPickup() {
+        this.playerState.potentialPickup = this.getNearbyStrayItem();
+    }
+
+    step() {
+        this.updatePotentialPickup();
+    }
+
+    takeItem() {
+        const pickup = this.getNearbyStrayItem();
+        if (!pickup) return;
+        this.pickup(pickup);
+        this.updatePotentialPickup();
     }
 
     dropItem() {

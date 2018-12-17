@@ -6,6 +6,7 @@ export default ({
         // The values here map to methods in the InteractionHandler class
         q: 'dropItem',
         b: 'buildItem',
+        e: 'takeItem',
     },
 } = {}) => {
 

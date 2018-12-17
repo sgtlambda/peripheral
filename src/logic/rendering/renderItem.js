@@ -12,7 +12,7 @@ export default (context, {position, itemType, amount = null}, size = 10) => {
     context.fillText(itemType.name, position.x, position.y + size / 2 + 6);
 
     if (amount) {
-        context.fillStyle    = 'black';
+        context.fillStyle    = 'white';
         context.font         = '11px monospace';
         context.textBaseline = 'middle';
         context.fillText(amount, position.x, position.y);

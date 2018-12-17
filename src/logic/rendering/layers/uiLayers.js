@@ -49,7 +49,7 @@ function renderInventory({context, padding, size, inventory, activeSlot, x = 0, 
     })
 }
 
-const renderControls = ({context, x, y, itemType}) => {
+const renderControls = ({playerState, context, x, y, itemType}) => {
 
     context.font         = '12px monospace';
     context.textAlign    = 'right';
@@ -70,6 +70,11 @@ const renderControls = ({context, x, y, itemType}) => {
             renderTextWithShadow({context, text: itemIntent.description, x, y});
             y += 20;
         });
+    }
+
+    if (playerState.potentialPickup) {
+        renderTextWithShadow({context, text: `take ${playerState.potentialPickup.itemType.name} [e]`, x, y});
+        y += 20;
     }
 };
 
@@ -136,7 +141,7 @@ export default ({gameMouse, player, playerState}) => [
 
             renderControls({
                 context, x: rightMargin, y: 20,
-                itemType:   playerState.getActiveSlot().itemType,
+                itemType:   playerState.getActiveSlot().itemType, playerState,
             });
 
             renderDebugText({
