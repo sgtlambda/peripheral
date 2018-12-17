@@ -2,6 +2,10 @@ import Layer from '../Layer';
 
 import renderItem from '../renderItem';
 
+import circle from '../../common/circle';
+
+import renderVertices from '../../common/renderVertices';
+
 const renderBuilding = (context, building) => {
     const position       = building.body.position;
     context.font         = '10px monospace';
@@ -27,6 +31,11 @@ export default ({stage}) => [
                 renderBuilding(context, building);
             });
             stage.graphics.renderOverLayers(context);
+            stage.planets.forEach(planet => {
+                context.strokeStyle = 'white';
+                const planetPos = planet.centerOfMass;
+                circle(context, planetPos.x, planetPos.y, 4, false, true);
+            });
         }
     }),
 ];

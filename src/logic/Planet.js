@@ -8,9 +8,8 @@ import {cTerrain} from '../data/collisionGroups';
 export const gravityConstant = 8e-1;
 
 export const getPlanetaryGravity = (bodyA, bodyB, epicenter) => {
-    const angle  = Vector.angle(bodyA.position, bodyB.position);
-    let distance = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
-    if (distance < epicenter) distance = epicenter + (epicenter - distance);
+    const angle       = Vector.angle(bodyA.position, bodyB.position);
+    let distance      = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position)) + epicenter;
     const massProduct = bodyA.mass * bodyB.mass;
     const force       = gravityConstant * massProduct / Math.pow(distance, 2);
     return Vector.rotate({x: -force, y: 0}, angle);
@@ -45,16 +44,16 @@ export default class Planet {
 
         // For static bodies, the mass is set to 'Infinity' which breaks the gravitational
         // formula so we have to manually define the mass of the planet
-        this.lockMass();
         this.lockSourcePosition();
+        this.lockEpicenter();
     }
 
     lockSourcePosition() {
         this.sourcePosition = {...this.body.position};
     }
 
-    lockMass() {
-        this.sourceMass = Vertices.area(this.sourceVertices) * this.density;
+    lockEpicenter() {
+        this.epicenter = Math.sqrt(this.body.area) / 2;
     }
 
     getCurrentVertices() {
@@ -72,10 +71,7 @@ export default class Planet {
     }
 
     getGravityForce(body) {
-        return getPlanetaryGravity({
-            position: this.centerOfMass,
-            mass:     this.sourceMass,
-        }, body, this.radius);
+        return getPlanetaryGravity(this.body, body, this.epicenter);
     }
 
     step() {
