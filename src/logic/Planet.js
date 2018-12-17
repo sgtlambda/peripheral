@@ -31,16 +31,12 @@ export default class Planet {
         const pos = Vector.add({x, y}, this.centroid);
 
         this.body = Bodies.fromVertices(pos.x, pos.y, vertices, {
-            // isStatic:        true,
             render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
             density,
         });
 
         this.body.isPlanet = true;
-
-        this.radius  = radius;
-        this.density = density;
 
         // For static bodies, the mass is set to 'Infinity' which breaks the gravitational
         // formula so we have to manually define the mass of the planet
@@ -72,10 +68,6 @@ export default class Planet {
 
     getGravityForce(body) {
         return getPlanetaryGravity(this.body, body, this.epicenter);
-    }
-
-    step() {
-        // do something
     }
 
     static createCircular({name, radius, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {

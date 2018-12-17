@@ -58,8 +58,6 @@ class InteractionHandler {
         const nonPlanetBodies = Composite.allBodies(engine.world).filter(body => !body.isPlanet);
         this.stage.planets.forEach(planet => {
             doPlanetGravity(planet, nonPlanetBodies);
-            // Do planetary motion (rotation around other planets)
-            planet.step();
         });
         this.stage.throwables.forEach(throwable => throwable.step(this));
     }
