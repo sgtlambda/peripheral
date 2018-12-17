@@ -30,13 +30,25 @@ export default class Planet {
 
         // For static bodies, the mass is set to "Infinity" which breaks the gravitational
         // formula so we have to manually define the mass of the planet
-        this.computeMass();
+        this.lockMass();
+        this.lockSourcePosition();
 
         this.planetaryParts = [];
     }
 
-    computeMass() {
-        this.computedMass = Vertices.area(this.sourceVertices) * this.density;
+    lockSourcePosition() {
+        this.sourcePosition = {...this.body.position};
+    }
+
+    lockMass() {
+        this.sourceMass = Vertices.area(this.sourceVertices) * this.density;
+    }
+
+    /**
+     * Movement away from the original position since spawning
+     */
+    get movement() {
+        return Vector.sub(this.body.position, this.sourcePosition);
     }
 
     get position() {
@@ -46,7 +58,7 @@ export default class Planet {
     getGravityForce(body) {
         return getPlanetaryGravity({
             position: this.position,
-            mass:     this.computedMass,
+            mass:     this.sourceMass,
         }, body, this.radius);
     }
 
@@ -83,23 +95,28 @@ export default class Planet {
     }
 
     replace({main: vertices, parts = []}) {
-        const originalPosition = {...this.position};
-        const offset           = getBodyOffset(vertices);
-        const newPos           = Vector.add(originalPosition, offset);
+        console.log(this.movement);
 
-        const main                = Bodies.fromVertices(newPos.x, newPos.y, vertices, {
+        const previousPosition = {...this.position};
+        const offset           = getBodyOffset(vertices);
+        const newPos           = Vector.add(previousPosition, offset);
+
+        const main = Bodies.fromVertices(newPos.x, newPos.y, vertices, {
             isStatic:        true,
             render:          planetDebugRender,
             collisionFilter: {category: cTerrain},
         });
+
         this.body                 = main;
         this.sourceVertices       = vertices;
         this.sourceVerticesOffset = offset;
-        this.computeMass();
+
+        this.lockMass();
+        this.lockSourcePosition();
 
         const planetaryParts = parts.map(partVertices => {
             const offset  = getBodyOffset(partVertices);
-            const partPos = Vector.add(originalPosition, offset);
+            const partPos = Vector.add(previousPosition, offset);
             return Bodies.fromVertices(partPos.x, partPos.y, partVertices, {
                 render:          planetDebugRender,
                 collisionFilter: {category: cTerrain},
