@@ -96,15 +96,6 @@ const renderDebugText = ({context, player, gameMouse, x, y}) => {
     renderTextWithShadow({context, text: mouseDebug, x, y});
     renderTextWithShadow({context, text: playerPosDebug, x, y: y + line});
     renderTextWithShadow({context, text: playerMotionDebug, x, y: y + line * 2});
-
-    // if (player.currentPlanet) {
-    //     const planetInfo   = `planet [${player.currentPlanet.name}]`;
-    //     const altitudeInfo = `altitude [${Math.round(player.currentPlanet.getPointAltitude(player.position))}]`;
-    //     const angleInfo    = `angle [${Math.round((player.surfaceAngle / Math.PI / 2 * 180) || 0)}]`;
-    //     renderTextWithShadow({context, text: planetInfo, x, y: y + line * 3});
-    //     renderTextWithShadow({context, text: altitudeInfo, x, y: y + line * 4});
-    //     renderTextWithShadow({context, text: angleInfo, x, y: y + line * 5});
-    // }
 };
 
 const renderDebugPath = ({context, gameMouse}) => {

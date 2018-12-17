@@ -50,10 +50,10 @@ export default ({player, playerState}) => new Layer({
         const itemType = playerState.getActiveSlot().itemType;
         if (itemType && itemType.getIntentOf(INTENT_BUILD)) {
             const buildable = itemType.getIntentOf(INTENT_BUILD).options.buildable;
-            const vertices  = buildableVertices({buildable, angle: player.angle, ...player.position});
+            const vertices  = buildableVertices({buildable, angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         } else {
-            const vertices = arrowVertices({angle: player.angle, ...player.position});
+            const vertices = arrowVertices({angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         }
         context.strokeStyle = 'rgba(255,255,255,.6)';

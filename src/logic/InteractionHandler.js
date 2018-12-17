@@ -76,7 +76,7 @@ class InteractionHandler {
     }
 
     getPlayerEmitVelocity(force) {
-        return Vector.rotate({x: force, y: 0}, this.player.angle);
+        return Vector.rotate({x: force, y: 0}, this.player.aimAngle);
     }
 
     dropItem() {
@@ -91,7 +91,7 @@ class InteractionHandler {
     }
 
     getPlayerBuildPosition(offset = 35 + 16) {
-        return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.angle));
+        return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.aimAngle));
     }
 
     getActiveItemType() {
@@ -112,7 +112,7 @@ class InteractionHandler {
         if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
             const position = this.getPlayerBuildPosition();
             this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
-                angle: this.player.angle,
+                angle: this.player.aimAngle,
                 ...position,
             }));
         }

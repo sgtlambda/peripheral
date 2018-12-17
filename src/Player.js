@@ -25,7 +25,7 @@ class Player {
 
     }) {
 
-        this.angle         = 0;
+        this.aimAngle         = 0;
         this.currentPlanet = null;
 
         // globals
@@ -93,7 +93,7 @@ class Player {
     }
 
     afterStep() {
-        this.angle         = Vector.angle(this.position, this.mouse);
+        this.aimAngle         = Vector.angle(this.position, this.mouse);
         this.currentPlanet = this.stage.getClosestPlanet(this.position);
     }
 

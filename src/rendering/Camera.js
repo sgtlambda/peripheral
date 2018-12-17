@@ -35,8 +35,6 @@ class Camera {
     }
 
     getTargetAngle() {
-        if (!this.player) return this.currentAngle;
-        if (!this.player.currentPlanet) return this.currentAngle;
         return this.player.surfaceAngle + Math.PI / 2;
     }
 
