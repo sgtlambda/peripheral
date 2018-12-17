@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "eslint": "^5.2.0",
-    "line": "^0.1.8",
     "lodash": "^4.17.10",
     "matter-js": "^0.14.2",
     "paper": "^0.12.0",
