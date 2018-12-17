@@ -1,5 +1,5 @@
 // create a renderer
-import Render from "../fork/renderer";
+import Render from "./fork/renderer";
 
 module.exports = ({element, engine}) => {
 
