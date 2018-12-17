@@ -4,6 +4,8 @@ import {cTerrain, cPlayer} from './data/collisionGroups';
 
 import debugRender from './data/debugRender';
 
+import getTotalPlanetaryForce from './common/getTotalPlanetaryForce';
+
 class Player {
 
     constructor({
@@ -24,8 +26,7 @@ class Player {
 
     }) {
 
-        this.aimAngle      = 0;
-        this.currentPlanet = null;
+        this.aimAngle = 0;
 
         // globals
         this.keys  = keys;
@@ -58,11 +59,10 @@ class Player {
     }
 
     get surfaceAngle() {
-        return this.currentPlanet ? Vector.angle(this.currentPlanet.position, this.position) : null;
+        return this.gravityForce ? Vector.angle(this.gravityForce, {x: 0, y: 0}) : -Math.PI / 2;
     }
 
     rotateVectorToSurface(point) {
-        if (!this.currentPlanet) return point;
         const angle = this.surfaceAngle + Math.PI / 2;
         return Vector.rotate(point, angle);
     }
@@ -87,8 +87,8 @@ class Player {
     }
 
     afterStep() {
-        this.aimAngle      = Vector.angle(this.position, this.mouse);
-        this.currentPlanet = this.stage.getClosestPlanet(this.position);
+        this.aimAngle     = Vector.angle(this.position, this.mouse);
+        this.gravityForce = getTotalPlanetaryForce(this.stage.planets, this.body);
     }
 
     provision(world) {
