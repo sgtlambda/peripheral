@@ -14,7 +14,7 @@ export default ({stage, x, y, radius, force}) => {
         const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(pos, bpos));
         Body.applyForce(body, bpos, rotatedForceVector);
     });
-    const explosionVertices = Vertices.translate(circleVertices(radius, 20), pos);
+    const explosionVertices = Vertices.translate(circleVertices(radius, 12, .7), pos);
     stage.planets.forEach(planet => {
         const newTerrain = subtract(planet.originalVertices, explosionVertices);
         stage.removeBody(planet.body);

@@ -66,8 +66,8 @@ export default class Planet {
         return distanceFromCore - this.radius;
     }
 
-    static create({name, radius, parent = null, rps = 0, density = .001, resolution = 124, x = 0, y = 0}) {
-        const vertices = circleVertices(radius, resolution);
+    static create({name, radius, parent = null, rps = 0, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {
+        const vertices = circleVertices(radius, resolution, rand);
         const offset   = getBodyOffset(vertices);
 
         const body = Bodies.fromVertices(offset.x + x, offset.y + y, vertices, {

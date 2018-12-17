@@ -26,14 +26,14 @@ import grenade from '../../data/itemTypes/grenade';
 //     baseBorderLeft, baseBorderRight, ruinsMainTower, ruinsCompound, waterLeft, waterRight, logPos, logPos2
 // } from "./vectors";
 
-import {bananas, grenades} from "./vectors";
+// import {bananas, grenades} from "./vectors";
 
 export default () => {
 
     const radius = 1000;
 
     const stage = new Stage({
-        initialPlayerPos: {x: 50, y: -radius - 40},
+        initialPlayerPos: {x: 0, y: -radius - 40},
     });
 
     // const meteorRadius = 200;
@@ -41,7 +41,7 @@ export default () => {
     // const meteorY = -radius - meteorDist - meteorRadius;
     // const moon =
 
-    stage.addPlanet(Planet.create({name: 'moon', radius}));
+    stage.addPlanet(Planet.create({name: 'moon', radius, resolution: 60, rand: .05}));
 
     // stage.addPlanet(Planet.create({
     // parent: moon, rps: .0001,
@@ -55,9 +55,9 @@ export default () => {
     // Add a bunch of boxes...
     const boxSize = 24;
     [
-        [-.5, 1], [.5, 1],
-        [-.5, 2], [.5, 2],
-        [-.5, 3], [.5, 3],
+        // [-5, 1], [-4, 1],
+        [-5, 2], [-4, 2],
+        [-5, 3], [-4, 3],
     ].forEach(([bx, by]) => {
         boxes.push([bx * boxSize,
             -radius - 238.4820728 + by * boxSize]);
