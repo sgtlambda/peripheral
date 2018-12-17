@@ -1,13 +1,16 @@
-import {Events, Vector} from 'matter-js';
+import {Body, Events, Vector, Composite} from 'matter-js';
 import StrayItem from './StrayItem';
+
+import {INTENT_BUILD} from '../data/intents/buildIntent';
+import {INTENT_THROW} from "../data/intents/throwIntent";
 
 class InteractionHandler {
 
     static itemDropCooldown = 45;
-
-    static itemPickupDist = 30;
-
-    static itemDropForce = 5;
+    static itemPickupDist   = 30;
+    static itemDropForce    = 5;
+    static itemThrowForce   = 12;
+    // static itemThrowForce   = 2;
 
     constructor({
         stage,
@@ -44,8 +47,24 @@ class InteractionHandler {
         this.playerState.potentialPickup = this.getNearbyStrayItem();
     }
 
-    step() {
+    beforeUpdate(engine) {
         this.updatePotentialPickup();
+        this.stage.planets.forEach(planet => {
+
+            // console.log(engine);
+            const allBodies = Composite.allBodies(engine.world);
+            // console.log(allBodies);
+            allBodies.forEach(body => {
+                if (body !== planet.body) {
+                    const force = planet.getGravityForce(body);
+                    Body.applyForce(body, body.position, force);
+                }
+            });
+
+            // Do planetary motion (rotation around other planets)
+            planet.step();
+        });
+        this.stage.throwables.forEach(throwable => throwable.step(this));
     }
 
     takeItem() {
@@ -55,13 +74,17 @@ class InteractionHandler {
         this.updatePotentialPickup();
     }
 
+    getPlayerEmitVelocity(force) {
+        return Vector.rotate({x: force, y: 0}, this.player.angle);
+    }
+
     dropItem() {
-        const itemType = this.playerState.getActiveItemType();
+        const itemType = this.getActiveItemType();
         if (itemType && itemType.droppable) {
             const dropped  = this.playerState.removeFromInventory();
-            const position = {x: this.player.position.x, y: this.player.position.y};
+            const position = {...this.player.position};
             const cooldown = InteractionHandler.itemDropCooldown;
-            const velocity = Vector.rotate({x: InteractionHandler.itemDropForce, y: 0}, this.player.angle);
+            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemDropForce);
             this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
         }
     }
@@ -70,27 +93,48 @@ class InteractionHandler {
         return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.angle));
     }
 
+    getActiveItemType() {
+        const slot = this.playerState.getActiveSlot();
+        if (!slot.itemType || !slot.amount) return null;
+        return slot.itemType;
+    }
+
+    getActiveItemIntentOf(type) {
+        const itemType = this.getActiveItemType();
+        if (!itemType) return null;
+        return itemType.getIntentOf(type);
+    }
+
     buildItem() {
-        const itemType = this.playerState.getActiveItemType();
-        if (!itemType) return;
-        const buildIntent = itemType.getBuildIntent();
-        if (buildIntent) {
-            if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
-                const position = this.getPlayerBuildPosition();
-                this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
-                    angle: this.player.angle,
-                    ...position,
-                }));
-            }
+        const buildIntent = this.getActiveItemIntentOf(INTENT_BUILD);
+        if (!buildIntent) return;
+        if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
+            const position = this.getPlayerBuildPosition();
+            this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
+                angle: this.player.angle,
+                ...position,
+            }));
+        }
+    }
+
+    throwItem() {
+        const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
+        if (!throwIntent) return;
+        if (this.playerState.removeFromInventory(1)) {
+            const make     = throwIntent.options.throwable.make;
+            const position = {...this.player.position};
+            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
+            this.stage.addThrowable(make({...position, velocity}));
         }
     }
 
     triggerPrimary() {
-        const itemType = this.playerState.getActiveItemType();
+        const itemType = this.getActiveItemType();
         if (!itemType) return;
         const primaryIntent = itemType.getPrimaryIntent();
         if (!primaryIntent) return;
-        if (primaryIntent.name === 'build') return this.buildItem();
+        if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
+        if (primaryIntent.type === INTENT_THROW) return this.throwItem();
         else if (primaryIntent.trigger) return primaryIntent.trigger(this);
     }
 
@@ -100,14 +144,14 @@ class InteractionHandler {
     }
 
     attach(engine) {
-        this._callback = () => this.step();
-        Events.on(engine, 'afterUpdate', this._callback);
+        this._beforeUpdate = () => this.beforeUpdate(engine);
+        Events.on(engine, 'beforeUpdate', this._beforeUpdate);
         return this;
     }
 
     detach(engine) {
-        if (this._callback) Events.off(engine, 'afterUpdate', this._callback);
-        this._callback = null;
+        if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', this._beforeUpdate);
+        this._beforeUpdate = null;
     }
 }
 

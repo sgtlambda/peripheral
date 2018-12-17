@@ -7,6 +7,7 @@ export default ({
         q: 'dropItem',
         b: 'buildItem',
         e: 'takeItem',
+        t: 'throwItem',
     },
 } = {}) => {
 

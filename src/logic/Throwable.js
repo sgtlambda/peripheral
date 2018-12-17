@@ -2,13 +2,15 @@ import {Body, Bodies} from 'matter-js';
 
 import debugRender from '../data/debugRender';
 
-import {cItems, cTerrain} from "../data/collisionGroups";
+import {cItems, cTerrain} from '../data/collisionGroups';
 
-class StrayItem {
+class Throwable {
 
-    constructor({itemType, x, y, velocity = null, cooldown = 0}) {
-        this.itemType = itemType;
-        this.cooldown = cooldown;
+    constructor({name, x, y, velocity = null, trigger, countdown = 120}) {
+        // this.itemType = itemType;
+        this.name      = name;
+        this.countdown = countdown;
+        this.trigger   = trigger;
         this.prepareBodies({x, y, velocity});
     }
 
@@ -31,9 +33,13 @@ class StrayItem {
         return this.collider.position;
     }
 
-    step() {
-        if (this.cooldown > 0) this.cooldown -= 1;
+    step(interactionHandler) {
+        this.countdown -= 1;
+        if (this.countdown <= 0) {
+            this.trigger({position: {...this.position}, throwable: this, interactionHandler});
+            interactionHandler.stage.removeThrowable(this);
+        }
     }
 }
 
-export default StrayItem;
+export default Throwable;

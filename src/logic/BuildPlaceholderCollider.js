@@ -26,11 +26,11 @@ export default class BuildPlaceholderCollider {
         this._beforeUpdate = () => this.updateColliderPosition();
         this._afterUpdate  = () => this.updateCollisionState();
         Events.on(engine, 'beforeUpdate', this._beforeUpdate);
-        Events.on(engine, 'afterUpdate', this._afterUpdate);
+        Events.on(engine, 'beforeUpdate', this._afterUpdate);
     }
 
     detach(engine) {
         Events.off(engine, 'beforeUpdate', this._beforeUpdate);
-        Events.off(engine, 'afterUpdate', this._afterUpdate);
+        Events.off(engine, 'beforeUpdate', this._afterUpdate);
     }
 }

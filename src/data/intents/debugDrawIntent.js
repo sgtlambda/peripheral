@@ -1,14 +1,15 @@
 import ItemIntent from './../../logic/ItemIntent';
 
 export const debugDrawGlobal = {path: []};
+window.debugDrawGlobal       = debugDrawGlobal;
 
-window.debugDrawGlobal = debugDrawGlobal;
+export const INTENT_DEBUG_DRAW = Symbol('INTENT_DEBUG_DRAW');
 
 export default ({
-    name = 'debugDraw',
     primary = true,
 } = {}) => new ItemIntent({
-    primary, name,
+    primary,
+    type:        INTENT_DEBUG_DRAW,
     description: `draw [lmb]`,
     trigger({gameMouse}) {
         debugDrawGlobal.path.push({

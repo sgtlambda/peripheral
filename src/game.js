@@ -16,15 +16,16 @@ import planetaryStage from './stages/planetary';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
-import backgroundLayer from './logic/rendering/layers/backgroundLayer.js';
-import stageLayers from './logic/rendering/layers/stageLayers';
-import uiLayers from './logic/rendering/layers/uiLayers';
-import playerInteractionLayer from './logic/rendering/layers/playerInteractionLayer';
-import rotateContext from './logic/rendering/layers/rotateContext';
+import backgroundLayer from './rendering/layers/backgroundLayer.js';
+import stageLayers from './rendering/layers/stageLayers';
+import uiLayers from './rendering/layers/uiLayers';
+import playerInteractionLayer from './rendering/layers/playerInteractionLayer';
+import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
-import Camera from './logic/rendering/Camera';
+import Camera from './rendering/Camera';
 
+import grenade from './data/itemTypes/grenade';
 import debugDraw from './data/itemTypes/debugDraw.js';
 
 // cleanup
@@ -46,6 +47,7 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
+    playerState.addToInventory({itemType: grenade, amount: 90, slot: 0});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;

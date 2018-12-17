@@ -2,7 +2,9 @@ import {Vertices} from 'matter-js';
 
 import Layer from '../Layer';
 
-import circle from '../../../common/circle';
+import circle from '../../common/circle';
+
+import {INTENT_BUILD} from '../../data/intents/buildIntent';
 
 export const arrowVertices = ({offset = 20, length = 10, width = 5, angle, x, y}) => {
     const vertices = [
@@ -46,8 +48,8 @@ export const drawVertices = ({context, vertices, fillStyle = null, strokeStyle =
 export default ({player, playerState}) => new Layer({
     render(context) {
         const itemType = playerState.getActiveSlot().itemType;
-        if (itemType && itemType.getBuildIntent()) {
-            const buildable = itemType.getBuildIntent().options.buildable;
+        if (itemType && itemType.getIntentOf(INTENT_BUILD)) {
+            const buildable = itemType.getIntentOf(INTENT_BUILD).options.buildable;
             const vertices  = buildableVertices({buildable, angle: player.angle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         } else {

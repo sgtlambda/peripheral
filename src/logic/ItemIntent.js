@@ -3,13 +3,13 @@ class ItemIntent {
         keyBind,
         primary = false,
         trigger = null,
-        name,
+        type,
         description,
         options,
     }) {
         this.keyBind     = keyBind;
         this.primary     = primary;
-        this.name        = name;
+        this.type        = type;
         this.description = description;
         this.options     = options;
         this.trigger     = trigger;

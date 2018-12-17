@@ -1,4 +1,4 @@
-import circle from '../../common/circle';
+import circle from '../common/circle';
 
 export default (context, {position, itemType, amount = null}, size = 10) => {
 

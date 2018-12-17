@@ -1,12 +1,12 @@
 import renderItem from '../renderItem';
 
-import roundRect from '../../../common/roundrect';
+import roundRect from '../../common/roundrect';
 
 import Layer from '../Layer';
 
-import renderTextWithShadow from '../../../common/renderTextWithShadow';
+import renderTextWithShadow from '../../common/renderTextWithShadow';
 
-import {debugDrawGlobal} from '../../../data/intents/debugDrawIntent';
+import {debugDrawGlobal} from '../../data/intents/debugDrawIntent';
 
 const inventoryPadding  = 4;
 const inventorySlotSize = 48;
@@ -100,8 +100,10 @@ const renderDebugText = ({context, player, gameMouse, x, y}) => {
     if (player.currentPlanet) {
         const planetInfo   = `planet [${player.currentPlanet.name}]`;
         const altitudeInfo = `altitude [${Math.round(player.currentPlanet.getPointAltitude(player.position))}]`;
+        const angleInfo    = `angle [${Math.round((player.surfaceAngle / Math.PI / 2 * 180) || 0)}]`;
         renderTextWithShadow({context, text: planetInfo, x, y: y + line * 3});
         renderTextWithShadow({context, text: altitudeInfo, x, y: y + line * 4});
+        renderTextWithShadow({context, text: angleInfo, x, y: y + line * 5});
     }
 };
 

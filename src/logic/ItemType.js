@@ -9,8 +9,8 @@ class ItemType {
         this.droppable        = droppable;
     }
 
-    getBuildIntent() {
-        return find(this.availableIntents, {name: 'build'});
+    getIntentOf(type) {
+        return find(this.availableIntents, {type});
     }
 
     getPrimaryIntent() {

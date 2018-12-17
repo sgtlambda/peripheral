@@ -1,0 +1,45 @@
+<script src="../node_modules/paper/dist/paper-full.min.js"></script>
+<body>
+<canvas id="myCanvas" resize></canvas>
+<script>
+    // Get a reference to the canvas object
+    var canvas = document.getElementById('myCanvas');
+    // Create an empty project and a view for the canvas:
+    paper.setup(canvas);
+
+    const _path1 = [[0, 0], [100, 0], [100, 100], [0, 100]];
+
+    const _path2 = [[50, 50], [150, 50], [150, 150], [50, 150]];
+
+    const convertPath = points => {
+        const path = new paper.Path();
+        points.forEach(([x, y]) => {
+            path.add(new paper.Point(x, y));
+        });
+        path.closed      = true;
+        return path;
+    };
+
+    const stringifyPath = path => path._segments.map(segment => {
+        return [segment._point.x, segment._point.y];
+    });
+
+    // myPath.add(new paper.Point(0, 0));
+    // myPath.add(new paper.Point(100, 50));
+
+    const path1 = convertPath(_path1);
+
+    const path2 = convertPath(_path2);
+
+    const subtracted = path2.subtract(path1);
+
+    subtracted.strokeColor = 'black';
+
+
+    // path1.flatten(4);
+
+    // console.log(subtracted.area);
+
+    // console.log(paper.project.exportSVG({asString:true}));
+</script>
+</body>

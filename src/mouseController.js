@@ -24,7 +24,7 @@ export default ({
         gameMouse.y = _gameMouse.y;
     };
 
-    Events.on(engine, 'afterUpdate', updateGameMouse);
+    Events.on(engine, 'beforeUpdate', updateGameMouse);
 
     emitter.addEventListener('mousemove', mousemove);
 

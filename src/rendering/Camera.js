@@ -37,7 +37,7 @@ class Camera {
     getTargetAngle() {
         if (!this.player) return this.currentAngle;
         if (!this.player.currentPlanet) return this.currentAngle;
-        return Vector.angle(this.player.currentPlanet.position, this.player.position) + Math.PI / 2;
+        return this.player.surfaceAngle + Math.PI / 2;
     }
 
     trackPlayer(player) {

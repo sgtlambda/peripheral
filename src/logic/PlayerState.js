@@ -43,12 +43,6 @@ class PlayerState {
         return this.inventory[this.activeInventorySlot];
     }
 
-    getActiveItemType() {
-        const slot = this.getActiveSlot();
-        if (!slot.itemType || !slot.amount) return null;
-        return slot.itemType;
-    }
-
     /**
      * Remove the given amount from the inventory slot at the given index (defaults to active slot)
      * @param amount

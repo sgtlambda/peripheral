@@ -7,6 +7,7 @@ import Planet from '../../logic/Planet';
 import StrayItem from '../../logic/StrayItem';
 
 import banana from '../../data/itemTypes/banana';
+import grenade from '../../data/itemTypes/grenade';
 
 // import log from '../../data/itemTypes/log';
 // import {cTerrain} from '../../data/collisionGroups';
@@ -25,24 +26,27 @@ import banana from '../../data/itemTypes/banana';
 //     baseBorderLeft, baseBorderRight, ruinsMainTower, ruinsCompound, waterLeft, waterRight, logPos, logPos2
 // } from "./vectors";
 
-import {bananas} from "./vectors";
+import {bananas, grenades} from "./vectors";
 
 export default () => {
 
     const radius = 2000;
 
     const stage = new Stage({
-        initialPlayerPos: {x: 0, y: -radius - 40},
+        initialPlayerPos: {x: 50, y: -radius - 40},
     });
 
-    const meteorRadius = 200;
-    const meteorDist   = 300;
-
-    const meteorY = -radius - meteorDist - meteorRadius;
+    // const meteorRadius = 200;
+    // const meteorDist   = 300;
+    // const meteorY = -radius - meteorDist - meteorRadius;
+    // const moon =
 
     stage.addPlanet(Planet.create({name: 'moon', radius}));
 
-    stage.addPlanet(Planet.create({name: 'meteor', radius: meteorRadius, density: 15e-4, x: 0, y: meteorY}));
+    // stage.addPlanet(Planet.create({
+    // parent: moon, rps: .0001,
+    // name: 'meteor', radius: meteorRadius, density: 15e-4, x: 0, y: meteorY
+    // }));
 
     const boxes = [
         // [-10, meteorY + meteorRadius + 20]
@@ -52,6 +56,8 @@ export default () => {
     const boxSize = 24;
     [
         [-.5, 1], [.5, 1],
+        [-.5, 2], [.5, 2],
+        [-.5, 3], [.5, 3],
     ].forEach(([bx, by]) => {
         boxes.push([bx * boxSize,
             -radius - 238.4820728 + by * boxSize]);
@@ -59,12 +65,13 @@ export default () => {
 
     boxes.forEach(([x, y]) => {
         stage.addTerrainBody(Bodies.rectangle(x, y, boxSize, boxSize, {
-            density: .001,
-            render:  {fillStyle: '#b2b2b0',}
+            // density: .001,
+            render: {fillStyle: '#b2b2b0'}
         }));
     });
 
     bananas.forEach(pos => stage.addStrayItem(new StrayItem({itemType: banana, ...pos})));
+    grenades.forEach(pos => stage.addStrayItem(new StrayItem({itemType: grenade, ...pos})));
     // stage.addStrayItem(new StrayItem({itemType: banana, x: -100, y: -radius - 40}));
 
     return stage;
