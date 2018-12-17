@@ -3,12 +3,12 @@ import Throwable from '../../logic/Throwable';
 import boom from '../../logic/effects/boom';
 
 export default ({x, y, velocity}) => new Throwable({
-    name: 'grenade', x, y, velocity, countdown: 80,
+    name: 'nuke', x, y, velocity, countdown: 180,
     trigger({position, interactionHandler}) {
         boom({
             stage:  interactionHandler.stage, ...position,
-            radius: 70,
-            force:  1.5e-2,
+            radius: 300,
+            force:  1.5e-1,
         });
     }
 })

@@ -19,19 +19,28 @@ export default ({
             interactionHandler[method].call(interactionHandler);
     };
 
+    let _triggerContinuous;
+
     const mouseDown = () => {
         interactionHandler.triggerPrimary();
+        _triggerContinuous = setInterval(() => interactionHandler.triggerContinuous(), 200);
+    };
+
+    const mouseUp = () => {
+        clearInterval(_triggerContinuous);
     };
 
     emitter.addEventListener('keydown', press);
 
     mouseEmitter.addEventListener('mousedown', mouseDown);
+    mouseEmitter.addEventListener('mouseup', mouseUp);
 
     return {
         keysOn,
         destroy() {
             emitter.removeEventListener('keydown', press);
             mouseEmitter.removeEventListener('mousedown', mouseDown);
+            mouseEmitter.removeEventListener('mouseup', mouseUp);
         },
     };
 };

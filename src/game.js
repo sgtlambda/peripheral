@@ -23,7 +23,9 @@ import rotateContext from './rendering/layers/rotateContext';
 import Player from './Player';
 import Camera from './rendering/Camera';
 
+import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
+import nuke from './data/itemTypes/nuke';
 import debugDraw from './data/itemTypes/debugDraw.js';
 
 // cleanup
@@ -42,7 +44,9 @@ if (window.lastStop) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: grenade, amount: 160, slot: 0});
+    playerState.addToInventory({itemType: drill, amount: 800, slot: 0});
+    playerState.addToInventory({itemType: grenade, amount: 64, slot: 1});
+    playerState.addToInventory({itemType: nuke, amount: 24, slot: 2});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;

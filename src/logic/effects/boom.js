@@ -6,7 +6,7 @@ import circleVertices from '../../common/circleVertices';
 
 import {subtract} from "../../common/terrainOps";
 
-export default ({stage, x, y, radius, force}) => {
+export default ({stage, x, y, radius, resolution = 12, rand = .7, force}) => {
 
     const pos = {x, y};
 
@@ -19,14 +19,14 @@ export default ({stage, x, y, radius, force}) => {
         Body.applyForce(body, bpos, rotatedForceVector);
     });
 
-    const explosionVertices = Vertices.translate(circleVertices(radius, 12, .7), pos);
+    const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), pos);
 
     stage.planets.forEach(planet => {
         const currentVertices = planet.getCurrentVertices();
         stage.removePlanet(planet);
         const paths = subtract(currentVertices, explosionVertices);
         paths.map((path, index) => {
-            if(Vertices.area(path) < 40) return;
+            if (Vertices.area(path) < 40) return;
             const name      = `${planet.name}.${index}`;
             const newPlanet = new Planet({
                 vertices: path,

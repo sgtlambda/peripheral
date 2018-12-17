@@ -116,9 +116,10 @@ class InteractionHandler {
         const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
         if (!throwIntent) return;
         if (this.playerState.removeFromInventory(1)) {
-            const make     = throwIntent.options.throwable.make;
-            const position = {...this.player.position};
-            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
+            const {make, drill = 0} = throwIntent.options.throwable;
+            const position          = Vector.add({...this.player.position},
+                Vector.rotate({x: drill, y: 0}, this.player.aimAngle));
+            const velocity          = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
             this.stage.addThrowable(make({...position, velocity}));
         }
     }
@@ -131,6 +132,13 @@ class InteractionHandler {
         if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
         if (primaryIntent.type === INTENT_THROW) return this.throwItem();
         else if (primaryIntent.trigger) return primaryIntent.trigger(this);
+    }
+
+    triggerContinuous() {
+        const itemType = this.getActiveItemType();
+        if (!itemType) return;
+        const primaryIntent = itemType.getPrimaryIntent();
+        if (primaryIntent.continuous) this.triggerPrimary();
     }
 
     pickup(strayItem) {
