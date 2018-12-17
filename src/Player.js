@@ -21,11 +21,10 @@ class Player {
         // acceleration = .0004,
         frictionWhileMoving = .0015,
         friction = .1,
-        // density = .002,
 
     }) {
 
-        this.aimAngle         = 0;
+        this.aimAngle      = 0;
         this.currentPlanet = null;
 
         // globals
@@ -38,7 +37,6 @@ class Player {
         this.jetpackForce        = jetpackForce;
         this.frictionWhileMoving = frictionWhileMoving;
         this.friction            = friction;
-        // this.density             = density;
 
         this.prepareBodies({x, y, radius});
     }
@@ -48,11 +46,7 @@ class Player {
     }
 
     prepareBodies({x, y, radius}) {
-
-        const pp = {x, y};
-
-        this.collider = Bodies.circle(pp.x, pp.y, radius, {
-            // density:         this.density,
+        this.collider = Bodies.circle(x, y, radius, {
             friction:        this.friction,
             inertia:         Infinity,
             render:          debugRender,
@@ -93,7 +87,7 @@ class Player {
     }
 
     afterStep() {
-        this.aimAngle         = Vector.angle(this.position, this.mouse);
+        this.aimAngle      = Vector.angle(this.position, this.mouse);
         this.currentPlanet = this.stage.getClosestPlanet(this.position);
     }
 
