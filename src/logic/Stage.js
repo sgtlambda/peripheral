@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {Composite} from 'matter-js';
-import {without, minBy} from 'lodash';
+import {without} from 'lodash';
 
 import StageGraphics from './StageGraphics';
 
