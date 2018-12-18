@@ -1,9 +1,9 @@
 // create a renderer
 import Render from "./fork/renderer";
 
-module.exports = ({element, engine}) => {
+export default ({element, engine}) => {
 
-    const render = Render.create({
+    return Render.create({
         element: document.body,
         engine:  engine,
         options: {
@@ -33,6 +33,4 @@ module.exports = ({element, engine}) => {
             showMousePosition:   false,
         }
     });
-
-    return render;
 };

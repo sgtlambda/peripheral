@@ -1,3 +1,10 @@
+declare global {
+    interface Window {
+        lastStop: any;
+        decomp: any;
+    }
+}
+
 window.decomp = require('poly-decomp');
 
 import {Engine, Runner} from 'matter-js';
@@ -23,7 +30,7 @@ import rotateContext from './rendering/layers/rotateContext';
 import Player from './Player';
 import Camera from './rendering/Camera';
 
-import drill from "./data/itemTypes/drill";
+// import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import debugDraw from './data/itemTypes/debugDraw.js';
@@ -31,13 +38,13 @@ import debugDraw from './data/itemTypes/debugDraw.js';
 // cleanup
 const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
-if (window.lastStop) window.lastStop();
+if ('lastStop' in window) window.lastStop();
 
 (() => {
 
     const engine = Engine.create();
     const runner = Runner.create();
-    const world  = engine.world;
+    const world = engine.world;
     const render = createRenderer({element: document.body, engine});
 
     const camera = new Camera({render});
@@ -51,9 +58,9 @@ if (window.lastStop) window.lastStop();
 
     world.gravity.scale = 0;
 
-    const {keysOn, destroy: destroyPlayerController}   = playerController();
+    const {keysOn, destroy: destroyPlayerController} = playerController();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
-    const {destroy: destroyUiController}               = uiController({playerState});
+    const {destroy: destroyUiController} = uiController({playerState});
 
     const stage = planetaryStage();
 
@@ -71,7 +78,7 @@ if (window.lastStop) window.lastStop();
         interactionHandler
     });
 
-    const worldParts  = [stage, player];
+    const worldParts = [stage, player];
     const engineHooks = [player, interactionHandler, camera];
 
     const {before: rotate, after: unrotate} = rotateContext();

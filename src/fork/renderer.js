@@ -7,8 +7,6 @@
  */
 const Render = {};
 
-module.exports = Render;
-
 const Common    = require('matter-js/src/core/Common');
 const Composite = require('matter-js/src/body/Composite');
 const Bounds    = require('matter-js/src/geometry/Bounds');
@@ -1512,3 +1510,5 @@ const Mouse     = require('matter-js/src/core/Mouse');
      */
 
 })();
+
+export default Render;
