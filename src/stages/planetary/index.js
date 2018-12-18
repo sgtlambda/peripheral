@@ -6,7 +6,7 @@ import Planet from '../../logic/Planet';
 
 export default () => {
 
-    const radius = 1600;
+    const radius = 3200;
 
     const stage = new Stage({
         initialPlayerPos: {x: 0, y: -radius - 100},
