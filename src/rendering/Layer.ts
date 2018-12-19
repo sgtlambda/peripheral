@@ -1,5 +1,6 @@
-import {Events} from 'matter-js';
-import Renderer from '../types';
+import {Events, Render} from 'matter-js';
+
+import Camera from './Camera';
 
 export default class Layer {
 
@@ -30,10 +31,10 @@ export default class Layer {
     }
 
     /**
-     * @param {Renderer} renderer
+     * @param {Render} renderer
      * @param {Camera} camera
      */
-    render(renderer: Renderer, camera) {
+    render(renderer: Render, camera: Camera) {
         const context = renderer.context;
         if (!this.persistMatrix) context.save();
         if (!this.hud) {
@@ -46,12 +47,12 @@ export default class Layer {
         if (!this.persistMatrix) context.restore();
     }
 
-    attach(renderer: Renderer, camera) {
+    attach(renderer: Render, camera: Camera) {
         this._callback = () => this.render(renderer, camera);
         Events.on(renderer, this._hook, this._callback);
     }
 
-    detach(renderer: Renderer) {
+    detach(renderer: Render) {
         Events.off(renderer, this._hook, this._callback);
     }
 }
