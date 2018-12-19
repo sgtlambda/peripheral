@@ -1,26 +1,33 @@
-import {Events, Bounds, Vector} from 'matter-js';
+import {Events, Bounds, Render} from 'matter-js';
 
-const boundsWidth  = bounds => bounds.max.x - bounds.min.x;
+const boundsWidth = bounds => bounds.max.x - bounds.min.x;
 const boundsHeight = bounds => bounds.max.y - bounds.min.y;
 
 class Camera {
 
+    render: Render;
+    width: number;
+    height: number;
+    smooth: number;
+    currentAngle: number;
+    player: any;
+    _callback: (e: any) => void;
+
     constructor({
-        render,
+                    render,
 
-        width = null,
-        height = null,
-        y = null,
+                    width = null,
+                    height = null,
+                    y = null,
 
-        smooth = 8,
-    }) {
+                    smooth = 8,
+                }) {
 
-        this.width  = width || boundsWidth(render.bounds);
+        this.width = width || boundsWidth(render.bounds);
         this.height = height || boundsHeight(render.bounds);
-        this.y      = y || render.bounds.min.y;
 
-        this.smooth       = smooth;
-        this.render       = render;
+        this.smooth = smooth;
+        this.render = render;
         this.currentAngle = 0;
 
         Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
@@ -39,7 +46,7 @@ class Camera {
     }
 
     trackPlayer(player) {
-        this.player        = player;
+        this.player = player;
         const boundsTarget = this.getBoundsTarget();
         Bounds.shift(this.render.bounds, boundsTarget);
     }
@@ -74,8 +81,8 @@ class Camera {
 
         const {x: targetX, y: targetY} = this.getBoundsTarget();
         const {x: actualX, y: actualY} = this.currentBounds;
-        const shiftToX                 = (targetX + actualX * this.smooth) / (this.smooth + 1);
-        const shiftToY                 = (targetY + actualY * this.smooth) / (this.smooth + 1);
+        const shiftToX = (targetX + actualX * this.smooth) / (this.smooth + 1);
+        const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
         this.currentAngle = this.getTargetAngle();
 

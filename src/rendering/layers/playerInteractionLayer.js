@@ -1,6 +1,6 @@
 import {Vertices} from 'matter-js';
 
-import Layer from '../Layer';
+import Layer from '../Layer.ts';
 
 import circle from '../../common/circle';
 

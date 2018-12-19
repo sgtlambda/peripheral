@@ -1,8 +1,6 @@
-import Layer from '../Layer';
+import Layer from '../Layer.ts';
 
 import renderItem from '../renderItem';
-
-import circle from '../../common/circle';
 
 import renderVertices from '../../common/renderVertices';
 

@@ -43,7 +43,7 @@ if ('lastStop' in window) window.lastStop();
 (() => {
 
     const engine = Engine.create();
-    const runner = Runner.create();
+    const runner = Runner.create({});
     const world = engine.world;
     const render = createRenderer({element: document.body, engine});
 

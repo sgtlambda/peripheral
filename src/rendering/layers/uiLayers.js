@@ -2,7 +2,7 @@ import renderItem from '../renderItem';
 
 import roundRect from '../../common/roundrect';
 
-import Layer from '../Layer';
+import Layer from '../Layer.ts';
 
 import renderTextWithShadow from '../../common/renderTextWithShadow';
 

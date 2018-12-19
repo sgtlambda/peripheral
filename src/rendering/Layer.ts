@@ -1,6 +1,14 @@
 import {Events} from 'matter-js';
+import Renderer from '../types';
 
 export default class Layer {
+
+    _render: Function;
+    _callback: (e: any) => void;
+    hud: boolean;
+    over: boolean;
+    persistMatrix: boolean;
+    _hook: string;
 
     /**
      * @param {boolean} hud Whether the render layer should stay in place (static)
@@ -9,23 +17,23 @@ export default class Layer {
      * @param {function} render The render function
      */
     constructor({
-        hud = false,
-        over = true,
-        persistMatrix = false,
-        render
-    }) {
-        this.hud           = hud;
-        this.over          = over;
+                    hud = false,
+                    over = true,
+                    persistMatrix = false,
+                    render
+                }) {
+        this.hud = hud;
+        this.over = over;
         this.persistMatrix = persistMatrix;
-        this._render       = render;
-        this._hook         = this.over ? 'afterRender' : 'beforeRender';
+        this._render = render;
+        this._hook = this.over ? 'afterRender' : 'beforeRender';
     }
 
     /**
-     * @param {Render} renderer
+     * @param {Renderer} renderer
      * @param {Camera} camera
      */
-    render(renderer, camera) {
+    render(renderer: Renderer, camera) {
         const context = renderer.context;
         if (!this.persistMatrix) context.save();
         if (!this.hud) {
@@ -38,12 +46,12 @@ export default class Layer {
         if (!this.persistMatrix) context.restore();
     }
 
-    attach(renderer, camera) {
+    attach(renderer: Renderer, camera) {
         this._callback = () => this.render(renderer, camera);
         Events.on(renderer, this._hook, this._callback);
     }
 
-    detach(renderer) {
+    detach(renderer: Renderer) {
         Events.off(renderer, this._hook, this._callback);
     }
 }

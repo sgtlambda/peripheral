@@ -1,4 +1,4 @@
-import Layer from '../Layer';
+import Layer from '../Layer.ts';
 
 export default () => ({
     before: new Layer({
