@@ -8,7 +8,8 @@
     "eslint": "eslint ./*.js",
     "pretest": "npm run eslint",
     "parcel": "parcel index.html",
-    "start": "npm run parcel"
+    "start": "npm run parcel",
+    "build": "parcel build index.html"
   },
   "dependencies": {
     "@types/matter-js": "^0.10.2",
