@@ -14,7 +14,7 @@
   "dependencies": {
     "@types/matter-js": "^0.10.2",
     "eslint": "^5.2.0",
-    "lodash": "^4.17.10",
+    "lodash": "^4.17.19",
     "matter-js": "^0.14.2",
     "paper": "^0.12.0",
     "parcel": "^1.9.7",
