@@ -1,4 +1,5 @@
 import assert from 'assert';
+
 import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
