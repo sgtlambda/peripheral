@@ -55,7 +55,7 @@ class InteractionHandler {
 
     beforeUpdate(engine) {
         this.updatePotentialPickup();
-        const nonPlanetBodies = Composite.allBodies(engine.world).filter(body => !body.isPlanet);
+        const nonPlanetBodies = Composite.allBodies(engine.world).filter(body => body.label !== "planet");
         this.stage.planets.forEach(planet => {
             doPlanetGravity(planet, nonPlanetBodies);
         });

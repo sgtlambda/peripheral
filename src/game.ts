@@ -32,7 +32,7 @@ import rotateContext from './rendering/layers/rotateContext';
 import Player from './Player';
 import Camera from './rendering/Camera';
 
-// import drill from "./data/itemTypes/drill";
+import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import debugDraw from './data/itemTypes/debugDraw.js';
@@ -53,7 +53,7 @@ if ('lastStop' in window) window.lastStop();
 
     const playerState = new PlayerState();
 
-    // playerState.addToInventory({itemType: drill, amount: 800});
+    playerState.addToInventory({itemType: drill, amount: 800});
     playerState.addToInventory({itemType: grenade, amount: 99});
     playerState.addToInventory({itemType: nuke, amount: 99});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
