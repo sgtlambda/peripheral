@@ -9,7 +9,7 @@ window.decomp = require('poly-decomp');
 
 import {Engine, Runner} from 'matter-js';
 
-import Render from './fork/renderer';
+import {Render} from 'matter-js';
 import createRenderer from './createRenderer';
 import playerController from './playerController';
 import mouseController from './mouseController';

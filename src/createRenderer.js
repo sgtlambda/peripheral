@@ -1,5 +1,4 @@
-// create a renderer
-import Render from "./fork/renderer";
+import {Render} from 'matter-js';
 
 export default ({element, engine}) => {
 
@@ -16,8 +15,7 @@ export default ({element, engine}) => {
             enabled:             true,
             wireframes:          false,
             showSleeping:        true,
-            showDebug:           false,
-            showBroadphase:      false,
+            showDebug:           false,            showBroadphase:      false,
             showBounds:          false,
             showVelocity:        false,
             showCollisions:      false,
