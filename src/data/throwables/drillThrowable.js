@@ -1,11 +1,11 @@
 import Throwable from '../../logic/Throwable';
 
-import boom from '../../logic/effects/boom';
+import applyExplosion from '../../logic/effects/applyExplosion';
 
 export default ({x, y, velocity}) => new Throwable({
     name: 'drill', x, y, velocity, countdown: 0,
     trigger({position, interactionHandler}) {
-        boom({
+        applyExplosion({
             resolution: 6,
             rand:       .2,
             stage:      interactionHandler.stage,

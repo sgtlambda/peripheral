@@ -6,20 +6,24 @@ import circleVertices from '../../common/circleVertices';
 
 import {subtract} from "../../common/terrainOps";
 
-export default ({stage, x, y, radius, resolution = 12, rand = .7, force}) => {
+const applyExplosion = ({stage, x, y, radius, resolution = 12, rand = .7, force}) => {
 
-    const pos = {x, y};
+    const origin = {x, y};
 
+    // Apply outward force from the explosion
     stage.addedBodies.forEach(body => {
-        const bpos     = body.position;
-        const distance = Vector.magnitude(Vector.sub(bpos, pos));
+
+        const position = body.position;
+        const distance = Vector.magnitude(Vector.sub(position, origin));
+
         if (distance > radius) return;
+
         const forceVector        = {x: (1 - (distance / radius)) * force, y: 0};
-        const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(pos, bpos));
-        Body.applyForce(body, bpos, rotatedForceVector);
+        const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(origin, position));
+        Body.applyForce(body, position, rotatedForceVector);
     });
 
-    const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), pos);
+    const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), origin);
 
     stage.planets.forEach(planet => {
         const currentVertices = planet.getCurrentVertices();
@@ -38,3 +42,5 @@ export default ({stage, x, y, radius, resolution = 12, rand = .7, force}) => {
         });
     });
 };
+
+export default applyExplosion;
