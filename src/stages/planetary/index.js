@@ -8,9 +8,7 @@ export default () => {
 
     const radius = 5000;
 
-    const stage = new Stage({
-        initialPlayerPos: {x: 400, y: -radius - 100},
-    });
+    const stage = new Stage({x: 400, y: -radius - 100});
 
     stage.addPlanet(Planet.createCircular({
         name:       'moon',
@@ -36,7 +34,7 @@ export default () => {
     }
 
     boxes.forEach(([x, y]) => {
-        stage.addTerrainBody(Bodies.rectangle(x, y, boxSize*.9, boxSize*.9, {
+        stage.addTerrainBody(Bodies.rectangle(x, y, boxSize * .9, boxSize * .9, {
             render: {fillStyle: '#6171a2'},
         }));
     });

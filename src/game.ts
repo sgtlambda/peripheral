@@ -67,6 +67,8 @@ if ('lastStop' in window) window.lastStop();
 
     const stage = planetaryStage();
 
+    console.log({stage});
+
     const player = new Player({
         stage, keys: keysOn, mouse: gameMouse,
         ...stage.initialPlayerPos,

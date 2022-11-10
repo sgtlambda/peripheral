@@ -1,6 +1,6 @@
-import {Bodies, Body, World, Events, Vector} from 'matter-js';
+import {Bodies, Body, Events, Vector, World} from 'matter-js';
 
-import {cTerrain, cPlayer} from './data/collisionGroups';
+import {cPlayer, cTerrain} from './data/collisionGroups';
 
 import debugRender from './data/debugRender';
 
@@ -10,7 +10,7 @@ class Player {
 
     constructor({
 
-        x, y, angle = 0,
+        x, y,
 
         keys, mouse,
         stage,
