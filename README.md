@@ -8,3 +8,5 @@
 yarn install
 yarn start
 ```
+
+Then go to http://localhost:1234
