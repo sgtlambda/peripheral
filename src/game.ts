@@ -1,3 +1,5 @@
+import {browserWindowController} from "./browserWindowController";
+
 declare global {
     interface Window {
         lastStop: any;
@@ -35,7 +37,7 @@ import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import debugDraw from './data/itemTypes/debugDraw.js';
 
-// cleanup
+// cleanup (for hot reload, if applicable)
 const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
 if ('lastStop' in window) window.lastStop();
@@ -61,6 +63,7 @@ if ('lastStop' in window) window.lastStop();
     const {keysOn, destroy: destroyPlayerController} = playerController();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
     const {destroy: destroyUiController} = uiController({playerState});
+    const {destroy: destroyBrowserWindowController} = browserWindowController({render, camera});
 
     const stage = planetaryStage();
 
@@ -114,5 +117,6 @@ if ('lastStop' in window) window.lastStop();
         destroyUiController();
         destroyMouseController();
         destroyInteractionController();
+        destroyBrowserWindowController();
     };
 })();

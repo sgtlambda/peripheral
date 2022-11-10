@@ -1,36 +1,29 @@
-import {Events, Bounds, Render} from 'matter-js';
-
-const boundsWidth = bounds => bounds.max.x - bounds.min.x;
-const boundsHeight = bounds => bounds.max.y - bounds.min.y;
+import {Bounds, Events, Render} from 'matter-js';
+import {boundsHeight, boundsWidth} from "../common/bounds";
 
 class Camera {
 
-    render: Render;
     width: number;
     height: number;
+    render: Render;
     smooth: number;
     currentAngle: number;
     player: any;
     _callback: (e: any) => void;
 
-    constructor({
-                    render,
-
-                    width = null,
-                    height = null,
-                    y = null,
-
-                    smooth = 8,
-                }) {
-
-        this.width = width || boundsWidth(render.bounds);
-        this.height = height || boundsHeight(render.bounds);
+    constructor({render, smooth = 8}) {
 
         this.smooth = smooth;
         this.render = render;
+        this.updateBounds();
         this.currentAngle = 0;
 
         Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
+    }
+
+    updateBounds() {
+        this.width = boundsWidth(this.render.bounds);
+        this.height = boundsHeight(this.render.bounds);
     }
 
     get trackBody() {
