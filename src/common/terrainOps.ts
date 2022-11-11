@@ -1,10 +1,11 @@
 import {Vector} from "matter-js";
-import paper from "paper";
 
 const paper = require('paper/dist/paper-core.min'); // TODO (?)
 paper.setup();
 
-const toPaperPath = (points: Vector[]): paper.Path => {
+type PaperPath = any; // TODO
+
+const toPaperPath = (points: Vector[]): PaperPath => {
   const path = new paper.Path();
   points.forEach(({x, y}) => {
     path.add(new paper.Point(x, y));
@@ -13,11 +14,16 @@ const toPaperPath = (points: Vector[]): paper.Path => {
   return path;
 };
 
-const fromPaperPath = (path: paper.Path): Vector[] => path._segments.map(segment => {
-  return {x: segment._point.x, y: segment._point.y};
-});
+const fromPaperPath = (path: PaperPath): Vector[] => {
+  return path._segments.map(segment => {
+    return {x: segment._point.x, y: segment._point.y};
+  });
+};
 
-const normalizePaths = path => { // TODO typing (?)
+/**
+ * Normalize a "compound" paths (if applicable) into singular paths
+ */
+const normalizePaths = (path: PaperPath): PaperPath[] => {
   if (path._segments) return [path];
   else return path._children;
 };
