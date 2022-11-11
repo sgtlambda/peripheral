@@ -5,8 +5,6 @@ import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
 
-export const gravityConstant = 8e-1;
-
 export default class Planet {
 
   name: string;
@@ -35,7 +33,7 @@ export default class Planet {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
-      // isStatic: true,
+      isStatic: true,
     });
 
     this.body.label = "planet";

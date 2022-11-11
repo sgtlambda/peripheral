@@ -14,8 +14,6 @@ class Player {
   public mouse: Vector;
   public readonly stage: Stage;
 
-  private gravityForce: Vector;
-  private lastSurfaceAngle: number;
   public collider: Body;
 
   public readonly moveForce: number;
@@ -51,8 +49,6 @@ class Player {
     this.frictionWhileMoving = frictionWhileMoving;
     this.friction            = friction;
 
-    this.lastSurfaceAngle = -Math.PI / 2;
-
     this.prepareBodies({x, y, radius});
   }
 
@@ -72,28 +68,13 @@ class Player {
     });
   }
 
-  get surfaceAngle() {
-    if (this.gravityForce && Vector.magnitude(this.gravityForce) > 5e-4) {
-      this.lastSurfaceAngle = Vector.angle(this.gravityForce, {x: 0, y: 0});
-    }
-    return this.lastSurfaceAngle;
-  }
-
-  rotateVectorToSurface(point) {
-    const angle = this.surfaceAngle + Math.PI / 2;
-    return Vector.rotate(point, angle);
-  }
-
   beforeStep() {
-
     const xForce = (this.keys.left ? -this.moveForce : 0) + (this.keys.right ? this.moveForce : 0);
     const yForce = this.keys.up ? -this.jetpackForce : 0;
 
-    let force = this.rotateVectorToSurface({x: xForce, y: yForce});
-
     this.collider.friction = this.keys.left || this.keys.right ? this.frictionWhileMoving : this.friction;
 
-    Body.applyForce(this.collider, this.collider.position, force);
+    Body.applyForce(this.collider, this.collider.position, {x: xForce, y: yForce});
   }
 
   get position() {

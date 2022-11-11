@@ -7,7 +7,6 @@ class Camera {
     height: number;
     render: Render;
     smooth: number;
-    currentAngle: number;
     player: any;
     _callback: (e: any) => void;
 
@@ -16,8 +15,6 @@ class Camera {
         this.smooth = smooth;
         this.render = render;
         this.updateBounds();
-        this.currentAngle = 0;
-
         Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
     }
 
@@ -32,10 +29,6 @@ class Camera {
 
     get bounds() {
         return this.render.bounds;
-    }
-
-    getTargetAngle() {
-        return this.player.surfaceAngle + Math.PI / 2;
     }
 
     trackPlayer(player) {
@@ -65,7 +58,6 @@ class Camera {
     rotate(context) {
         const center = this.onscreenCenter;
         context.translate(center.x, center.y);
-        context.rotate(-this.currentAngle);
         context.translate(-center.x, -center.y);
     }
 
@@ -76,8 +68,6 @@ class Camera {
         const {x: actualX, y: actualY} = this.currentBounds;
         const shiftToX = (targetX + actualX * this.smooth) / (this.smooth + 1);
         const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1);
-
-        this.currentAngle = this.getTargetAngle();
 
         Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
     }

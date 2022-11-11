@@ -8,7 +8,7 @@ export default () => {
 
     const radius = 5000;
 
-    const stage = new Stage({x: 400, y: -radius - 100});
+    const stage = new Stage({x: 200, y: -radius - 100});
 
     stage.addPlanet(Planet.createCircular({
         name:       'moon',
@@ -22,8 +22,8 @@ export default () => {
     // Add a bunch of boxes...
     const boxSize = 30;
 
-    const boxMatrix = range(-2, 2).flatMap(x => {
-        return range(-2, 0).map(y => [x, y]);
+    const boxMatrix = range(-3, 3).flatMap(x => {
+        return range(-4, 0).map(y => [x, y]);
     });
 
     for (const [bx, by] of boxMatrix) {
@@ -34,7 +34,7 @@ export default () => {
     }
 
     boxes.forEach(([x, y]) => {
-        stage.addTerrainBody(Bodies.rectangle(x, y, boxSize * .9, boxSize * .9, {
+        stage.addTerrainBody(Bodies.rectangle(x, y, boxSize * .99, boxSize * .9, {
             render: {fillStyle: '#6171a2'},
         }));
     });

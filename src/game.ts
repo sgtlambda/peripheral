@@ -62,8 +62,6 @@ if ('lastStop' in window) window.lastStop();
     playerState.addToInventory({itemType: crate, amount: 800});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
-    world.gravity.scale = 0;
-
     const {keysOn, destroy: destroyPlayerController} = playerController();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
     const {destroy: destroyUiController} = uiController({playerState});
