@@ -16,8 +16,8 @@ export const laser = new ItemType({
         const shape: Vector[] = [
           {x: 0, y: 5},
           {x: 0, y: -5},
-          {x: 1000, y: -5},
-          {x: 1000, y: 5},
+          {x: 100, y: -5},
+          {x: 100, y: 5},
         ].map(vector => {
           return Vector.add(
             {...player.position},

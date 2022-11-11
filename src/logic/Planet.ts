@@ -1,5 +1,4 @@
 import {Bodies, Body, Vector, Vertices} from 'matter-js';
-import {cloneDeep} from 'lodash';
 
 import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
@@ -10,12 +9,9 @@ export default class Planet {
   name: string;
   body: Body;
   sourceVertices: Vector[];
-  centroid: Vector;
-  sourcePosition: Vector;
 
   density: number;
   radius: number;
-  epicenter: number;
 
   constructor({
                 x = 0, y = 0, vertices,
@@ -25,16 +21,26 @@ export default class Planet {
     this.name = name;
 
     this.sourceVertices = vertices;
-    this.centroid       = Vertices.centre(this.sourceVertices);
 
-    const pos = Vector.add({x, y}, this.centroid);
+    const offsetX = vertices.reduce((sum, v) => sum + v.x, 0) / vertices.length
+    const offsetY = vertices.reduce((sum, v) => sum + v.y, 0) / vertices.length
 
-    this.body = Bodies.fromVertices(pos.x, pos.y, vertices, {
+    console.log({offsetX, offsetY});
+
+    this.body = Bodies.fromVertices(0, 0, vertices, {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
-      isStatic: true,
+      isStatic:        true,
     });
+
+    setTimeout(() => {
+      console.log({
+        v: vertices[0].y,
+        vl: vertices.length,
+        bto: this.body.bounds.min.y,
+      });
+    }, 1000);
 
     this.body.label = "planet";
 
@@ -44,32 +50,33 @@ export default class Planet {
 
     // For static bodies, the mass is set to 'Infinity' which breaks the gravitational
     // formula, so we have to manually define the mass of the planet
-    this.lockSourcePosition();
-    this.lockEpicenter();
+    // this.lockSourcePosition();
+    // this.lockEpicenter();
   }
 
-  lockSourcePosition() {
-    this.sourcePosition = {...this.body.position};
-  }
+  // lockSourcePosition() {
+  //   this.sourcePosition = {...this.body.position};
+  // }
 
-  lockEpicenter() {
-    this.epicenter = Math.sqrt(this.body.area) / 1.5;
-    // console.log(this.epicenter);
-  }
+  // lockEpicenter() {
+  //   this.epicenter = Math.sqrt(this.body.area) / 1.5;
+  // console.log(this.epicenter);
+  // }
 
   getCurrentVertices() {
-    const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
-    Vertices.rotate(v, this.body.angle, this.body.position);
-    return v;
+    return this.sourceVertices;
+    // const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
+    // Vertices.rotate(v, this.body.angle, this.body.position);
+    // return v;
   }
 
-  get movement() {
-    return Vector.sub(this.body.position, this.sourcePosition);
-  }
+  // get movement() {
+  //   return Vector.sub(this.body.position, this.sourcePosition);
+  // }
 
-  get centerOfMass() {
-    return this.body.position;
-  }
+  // get centerOfMass() {
+  //   return this.body.position;
+  // }
 
   static createCircular({name, radius, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {
     const vertices = circleVertices(radius, resolution, rand);
