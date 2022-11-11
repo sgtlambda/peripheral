@@ -13,7 +13,7 @@ export default new ItemType({
             throwable:  {
                 name:  'drill',
                 make:  drillThrowable,
-                drill: 20,
+                throwableSpawnOffset: 20,
             },
         }),
     ],

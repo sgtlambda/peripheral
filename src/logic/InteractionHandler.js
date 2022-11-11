@@ -116,9 +116,9 @@ class InteractionHandler {
         const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
         if (!throwIntent) return;
         if (this.playerState.removeFromInventory(1)) {
-            const {make, drill = 0} = throwIntent.options.throwable;
+            const {make, throwableSpawnOffset = 0} = throwIntent.options.throwable;
             const position          = Vector.add({...this.player.position},
-                Vector.rotate({x: drill, y: 0}, this.player.aimAngle));
+                Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle));
             const velocity          = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
             this.stage.addThrowable(make({...position, velocity}));
         }
@@ -128,9 +128,12 @@ class InteractionHandler {
         const itemType = this.getActiveItemType();
         if (!itemType) return;
         const primaryIntent = itemType.getPrimaryIntent();
+
+        // TODO below should be a switch statement handled by the item itself
         if (!primaryIntent) return;
         if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
         if (primaryIntent.type === INTENT_THROW) return this.throwItem();
+
         else if (primaryIntent.trigger) return primaryIntent.trigger(this);
     }
 
