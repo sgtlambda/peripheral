@@ -5,7 +5,6 @@ export const INTENT_THROW = Symbol('INTENT_THROW');
 export default ({
     throwable,
     primary = true,
-    requires = 1,
     keyBind = 't',
     continuous = false,
 }) => new ItemIntent({
