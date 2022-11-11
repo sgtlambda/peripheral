@@ -1,3 +1,5 @@
+import {PressedKeys} from "./types";
+
 export default (
   {
     mouseEmitter = window,
@@ -17,7 +19,7 @@ export default (
     keyMap?: Record<string, string>;
   }) => {
 
-  const keysOn = {};
+  const keysOn: PressedKeys = {};
 
   const press = e => {
     const method = keyMap[e.key];

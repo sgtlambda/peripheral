@@ -8,3 +8,5 @@ export type Controller<Objects extends object = {}> = {
 export interface WorldPart {
   provision(world: World): this;
 }
+
+export type PressedKeys = Record<string, boolean>; // TODO keymap-specific index (?)
