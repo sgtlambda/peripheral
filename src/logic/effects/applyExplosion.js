@@ -1,10 +1,7 @@
 import {Body, Vector, Vertices} from 'matter-js';
 
-import Planet from '../Planet';
-
 import circleVertices from '../../common/circleVertices';
-
-import {subtract} from "../../common/terrainOps";
+import {nom} from "./nom";
 
 const applyExplosion = ({stage, x, y, radius, resolution = 12, rand = .7, force}) => {
 
@@ -25,22 +22,7 @@ const applyExplosion = ({stage, x, y, radius, resolution = 12, rand = .7, force}
 
     const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), origin);
 
-    stage.planets.forEach(planet => {
-        const currentVertices = planet.getCurrentVertices();
-        stage.removePlanet(planet);
-        const paths = subtract(currentVertices, explosionVertices);
-        paths.map((path, index) => {
-            if (Vertices.area(path) < 40) return;
-            const name      = `${planet.name}.${index}`;
-            const newPlanet = new Planet({
-                vertices: path,
-                name:     name,
-                density:  planet.density,
-                radius:   planet.radius,
-            });
-            stage.addPlanet(newPlanet);
-        });
-    });
+    nom(stage, explosionVertices);
 };
 
 export default applyExplosion;
