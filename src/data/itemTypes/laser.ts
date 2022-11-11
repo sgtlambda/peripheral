@@ -14,10 +14,10 @@ export const laser = new ItemType({
       apply(player, stage) {
 
         const shape: Vector[] = [
-          {x: 0, y: 5},
-          {x: 0, y: -5},
-          {x: 100, y: -5},
-          {x: 100, y: 5},
+          {x: 0, y: 15},
+          {x: 0, y: -15},
+          {x: 100, y: -15},
+          {x: 100, y: 15},
         ].map(vector => {
           return Vector.add(
             {...player.position},

@@ -1,4 +1,5 @@
 import {Bodies, Body, Vector, Vertices} from 'matter-js';
+import {clone, cloneDeep} from "lodash";
 
 import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
@@ -13,6 +14,8 @@ export default class Planet {
   density: number;
   radius: number;
 
+  origin: Vector;
+
   constructor({
                 x = 0, y = 0, vertices,
                 name, radius, density
@@ -20,27 +23,18 @@ export default class Planet {
 
     this.name = name;
 
-    this.sourceVertices = vertices;
+    this.sourceVertices = cloneDeep(vertices);
 
-    const offsetX = vertices.reduce((sum, v) => sum + v.x, 0) / vertices.length
-    const offsetY = vertices.reduce((sum, v) => sum + v.y, 0) / vertices.length
-
-    console.log({offsetX, offsetY});
-
-    this.body = Bodies.fromVertices(0, 0, vertices, {
+    const createBody = (x: number = 0, y: number = 0) => Bodies.fromVertices(x, y, cloneDeep(vertices), {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
       isStatic:        true,
     });
 
-    setTimeout(() => {
-      console.log({
-        v: vertices[0].y,
-        vl: vertices.length,
-        bto: this.body.bounds.min.y,
-      });
-    }, 1000);
+    const tempBody = createBody();
+
+    this.body = createBody(-(tempBody.bounds.min.x + tempBody.bounds.max.x) / 2, -(tempBody.bounds.min.y + tempBody.bounds.max.y) / 2);
 
     this.body.label = "planet";
 
@@ -64,10 +58,10 @@ export default class Planet {
   // }
 
   getCurrentVertices() {
-    return this.sourceVertices;
+    // return this.sourceVertices;
     // const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
     // Vertices.rotate(v, this.body.angle, this.body.position);
-    // return v;
+    return cloneDeep(this.body.vertices)
   }
 
   // get movement() {

@@ -15,6 +15,7 @@ export function nom(stage: Stage, bite: Vector[]) {
     paths.map((path, index) => {
       if (Vertices.area(path, true) < 40) return;
       const name      = `${planet.name}.${index}`;
+      console.log('making new planet. number of vertices: ', path.length);
       const newPlanet = new Planet({
         vertices: path,
         name:     name,
