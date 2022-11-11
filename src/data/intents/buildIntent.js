@@ -6,7 +6,7 @@ export default ({
     buildable,
     primary = true,
     requires = 1,
-    keyBind = 'b',
+    keyBind = 'b', // TODO bind to src/interactionController.ts:14 more explicitly
 }) => new ItemIntent({
     keyBind, primary,
     type:        INTENT_BUILD,

@@ -10,3 +10,5 @@ export type Building = any; // TODO
 
 // TODO _eBeforeStep ??
 // TODO _eAfterStep ??
+
+// TODO ItemIntent where `option` specifies with types the functions (e.g. applyIntent) take..

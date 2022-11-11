@@ -1,8 +1,9 @@
-import {Body, Events, Vector, Composite} from 'matter-js';
+import {Body, Composite, Events, Vector} from 'matter-js';
 import StrayItem from './StrayItem';
 
 import {INTENT_BUILD} from '../data/intents/buildIntent';
 import {INTENT_THROW} from "../data/intents/throwIntent";
+import {INTENT_APPLY} from "../data/intents/applyIntent";
 
 const doPlanetGravity = (planet, otherBodies) => {
     otherBodies.forEach(body => {
@@ -112,14 +113,25 @@ class InteractionHandler {
         }
     }
 
+    applyItem() {
+        const applyIntent = this.getActiveItemIntentOf(INTENT_APPLY);
+        applyIntent.options.apply(this.player, this.stage);
+    }
+
     throwItem() {
         const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
         if (!throwIntent) return;
         if (this.playerState.removeFromInventory(1)) {
+
             const {make, throwableSpawnOffset = 0} = throwIntent.options.throwable;
-            const position          = Vector.add({...this.player.position},
-                Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle));
-            const velocity          = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
+
+            const position = Vector.add(
+                {...this.player.position},
+                Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle)
+            );
+
+            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
+
             this.stage.addThrowable(make({...position, velocity}));
         }
     }
@@ -133,6 +145,7 @@ class InteractionHandler {
         if (!primaryIntent) return;
         if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
         if (primaryIntent.type === INTENT_THROW) return this.throwItem();
+        if (primaryIntent.type === INTENT_APPLY) return this.applyItem();
 
         else if (primaryIntent.trigger) return primaryIntent.trigger(this);
     }

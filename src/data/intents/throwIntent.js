@@ -5,7 +5,7 @@ export const INTENT_THROW = Symbol('INTENT_THROW');
 export default ({
     throwable,
     primary = true,
-    keyBind = 't',
+    keyBind = 't', // TODO bind to src/interactionController.ts:14 more explicitly
     continuous = false,
 }) => new ItemIntent({
     keyBind,

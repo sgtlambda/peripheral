@@ -11,7 +11,7 @@ export default (
       b: 'buildItem',
       e: 'takeItem',
       t: 'throwItem',
-      a: 'applyItem',
+      c: 'applyItem',
     },
   }: {
     mouseEmitter?: EventTarget;
