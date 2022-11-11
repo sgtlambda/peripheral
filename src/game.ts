@@ -55,11 +55,11 @@ if ('lastStop' in window) window.lastStop();
 
     const playerState = new PlayerState();
 
+    playerState.addToInventory({itemType: laser});
     playerState.addToInventory({itemType: grenade, amount: 99});
     playerState.addToInventory({itemType: nuke, amount: 99});
     playerState.addToInventory({itemType: drill, amount: 800});
     playerState.addToInventory({itemType: crate, amount: 800});
-    playerState.addToInventory({itemType: laser});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;
