@@ -8,7 +8,9 @@ export default ({
     keyBind = 't',
     continuous = false,
 }) => new ItemIntent({
-    keyBind, primary, continuous,
+    keyBind,
+    primary,
+    continuous,
     type:        INTENT_THROW,
     description: `throw ${throwable.name} [lmb] [${keyBind}]`,
     options:     {throwable},
