@@ -4,7 +4,6 @@ import {cPlayer, cTerrain} from './data/collisionGroups';
 
 import debugRender from './data/debugRender';
 
-import getTotalPlanetaryForce from './common/getTotalPlanetaryForce';
 import {PressedKeys} from "./types";
 import Stage from "./logic/Stage";
 
@@ -102,8 +101,7 @@ class Player {
   }
 
   afterStep() {
-    this.aimAngle     = Vector.angle(this.position, this.mouse);
-    this.gravityForce = getTotalPlanetaryForce(this.stage.planets, this.body);
+    this.aimAngle = Vector.angle(this.position, this.mouse);
   }
 
   provision(world) {

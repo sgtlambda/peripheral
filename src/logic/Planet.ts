@@ -7,15 +7,6 @@ import {cTerrain} from '../data/collisionGroups';
 
 export const gravityConstant = 8e-1;
 
-export const getPlanetaryGravity = (bodyA, bodyB, epicenter) => {
-  const angle       = Vector.angle(bodyA.position, bodyB.position);
-  let distance      = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
-  distance          = Math.max(distance, epicenter);
-  const massProduct = bodyA.mass * bodyB.mass;
-  const force       = gravityConstant * massProduct / Math.pow(distance, 2);
-  return Vector.rotate({x: -force, y: 0}, angle);
-};
-
 export default class Planet {
 
   name: string;
@@ -44,6 +35,7 @@ export default class Planet {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
+      // isStatic: true,
     });
 
     this.body.label = "planet";
@@ -79,10 +71,6 @@ export default class Planet {
 
   get centerOfMass() {
     return this.body.position;
-  }
-
-  getGravityForce(body) {
-    return getPlanetaryGravity(this.body, body, this.epicenter);
   }
 
   static createCircular({name, radius, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {

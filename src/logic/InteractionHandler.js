@@ -5,13 +5,6 @@ import {INTENT_BUILD} from '../data/intents/buildIntent';
 import {INTENT_THROW} from "../data/intents/throwIntent";
 import {INTENT_APPLY} from "../data/intents/applyIntent";
 
-const doPlanetGravity = (planet, otherBodies) => {
-    otherBodies.forEach(body => {
-        const force = planet.getGravityForce(body);
-        Body.applyForce(body, body.position, force);
-    });
-};
-
 class InteractionHandler {
 
     static itemDropCooldown = 45;
@@ -56,10 +49,6 @@ class InteractionHandler {
 
     beforeUpdate(engine) {
         this.updatePotentialPickup();
-        const nonPlanetBodies = Composite.allBodies(engine.world).filter(body => body.label !== "planet");
-        this.stage.planets.forEach(planet => {
-            doPlanetGravity(planet, nonPlanetBodies);
-        });
         this.stage.throwables.forEach(throwable => throwable.step(this));
     }
 
