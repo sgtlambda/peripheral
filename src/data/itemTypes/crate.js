@@ -5,7 +5,7 @@ import buildIntent from '../intents/buildIntent';
 import crate from './../buildables/crate';
 
 export default new ItemType({
-    name:             'log',
+    name:             'crate',
     color:            '#9c8051',
     availableIntents: [
         buildIntent({
