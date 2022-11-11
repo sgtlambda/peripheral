@@ -36,6 +36,7 @@ import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import crate from './data/itemTypes/crate';
+import {laser} from './data/itemTypes/laser';
 import debugDraw from './data/itemTypes/debugDraw.js';
 
 // cleanup (for hot reload, if applicable)
@@ -58,6 +59,7 @@ if ('lastStop' in window) window.lastStop();
     playerState.addToInventory({itemType: nuke, amount: 99});
     playerState.addToInventory({itemType: drill, amount: 800});
     playerState.addToInventory({itemType: crate, amount: 800});
+    playerState.addToInventory({itemType: laser});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
     world.gravity.scale = 0;
