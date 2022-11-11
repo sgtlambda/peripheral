@@ -1,9 +1,11 @@
-import {Bodies, Body, Vector, Vertices} from 'matter-js';
-import {clone, cloneDeep} from "lodash";
+import {Bodies, Body, Bounds, Vector} from 'matter-js';
+import {cloneDeep} from "lodash";
 
 import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
+
+let hasGcv = false;
 
 export default class Planet {
 
@@ -14,7 +16,8 @@ export default class Planet {
   density: number;
   radius: number;
 
-  origin: Vector;
+  xOffset: number;
+  yOffset: number;
 
   constructor({
                 x = 0, y = 0, vertices,
@@ -34,7 +37,21 @@ export default class Planet {
 
     const tempBody = createBody();
 
-    this.body = createBody(-(tempBody.bounds.min.x + tempBody.bounds.max.x) / 2, -(tempBody.bounds.min.y + tempBody.bounds.max.y) / 2);
+    this.xOffset = -(tempBody.bounds.min.x + tempBody.bounds.max.x);
+    this.yOffset = -(tempBody.bounds.min.y + tempBody.bounds.max.y);
+
+    this.body = createBody(this.xOffset / 2, this.yOffset / 2);
+
+    // console.log({
+    //   x: this.body.position.x,
+    //   y: this.body.position.y,
+    //   xoff: this.xOffset,
+    //   yoff: this.yOffset,
+    //   // actualBody: this.body.vertices.map(v => `${v.x} ${v.y}`),
+    //   // source:     this.sourceVertices.map(v => `${v.x} ${v.y}`),
+    //   // xbx:        Bounds.create(this.body.vertices).min.x - Bounds.create(this.sourceVertices).min.x,
+    //   // xby:        Bounds.create(this.body.vertices).min.y - Bounds.create(this.sourceVertices).min.y,
+    // })
 
     this.body.label = "planet";
 
@@ -61,7 +78,18 @@ export default class Planet {
     // return this.sourceVertices;
     // const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
     // Vertices.rotate(v, this.body.angle, this.body.position);
-    return cloneDeep(this.body.vertices)
+    // return cloneDeep(this.body.vertices)
+    // if(!hasGcv) {
+    //   console.log({
+    //     gcv: cloneDeep(this.sourceVertices),
+    //   });
+    //   hasGcv =true;
+    // }
+    // return cloneDeep(this.sourceVertices);
+    return cloneDeep(this.sourceVertices).map(v => ({
+      x: v.x - this.xOffset + this.body.position.x * 2,
+      y: v.y - this.yOffset + this.body.position.y * 2,
+    }));
   }
 
   // get movement() {

@@ -13,8 +13,8 @@ export default () => {
     stage.addPlanet(Planet.createCircular({
         name:       'moon',
         radius,
-        resolution: 12,
-        rand:       0.4,
+        resolution: 10,
+        rand:       1,
     }));
 
     // const boxes = [];
