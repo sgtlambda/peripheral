@@ -12,10 +12,10 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "@types/matter-js": "^0.14.8",
+    "@types/matter-js": "^0.18.2",
     "eslint": "^7.16.0",
     "lodash": "^4.17.10",
-    "matter-js": "^0.14.2",
+    "matter-js": "^0.18.0",
     "paper": "^0.12.0",
     "parcel": "^1.9.7",
     "poly-decomp": "^0.3.0"
