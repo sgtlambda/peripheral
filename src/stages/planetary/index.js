@@ -1,5 +1,3 @@
-import {Vertices} from 'matter-js';
-
 import Stage from '../../logic/Stage';
 import Planet from '../../logic/Planet';
 
@@ -18,24 +16,17 @@ export default () => {
         rand:       0,
     }));
 
-    const testPlanets = [
-        Vertices.translate([
-            {x: -30, y: -170},
-            {x: -120, y: -430},
-            {x: 0, y: -430},
-            {x: -32, y: -420},
-            // {x: -30, y: -170},
-        ], {x: 0, y: 0}, 1),
-    ];
-
-    for (const i in testPlanets) {
-        stage.addPlanet(
-            new Planet({
-                name:     `test.${i}`,
-                vertices: testPlanets[i],
-            }),
-        );
-    }
+    stage.addPlanet(
+        new Planet({
+            name:     'test',
+            vertices: [
+                {x: -30, y: -170},
+                {x: -120, y: -430},
+                {x: 0, y: -430},
+                {x: -32, y: -420},
+            ],
+        }),
+    );
 
     return stage;
 };
