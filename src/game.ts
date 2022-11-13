@@ -36,7 +36,7 @@ import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import crate from './data/itemTypes/crate';
-import {laser} from './data/itemTypes/laser';
+import {createLaser} from './data/itemTypes/laser';
 import debugDraw from './data/itemTypes/debugDraw.js';
 
 // cleanup (for hot reload, if applicable)
@@ -55,7 +55,8 @@ if ('lastStop' in window) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: laser});
+    playerState.addToInventory({itemType: createLaser(100)});
+    playerState.addToInventory({itemType: createLaser(1000)});
     playerState.addToInventory({itemType: grenade, amount: 99});
     playerState.addToInventory({itemType: nuke, amount: 99});
     playerState.addToInventory({itemType: drill, amount: 800});

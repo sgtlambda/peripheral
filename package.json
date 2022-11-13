@@ -12,6 +12,8 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@turf/centroid": "^6.5.0",
+    "@turf/helpers": "^6.5.0",
     "@types/matter-js": "^0.18.2",
     "eslint": "^7.16.0",
     "lodash": "^4.17.10",
