@@ -3,7 +3,7 @@ import Planet from '../../logic/Planet';
 
 export default () => {
 
-    const radius = 100;
+    const radius = 10000;
 
     const stage = new Stage({x: 0, y: -radius - 50});
 
@@ -12,21 +12,9 @@ export default () => {
         y:          0,
         name:       'moon',
         radius,
-        resolution: 10,
-        rand:       0,
+        resolution: 200,
+        rand:       .1,
     }));
-
-    stage.addPlanet(
-        new Planet({
-            name:     'test',
-            vertices: [
-                {x: -30, y: -170},
-                {x: -120, y: -430},
-                {x: 0, y: -430},
-                {x: -32, y: -420},
-            ],
-        }),
-    );
 
     return stage;
 };

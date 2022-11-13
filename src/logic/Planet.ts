@@ -5,10 +5,6 @@ import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
 
-const listVertices = (v: Vector[]): string => {
-  return v.map(v => `x ${v.x} y ${v.y} `).join('\n');
-};
-
 export default class Planet {
 
   name: string;
@@ -17,19 +13,23 @@ export default class Planet {
 
   density: number;
 
+  sourcePosition: Vector;
+
   constructor(
     {
       x = 0,
       y = 0,
       vertices,
       name,
-      density = .1,
+      density = .001,
+      isStatic = true,
     }: {
       x?: number;
       y?: number;
       vertices: Vector[];
       name: string;
       density?: number;
+      isStatic?: boolean;
     }
   ) {
 
@@ -46,20 +46,36 @@ export default class Planet {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
-      isStatic:        true,
+      isStatic:        false,
     });
+
+    if (isStatic) {
+      // This solves a weird positioning bug, no idea why
+      this.body.isStatic = true;
+    }
+
+    this.sourceVertices = vertices;
 
     this.body.label = "planet";
 
     // For descendent planets
     this.density = density;
+
+    this.lockSourcePosition();
+  }
+
+  lockSourcePosition() {
+    this.sourcePosition = {...this.body.position};
   }
 
   getCurrentVertices() {
-    return cloneDeep(this.sourceVertices).map(v => ({
-      x: v.x + this.body.position.x,
-      y: v.y + this.body.position.y,
-    }));
+    const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
+    Vertices.rotate(v, this.body.angle, this.body.position);
+    return v;
+  }
+
+  get movement() {
+    return Vector.sub(this.body.position, this.sourcePosition);
   }
 
   static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0}) {
