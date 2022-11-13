@@ -1,4 +1,4 @@
-import {Vector, Vertices} from "matter-js";
+import {Vector} from "matter-js";
 import {cloneDeep} from "lodash";
 import Planet from "../Planet";
 import Stage from "../Stage";
@@ -11,26 +11,21 @@ import {subtract} from "../../common/terrainOps";
 export function nom(stage: Stage, bite: Vector[]) {
   stage.planets.forEach(planet => {
 
+    stage.removePlanet(planet);
     const currentVertices = planet.getCurrentVertices();
 
-    stage.removePlanet(planet);
+    const paths = subtract(cloneDeep(currentVertices), bite);
 
-    const paths = subtract(currentVertices, bite);
+    if (paths.length > 1) {
+      console.log({paths});
+    }
 
-    paths.map((path, index) => {
-
-      if (Vertices.area(path, true) < 1) return;
+    paths.forEach((path, index) => {
 
       const name = `${planet.name}.${index}`;
 
-      const c1 = Vertices.centre(path);
-
-      const translated = Vertices.translate(cloneDeep(path), Vector.neg(c1), 1);
-
       const newPlanet = new Planet({
-        x:        c1.x,
-        y:        c1.y,
-        vertices: translated,
+        vertices: path,
         name:     name,
         density:  planet.density,
       });

@@ -1,4 +1,4 @@
-import {Bodies, Body, Vector} from 'matter-js';
+import {Bodies, Body, Vector, Vertices} from 'matter-js';
 import {cloneDeep} from "lodash";
 
 import circleVertices from '../common/circleVertices';
@@ -23,28 +23,31 @@ export default class Planet {
       y = 0,
       vertices,
       name,
-      density
+      density = .1,
     }: {
       x?: number;
       y?: number;
       vertices: Vector[];
       name: string;
-      density: number;
+      density?: number;
     }
   ) {
 
     this.name = name;
 
-    this.sourceVertices = cloneDeep(vertices);
+    const centroid = Vertices.centre(vertices);
 
-    const createBody = (x: number, y: number) => Bodies.fromVertices(x, y, cloneDeep(vertices), {
+    this.sourceVertices = vertices.map(v => ({
+      x: v.x - centroid.x,
+      y: v.y - centroid.y,
+    }));
+
+    this.body = Bodies.fromVertices(x + centroid.x, y + centroid.y, cloneDeep(this.sourceVertices), {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
       isStatic:        true,
     });
-
-    this.body = createBody(x, y);
 
     this.body.label = "planet";
 
@@ -59,7 +62,7 @@ export default class Planet {
     }));
   }
 
-  static createCircular({name, radius, density = .001, resolution = 124, rand = 0, x = 0, y = 0}) {
+  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0}) {
     const vertices = circleVertices(radius, resolution, rand);
     return new Planet({x, y, name, vertices, density});
   }
