@@ -19,11 +19,11 @@ export default () => {
     }));
 
     const testPlanets = [
-        Vertices.translate([{x: -30, y: -170},
+        Vertices.translate([
+            {x: -30, y: -170},
             {x: -120, y: -430},
             {x: 0, y: -430},
             {x: -32, y: -420},
-            {x: -32, y: -340},
         ], {x: 0, y: 0}, 1),
     ];
 
