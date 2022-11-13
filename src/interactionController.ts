@@ -1,4 +1,4 @@
-import {PressedKeys} from "./types";
+import {KeyMap, KeysOn} from "./types";
 
 export default (
   {
@@ -17,10 +17,10 @@ export default (
     mouseEmitter?: EventTarget;
     keyEmitter?: EventTarget;
     interactionHandler: any; // TODO ts-ify `InteractionHandler`
-    keyMap?: Record<string, string>;
+    keyMap?: KeyMap;
   }) => {
 
-  const keysOn: PressedKeys = {};
+  const keysOn: KeysOn = {};
 
   const press = e => {
     const method = keyMap[e.key];

@@ -4,13 +4,13 @@ import {cPlayer, cTerrain} from './data/collisionGroups';
 
 import debugRender from './data/debugRender';
 
-import {PressedKeys} from "./types";
 import Stage from "./logic/Stage";
+import {KeysOn} from "./types";
 
 class Player {
 
   public aimAngle: number;
-  public keys: PressedKeys;
+  public keys: KeysOn;
   public mouse: Vector;
   public readonly stage: Stage;
 
