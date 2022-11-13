@@ -21,7 +21,7 @@ export default class Planet {
       y = 0,
       vertices,
       name,
-      density = .001,
+      density = .005,
       isStatic = true,
     }: {
       x?: number;
@@ -46,12 +46,13 @@ export default class Planet {
       render:          planetDebugRender,
       collisionFilter: {category: cTerrain},
       density,
+      friction:        .1,
       isStatic:        false,
     });
 
     if (isStatic) {
-      // This solves a weird positioning bug, no idea why
-      this.body.isStatic = true;
+    // This solves a weird positioning bug, no idea why
+    this.body.isStatic = true;
     }
 
     this.sourceVertices = vertices;

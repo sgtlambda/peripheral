@@ -12,8 +12,8 @@ export default () => {
         y:          0,
         name:       'moon',
         radius,
-        resolution: 200,
-        rand:       .1,
+        resolution: 1000,
+        rand:       .01,
     }));
 
     return stage;
