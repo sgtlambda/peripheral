@@ -18,7 +18,7 @@ import mouseController from './mouseController';
 import uiController from './uiController';
 import interactionController from './interactionController';
 
-import planetaryStage from './stages/planetary';
+import sandboxStage from './stages/sandbox';
 
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
@@ -67,7 +67,7 @@ if ('lastStop' in window) window.lastStop();
     const {destroy: destroyUiController} = uiController({playerState});
     const {destroy: destroyBrowserWindowController} = browserWindowController({render, camera});
 
-    const stage = planetaryStage();
+    const stage = sandboxStage();
 
     const player = new Player({
         stage, keys: keysOn, mouse: gameMouse,
