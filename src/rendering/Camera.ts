@@ -74,12 +74,12 @@ class Camera {
 
     attach(engine) {
         this._callback = this.beforeTick.bind(this);
-        Events.on(engine, 'beforeTick', this._callback);
+        Events.on(engine, 'beforeUpdate', this._callback);
         return this;
     }
 
     detach(engine) {
-        if (this._callback) Events.off(engine, 'beforeTick', this._callback);
+        if (this._callback) Events.off(engine, 'beforeUpdate', this._callback);
         this._callback = null;
     }
 }
