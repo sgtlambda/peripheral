@@ -4,6 +4,9 @@ import StrayItem from './StrayItem';
 import {INTENT_BUILD} from '../data/intents/buildIntent';
 import {INTENT_THROW} from '../data/intents/throwIntent';
 import {INTENT_APPLY} from '../data/intents/applyIntent';
+import Player from "../Player";
+import Stage from "./Stage";
+import PlayerState from "./PlayerState";
 
 export const ITEM_DROP_COOLDOWN = 45;
 
@@ -18,6 +21,12 @@ export const ITEM_THROW_FORCE = 12;
  */
 class InteractionHandler {
 
+    stage: Stage;
+    player: Player;
+    playerState: PlayerState;
+
+    _beforeUpdate: any; // TODO
+
     constructor({
         stage,
         player,
@@ -28,7 +37,7 @@ class InteractionHandler {
         this.playerState = playerState;
     }
 
-    getNearbyStrayItem() {
+    getNearbyStrayItem(): StrayItem | null {
         const playerPos = this.player.position;
         let result      = null;
         let minDist     = -1;
@@ -159,7 +168,7 @@ class InteractionHandler {
     }
 
     attach(engine) {
-        this._beforeUpdate = () => this.beforeUpdate(engine);
+        this._beforeUpdate = () => this.beforeUpdate();
         Events.on(engine, 'beforeUpdate', this._beforeUpdate);
         return this;
     }

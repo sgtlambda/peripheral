@@ -1,8 +1,14 @@
 import {times, find} from 'lodash';
 
 import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
+import {StrayItem} from "../todoTypes";
 
 class InventorySlot {
+
+    itemType: any; // TODO
+    amount: number;
+    keyBind: any; // TODO;
+
     constructor({itemType = null, amount = 0, keyBind = null} = {}) {
         this.itemType = itemType;
         this.amount   = amount;
@@ -17,6 +23,12 @@ const createInventory = (slots = defaultInventorySize) => {
 };
 
 class PlayerState {
+
+    inventory: InventorySlot[];
+
+    potentialPickup: StrayItem | null;
+
+    activeInventorySlot: number;
 
     constructor({
         inventory = null,
