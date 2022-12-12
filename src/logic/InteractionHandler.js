@@ -1,16 +1,22 @@
-import {Body, Composite, Events, Vector} from 'matter-js';
+import {Events, Vector} from 'matter-js';
 import StrayItem from './StrayItem';
 
 import {INTENT_BUILD} from '../data/intents/buildIntent';
-import {INTENT_THROW} from "../data/intents/throwIntent";
-import {INTENT_APPLY} from "../data/intents/applyIntent";
+import {INTENT_THROW} from '../data/intents/throwIntent';
+import {INTENT_APPLY} from '../data/intents/applyIntent';
 
+export const ITEM_DROP_COOLDOWN = 45;
+
+export const ITEM_PICKUP_DISTANCE = 30;
+
+export const ITEM_DROP_FORCE = 5;
+
+export const ITEM_THROW_FORCE = 12;
+
+/**
+ * Takes care of interactions between the player and the world
+ */
 class InteractionHandler {
-
-    static itemDropCooldown = 45;
-    static itemPickupDist   = 30;
-    static itemDropForce    = 5;
-    static itemThrowForce   = 12;
 
     constructor({
         stage,
@@ -33,7 +39,7 @@ class InteractionHandler {
             if (strayItem.cooldown > 1) return;
             const ipos = strayItem.position;
             const dist = Vector.magnitude({x: Math.abs(ipos.x - ppos.x), y: Math.abs(ipos.y - ppos.y)});
-            if (dist < InteractionHandler.itemPickupDist) {
+            if (dist < ITEM_PICKUP_DISTANCE) {
                 if (dist < minDist || minDist === -1) {
                     result  = strayItem;
                     minDist = dist;
@@ -68,8 +74,8 @@ class InteractionHandler {
         if (itemType && itemType.droppable) {
             const dropped  = this.playerState.removeFromInventory();
             const position = {...this.player.position};
-            const cooldown = InteractionHandler.itemDropCooldown;
-            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemDropForce);
+            const cooldown = ITEM_DROP_COOLDOWN;
+            const velocity = this.getPlayerEmitVelocity(ITEM_DROP_FORCE);
             this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
         }
     }
@@ -119,7 +125,7 @@ class InteractionHandler {
                 Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle)
             );
 
-            const velocity = this.getPlayerEmitVelocity(InteractionHandler.itemThrowForce);
+            const velocity = this.getPlayerEmitVelocity(ITEM_THROW_FORCE);
 
             this.stage.addThrowable(make({...position, velocity}));
         }
