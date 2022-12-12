@@ -10,8 +10,8 @@ export type CharacterConstructorProps = {
   x: number,
   y: number,
   stage: Stage,
-  radius: number,
-  friction: number,
+  radius?: number,
+  friction?: number,
 };
 
 class Character {
