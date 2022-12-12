@@ -46,7 +46,7 @@ function renderInventory({context, padding, size, inventory, activeSlot, x = 0, 
             w: size, h: size,
         });
         y++;
-    })
+    });
 }
 
 const renderControls = ({playerState, context, x, y, itemType}) => {
@@ -57,14 +57,19 @@ const renderControls = ({playerState, context, x, y, itemType}) => {
     context.fillStyle    = `white`;
 
     renderTextWithShadow({context, text: `move [w,a,s,d]`, x, y});
+
     y += 20;
 
     if (itemType) {
 
         if (itemType.droppable) {
+            // TODO this should be reconciled with the `availableIntents` such that "drop"
+            //  is just another available item intent here
             renderTextWithShadow({context, text: `drop ${itemType.name} [q]`, x, y});
             y += 20;
         }
+
+        // TODO available intents should also be based on for example nearby NPCs
 
         itemType.availableIntents.forEach(itemIntent => {
             renderTextWithShadow({context, text: itemIntent.description, x, y});
