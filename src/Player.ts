@@ -33,7 +33,7 @@ class Player {
       moveForce = .001,
       jetpackForce = .003,
       frictionWhileMoving = .0015,
-      friction = .1,
+      friction = .5,
     }) {
 
     this.aimAngle = 0;

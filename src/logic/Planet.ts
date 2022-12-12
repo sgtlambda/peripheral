@@ -21,7 +21,7 @@ export default class Planet {
       y = 0,
       vertices,
       name,
-      density = .005,
+      density = .05,
       isStatic = true,
     }: {
       x?: number;
@@ -42,17 +42,22 @@ export default class Planet {
       y: v.y - centroid.y,
     }));
 
-    this.body = Bodies.fromVertices(x + centroid.x, y + centroid.y, cloneDeep(this.sourceVertices), {
-      render:          planetDebugRender,
-      collisionFilter: {category: cTerrain},
-      density,
-      friction:        .1,
-      isStatic:        false,
-    });
+    this.body = Bodies.fromVertices(
+      x + centroid.x,
+      y + centroid.y,
+      cloneDeep(this.sourceVertices),
+      {
+        render:          planetDebugRender,
+        collisionFilter: {category: cTerrain},
+        density,
+        friction:        .9,
+        isStatic:        false,
+      }
+    );
 
     if (isStatic) {
-    // This solves a weird positioning bug, no idea why
-    this.body.isStatic = true;
+      // This solves a weird positioning bug, no idea why
+      this.body.isStatic = true;
     }
 
     this.sourceVertices = vertices;
@@ -70,7 +75,11 @@ export default class Planet {
   }
 
   getCurrentVertices() {
-    const v = Vertices.translate(cloneDeep(this.sourceVertices), this.movement, 1);
+    const v = Vertices.translate(
+      cloneDeep(this.sourceVertices),
+      this.movement,
+      1,
+    );
     Vertices.rotate(v, this.body.angle, this.body.position);
     return v;
   }
