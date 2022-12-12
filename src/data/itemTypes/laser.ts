@@ -3,7 +3,7 @@ import applyIntent from "../intents/applyIntent";
 import {nom} from "../../logic/effects/nom";
 import {Vector} from "matter-js";
 
-export const createLaser = (depth: number = 100, width: number = 2) => new ItemType({
+export const createLaser = (depth: number = 100, width: number = 1) => new ItemType({
   name:             `laser`,
   color:            '#b8866e',
   availableIntents: [
