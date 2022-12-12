@@ -31,14 +31,17 @@ class InteractionHandler {
     }
 
     getNearbyStrayItem() {
-        const ppos  = this.player.position;
-        let result  = null;
-        let minDist = -1;
+        const playerPos = this.player.position;
+        let result      = null;
+        let minDist     = -1;
         this.stage.strayItems.forEach(strayItem => {
             strayItem.step();
             if (strayItem.cooldown > 1) return;
-            const ipos = strayItem.position;
-            const dist = Vector.magnitude({x: Math.abs(ipos.x - ppos.x), y: Math.abs(ipos.y - ppos.y)});
+            const itemPosition = strayItem.position;
+            const dist         = Vector.magnitude({
+                x: Math.abs(itemPosition.x - playerPos.x),
+                y: Math.abs(itemPosition.y - playerPos.y)
+            });
             if (dist < ITEM_PICKUP_DISTANCE) {
                 if (dist < minDist || minDist === -1) {
                     result  = strayItem;
