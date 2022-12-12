@@ -8,6 +8,7 @@ import {Building, StrayItem, Throwable} from "../todoTypes";
 import {WorldPart} from "../types";
 import Planet from "./Planet";
 import Character from "../Character";
+import {NPC} from "../NPC";
 
 class Stage implements WorldPart {
 
@@ -17,7 +18,7 @@ class Stage implements WorldPart {
 
   public planets: Planet[];
 
-  public npcs: Character[];
+  public npcs: NPC[];
 
   public strayItems: StrayItem[];
   public throwables: Throwable[];
@@ -54,7 +55,7 @@ class Stage implements WorldPart {
     }
   }
 
-  addNPC(npc: Character) {
+  addNPC(npc: NPC) {
     this.npcs.push(npc);
   }
 

@@ -21,16 +21,16 @@ export default () => {
     name:     'sandbox-planet',
   }));
   stage.addNPC(new NPC({
-    name: 'Barry',
-    stage,
-    x: -100,
-    y: 0,
+    id:                   1, name: 'Barry', stage, x: -100, y: 0,
+    additionalNpcContext: "Barry speaks broken German with some English mixed in, but always with a derogatory tone.",
   }));
   stage.addNPC(new NPC({
-    name: 'Karel',
-    stage,
-    x: -300,
-    y: 0,
+    id:                   2, name: 'Karel', stage, x: -350, y: 0,
+    additionalNpcContext: "Karel will always accuse the player of looking like a tiny rat, no matter what the player says to try and convince him otherwise."
+  }));
+  stage.addNPC(new NPC({
+    id:                   3, name: 'Gijsbert', stage, x: -600, y: 0,
+    additionalNpcContext: "Gijsbert will always pretend not to understand a single word of English. He'll talk in a made up language."
   }));
   return stage;
 };

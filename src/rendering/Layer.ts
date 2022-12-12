@@ -2,9 +2,11 @@ import {Events, Render} from 'matter-js';
 
 import Camera from './Camera';
 
+export type LayerRendererFn = (context: CanvasRenderingContext2D, renderer: Render, camera: Camera) => void;
+
 export default class Layer {
 
-    _render: Function;
+    _render: LayerRendererFn;
     _callback: (e: any) => void;
     hud: boolean;
     over: boolean;
@@ -17,12 +19,18 @@ export default class Layer {
      * @param {boolean} persistMatrix Whether to leave the context matrix in place after drawing the layer
      * @param {function} render The render function
      */
-    constructor({
+    constructor(
+      {
                     hud = false,
                     over = true,
                     persistMatrix = false,
                     render
-                }) {
+                }: {
+      hud?: boolean;
+      over?: boolean;
+      persistMatrix?: boolean;
+      render: LayerRendererFn;
+    }) {
         this.hud = hud;
         this.over = over;
         this.persistMatrix = persistMatrix;

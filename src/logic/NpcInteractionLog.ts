@@ -2,7 +2,7 @@ export class NpcInteractionLog {
 
   static PlayerPrefix = 'Player: ';
 
-  NpcPrefix = 'NPC: ';
+  npcPrefix = 'NPC: ';
 
   results: { prefix: string; text: string }[];
 
@@ -14,14 +14,14 @@ export class NpcInteractionLog {
   ) {
     this.results       = [];
     this.getNpcContext = getNpcContext;
-    if (npcPrefix) this.NpcPrefix = npcPrefix;
+    if (npcPrefix) this.npcPrefix = npcPrefix;
   }
 
   public getFullPrompt(): string {
     const lines = [
       `This is an in-game interaction between a player and an NPC. ${this.getNpcContext()}`,
       ...this.results.map(result => `${result.prefix}${result.text}`),
-      this.NpcPrefix,
+      this.npcPrefix,
     ];
     console.log(lines);
     return lines.join('\n');
@@ -32,6 +32,6 @@ export class NpcInteractionLog {
   }
 
   public addAnswer(answer: string) {
-    this.results.push({prefix: this.NpcPrefix, text: answer});
+    this.results.push({prefix: this.npcPrefix, text: answer});
   }
 }

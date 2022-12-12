@@ -14,12 +14,10 @@ export async function processPrompt(npc: NPC, input: string) {
 
   const prompt = interactionLog.getFullPrompt();
 
-  console.log('input prompt', prompt);
-
   const gptResponse = await openai.complete({
     engine:           'text-davinci-003',
     prompt:           prompt,
-    maxTokens:        50,
+    maxTokens:        100,
     temperature:      0.9,
     topP:             1,
     presencePenalty:  0,
@@ -31,9 +29,5 @@ export async function processPrompt(npc: NPC, input: string) {
 
   const answer = gptResponse.data.choices[0].text.trim();
 
-  console.log('answer: ', answer);
-
   interactionLog.addAnswer(answer);
-
-  alert(answer);
 }

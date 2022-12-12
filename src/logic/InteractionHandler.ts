@@ -95,9 +95,10 @@ class InteractionHandler {
   interactWithNpc() {
     const npc = this.getNearbyNpc();
     if (!npc) return;
-    const input  = window.prompt(`Say something to ${npc.name}...`);
-    const result = processPrompt(npc, input);
-    // TODO process using GPT-3
+    const input = window.prompt(`Say something to ${npc.name}...`);
+    if (input) {
+      const result = processPrompt(npc, input);
+    }
   }
 
   getPlayerEmitVelocity(force) {
