@@ -7,6 +7,7 @@ import Layer from '../Layer.ts';
 import renderTextWithShadow from '../../common/renderTextWithShadow';
 
 import {debugDrawGlobal} from '../../data/intents/debugDrawIntent';
+import player from "../../Player";
 
 const inventoryPadding  = 4;
 const inventorySlotSize = 48;
@@ -79,6 +80,11 @@ const renderControls = ({playerState, context, x, y, itemType}) => {
 
     if (playerState.potentialPickup) {
         renderTextWithShadow({context, text: `take ${playerState.potentialPickup.itemType.name} [e]`, x, y});
+        y += 20;
+    }
+
+    if(playerState.potentialInteractiveNpc) {
+        renderTextWithShadow({context, text: `interact with ${playerState.potentialInteractiveNpc.name} [f]`, x, y});
         y += 20;
     }
 };

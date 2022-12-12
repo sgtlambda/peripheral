@@ -2,6 +2,7 @@ import {times, find} from 'lodash';
 
 import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
 import {StrayItem} from "../todoTypes";
+import {NPC} from "../NPC";
 
 class InventorySlot {
 
@@ -27,6 +28,7 @@ class PlayerState {
     inventory: InventorySlot[];
 
     potentialPickup: StrayItem | null;
+    potentialInteractiveNpc: NPC | null;
 
     activeInventorySlot: number;
 

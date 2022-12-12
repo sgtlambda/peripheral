@@ -7,6 +7,7 @@ import {INTENT_APPLY} from '../data/intents/applyIntent';
 import Player from "../Player";
 import Stage from "./Stage";
 import PlayerState from "./PlayerState";
+import {NPC} from "../NPC";
 
 export const ITEM_DROP_COOLDOWN = 45;
 
@@ -16,167 +17,182 @@ export const ITEM_DROP_FORCE = 5;
 
 export const ITEM_THROW_FORCE = 12;
 
+export const NPC_INTERACTION_DISTANCE = 50;
+
 /**
  * Takes care of interactions between the player and the world
  */
 class InteractionHandler {
 
-    stage: Stage;
-    player: Player;
-    playerState: PlayerState;
+  stage: Stage;
+  player: Player;
+  playerState: PlayerState;
 
-    _beforeUpdate: any; // TODO
+  _beforeUpdate: any; // TODO
 
-    constructor({
-        stage,
-        player,
-        playerState,
-    }) {
-        this.stage       = stage;
-        this.player      = player;
-        this.playerState = playerState;
-    }
+  constructor({
+                stage,
+                player,
+                playerState,
+              }) {
+    this.stage       = stage;
+    this.player      = player;
+    this.playerState = playerState;
+  }
 
-    getNearbyStrayItem(): StrayItem | null {
-        const playerPos = this.player.position;
-        let result      = null;
-        let minDist     = -1;
-        this.stage.strayItems.forEach(strayItem => {
-            strayItem.step();
-            if (strayItem.cooldown > 1) return;
-            const itemPosition = strayItem.position;
-            const dist         = Vector.magnitude({
-                x: Math.abs(itemPosition.x - playerPos.x),
-                y: Math.abs(itemPosition.y - playerPos.y)
-            });
-            if (dist < ITEM_PICKUP_DISTANCE) {
-                if (dist < minDist || minDist === -1) {
-                    result  = strayItem;
-                    minDist = dist;
-                }
-            }
-        });
-        return result;
-    }
-
-    updatePotentialPickup() {
-        this.playerState.potentialPickup = this.getNearbyStrayItem();
-    }
-
-    beforeUpdate() {
-        this.updatePotentialPickup();
-        this.stage.throwables.forEach(throwable => throwable.step(this));
-    }
-
-    takeItem() {
-        const pickup = this.getNearbyStrayItem();
-        if (!pickup) return;
-        this.pickup(pickup);
-        this.updatePotentialPickup();
-    }
-
-    getPlayerEmitVelocity(force) {
-        return Vector.rotate({x: force, y: 0}, this.player.aimAngle);
-    }
-
-    dropItem() {
-        const itemType = this.getActiveItemType();
-        if (itemType && itemType.droppable) {
-            const dropped  = this.playerState.removeFromInventory();
-            const position = {...this.player.position};
-            const cooldown = ITEM_DROP_COOLDOWN;
-            const velocity = this.getPlayerEmitVelocity(ITEM_DROP_FORCE);
-            this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
+  getNearbyThing<T extends { position: Vector }>(
+    candidates: T[],
+    distance: number,
+    isEligible?: (candidate: T) => boolean,
+  ) {
+    const playerPos = this.player.position;
+    let result      = null;
+    let minDist     = -1;
+    candidates.forEach(candidate => {
+      if (isEligible && !isEligible(candidate)) return;
+      const position = candidate.position;
+      const dist     = Vector.magnitude({
+        x: Math.abs(position.x - playerPos.x),
+        y: Math.abs(position.y - playerPos.y)
+      });
+      if (dist < distance) {
+        if (dist < minDist || minDist === -1) {
+          result  = candidate;
+          minDist = dist;
         }
+      }
+    });
+    return result;
+  }
+
+  getNearbyStrayItem(): StrayItem | null {
+    return this.getNearbyThing(this.stage.strayItems, ITEM_PICKUP_DISTANCE, strayItem => strayItem.cooldown <= 0);
+  }
+
+  getNearbyNpc(): NPC | null {
+    return this.getNearbyThing(this.stage.npcs, NPC_INTERACTION_DISTANCE);
+  }
+
+  updatePlayerInteractionPotentials() {
+    this.playerState.potentialPickup         = this.getNearbyStrayItem();
+    this.playerState.potentialInteractiveNpc = this.getNearbyNpc();
+  }
+
+  beforeUpdate() {
+    this.stage.throwables.forEach(throwable => throwable.step(this));
+    this.stage.strayItems.forEach(strayItem => strayItem.step(this));
+    this.updatePlayerInteractionPotentials();
+  }
+
+  takeItem() {
+    const pickup = this.getNearbyStrayItem();
+    if (!pickup) return;
+    this.pickup(pickup);
+    this.updatePlayerInteractionPotentials();
+  }
+
+  getPlayerEmitVelocity(force) {
+    return Vector.rotate({x: force, y: 0}, this.player.aimAngle);
+  }
+
+  dropItem() {
+    const itemType = this.getActiveItemType();
+    if (itemType && itemType.droppable) {
+      const dropped  = this.playerState.removeFromInventory();
+      const position = {...this.player.position};
+      const cooldown = ITEM_DROP_COOLDOWN;
+      const velocity = this.getPlayerEmitVelocity(ITEM_DROP_FORCE);
+      this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
     }
+  }
 
-    getPlayerBuildPosition(offset = 35 + 16) {
-        return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.aimAngle));
+  getPlayerBuildPosition(offset = 35 + 16) {
+    return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.aimAngle));
+  }
+
+  getActiveItemType() {
+    const slot = this.playerState.getActiveSlot();
+    if (!slot.itemType || !slot.amount) return null;
+    return slot.itemType;
+  }
+
+  getActiveItemIntentOf(type) {
+    const itemType = this.getActiveItemType();
+    if (!itemType) return null;
+    return itemType.getIntentOf(type);
+  }
+
+  buildItem() {
+    const buildIntent = this.getActiveItemIntentOf(INTENT_BUILD);
+    if (!buildIntent) return;
+    if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
+      const position = this.getPlayerBuildPosition();
+      this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
+        angle: this.player.aimAngle,
+        ...position,
+      }));
     }
+  }
 
-    getActiveItemType() {
-        const slot = this.playerState.getActiveSlot();
-        if (!slot.itemType || !slot.amount) return null;
-        return slot.itemType;
+  applyItem() {
+    const applyIntent = this.getActiveItemIntentOf(INTENT_APPLY);
+    applyIntent.options.apply(this.player, this.stage);
+  }
+
+  throwItem() {
+    const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
+    if (!throwIntent) return;
+    if (this.playerState.removeFromInventory(1)) {
+
+      const {make, throwableSpawnOffset = 0} = throwIntent.options.throwable;
+
+      const position = Vector.add(
+        {...this.player.position},
+        Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle)
+      );
+
+      const velocity = this.getPlayerEmitVelocity(ITEM_THROW_FORCE);
+
+      this.stage.addThrowable(make({...position, velocity}));
     }
+  }
 
-    getActiveItemIntentOf(type) {
-        const itemType = this.getActiveItemType();
-        if (!itemType) return null;
-        return itemType.getIntentOf(type);
-    }
+  triggerPrimary() {
+    const itemType = this.getActiveItemType();
+    if (!itemType) return;
+    const primaryIntent = itemType.getPrimaryIntent();
 
-    buildItem() {
-        const buildIntent = this.getActiveItemIntentOf(INTENT_BUILD);
-        if (!buildIntent) return;
-        if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
-            const position = this.getPlayerBuildPosition();
-            this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
-                angle: this.player.aimAngle,
-                ...position,
-            }));
-        }
-    }
+    // TODO below should be a switch statement handled by the item itself
+    if (!primaryIntent) return;
+    if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
+    if (primaryIntent.type === INTENT_THROW) return this.throwItem();
+    if (primaryIntent.type === INTENT_APPLY) return this.applyItem();
 
-    applyItem() {
-        const applyIntent = this.getActiveItemIntentOf(INTENT_APPLY);
-        applyIntent.options.apply(this.player, this.stage);
-    }
+    else if (primaryIntent.trigger) return primaryIntent.trigger(this);
+  }
 
-    throwItem() {
-        const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
-        if (!throwIntent) return;
-        if (this.playerState.removeFromInventory(1)) {
+  triggerContinuous() {
+    const itemType = this.getActiveItemType();
+    if (!itemType) return;
+    const primaryIntent = itemType.getPrimaryIntent();
+    if (primaryIntent.continuous) this.triggerPrimary();
+  }
 
-            const {make, throwableSpawnOffset = 0} = throwIntent.options.throwable;
+  pickup(strayItem) {
+    const added = this.playerState.addToInventory({itemType: strayItem.itemType});
+    if (added) this.stage.removeStrayItem(strayItem);
+  }
 
-            const position = Vector.add(
-                {...this.player.position},
-                Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle)
-            );
+  attach(engine) {
+    this._beforeUpdate = () => this.beforeUpdate();
+    Events.on(engine, 'beforeUpdate', this._beforeUpdate);
+    return this;
+  }
 
-            const velocity = this.getPlayerEmitVelocity(ITEM_THROW_FORCE);
-
-            this.stage.addThrowable(make({...position, velocity}));
-        }
-    }
-
-    triggerPrimary() {
-        const itemType = this.getActiveItemType();
-        if (!itemType) return;
-        const primaryIntent = itemType.getPrimaryIntent();
-
-        // TODO below should be a switch statement handled by the item itself
-        if (!primaryIntent) return;
-        if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
-        if (primaryIntent.type === INTENT_THROW) return this.throwItem();
-        if (primaryIntent.type === INTENT_APPLY) return this.applyItem();
-
-        else if (primaryIntent.trigger) return primaryIntent.trigger(this);
-    }
-
-    triggerContinuous() {
-        const itemType = this.getActiveItemType();
-        if (!itemType) return;
-        const primaryIntent = itemType.getPrimaryIntent();
-        if (primaryIntent.continuous) this.triggerPrimary();
-    }
-
-    pickup(strayItem) {
-        const added = this.playerState.addToInventory({itemType: strayItem.itemType});
-        if (added) this.stage.removeStrayItem(strayItem);
-    }
-
-    attach(engine) {
-        this._beforeUpdate = () => this.beforeUpdate();
-        Events.on(engine, 'beforeUpdate', this._beforeUpdate);
-        return this;
-    }
-
-    detach(engine) {
-        if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', this._beforeUpdate);
-        this._beforeUpdate = null;
-    }
+  detach(engine) {
+    if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', this._beforeUpdate);
+    this._beforeUpdate = null;
+  }
 }
 
 export default InteractionHandler;

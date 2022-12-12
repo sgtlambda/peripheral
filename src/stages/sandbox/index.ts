@@ -21,6 +21,7 @@ export default () => {
     name:     'sandbox-planet',
   }));
   stage.addNPC(new NPC({
+    name: 'Barry',
     stage,
     x: -100,
     y: 0,

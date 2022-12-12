@@ -34,7 +34,7 @@ class Player extends Character {
       frictionWhileMoving?: number,
     }) {
 
-    super({...props});
+    super(props);
 
     this.aimAngle = 0;
 
