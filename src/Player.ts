@@ -1,13 +1,10 @@
-import {Bodies, Body, Events, Vector, World} from 'matter-js';
-
-import {cPlayer, cTerrain} from './data/collisionGroups';
-
-import debugRender from './data/debugRender';
+import {Body, Vector} from 'matter-js';
 
 import Stage from "./logic/Stage";
 import {KeysOn} from "./types";
+import Character, {CharacterConstructorProps} from "./Character";
 
-class Player {
+class Player extends Character {
 
   public aimAngle: number;
   public keys: KeysOn;
@@ -21,51 +18,34 @@ class Player {
   public readonly frictionWhileMoving: number;
   public readonly friction: number;
 
-  private _eBeforeStep: any; // TODO
-  private _eAfterStep: any; // TODO
 
   constructor(
     {
-      x, y,
       keys, mouse,
-      stage,
-      radius = 16,
       moveForce = .001,
       jetpackForce = .003,
       frictionWhileMoving = .0015,
-      friction = .5,
+      ...props
+    }: CharacterConstructorProps & {
+      keys: KeysOn,
+      mouse: Vector,
+      moveForce?: number,
+      jetpackForce?: number,
+      frictionWhileMoving?: number,
     }) {
+
+    super({...props});
 
     this.aimAngle = 0;
 
     // globals
     this.keys  = keys;
     this.mouse = mouse;
-    this.stage = stage;
 
     // configuration
     this.moveForce           = moveForce;
     this.jetpackForce        = jetpackForce;
     this.frictionWhileMoving = frictionWhileMoving;
-    this.friction            = friction;
-
-    this.prepareBodies({x, y, radius});
-  }
-
-  get body() {
-    return this.collider;
-  }
-
-  prepareBodies({x, y, radius}: { x: number, y: number, radius: number }) {
-    this.collider = Bodies.circle(x, y, radius, {
-      friction:        this.friction,
-      inertia:         Infinity,
-      render:          debugRender,
-      collisionFilter: {
-        category: cPlayer,
-        mask:     cTerrain,
-      },
-    });
   }
 
   beforeStep() {
@@ -77,32 +57,8 @@ class Player {
     Body.applyForce(this.collider, this.collider.position, {x: xForce, y: yForce});
   }
 
-  get position() {
-    return this.collider.position;
-  }
-
   afterStep() {
     this.aimAngle = Vector.angle(this.position, this.mouse);
-  }
-
-  provision(world) {
-    World.add(world, [this.collider]);
-    return this;
-  }
-
-  attach(engine) {
-    this._eBeforeStep = this.beforeStep.bind(this);
-    this._eAfterStep  = this.afterStep.bind(this);
-    Events.on(engine, 'beforeUpdate', this._eBeforeStep);
-    Events.on(engine, 'beforeUpdate', this._eAfterStep);
-    return this;
-  }
-
-  detach(engine) {
-    Events.off(engine, 'beforeUpdate', this._eBeforeStep);
-    Events.off(engine, 'beforeUpdate', this._eAfterStep);
-    this._eBeforeStep = null;
-    this._eAfterStep  = null;
   }
 }
 
