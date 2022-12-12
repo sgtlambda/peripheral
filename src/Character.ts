@@ -55,20 +55,13 @@ class Character {
   }
 
   beforeStep() {
-    // const xForce = (this.keys.left ? -this.moveForce : 0) + (this.keys.right ? this.moveForce : 0);
-    // const yForce = this.keys.up ? -this.jetpackForce : 0;
-    //
-    // this.collider.friction = this.keys.left || this.keys.right ? this.frictionWhileMoving : this.friction;
-    //
-    // Body.applyForce(this.collider, this.collider.position, {x: xForce, y: yForce});
+  }
+
+  afterStep() {
   }
 
   get position() {
     return this.collider.position;
-  }
-
-  afterStep() {
-    // this.aimAngle = Vector.angle(this.position, this.mouse);
   }
 
   provision(world) {
