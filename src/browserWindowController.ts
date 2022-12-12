@@ -17,10 +17,13 @@ export const browserWindowController = ({render, camera}: {
       width:  window.innerWidth,
       height: window.innerHeight,
     };
-    // TODO first calculate
-    render.bounds  = resizeBoundsAroundCenter(render.bounds, window.innerWidth, window.innerHeight);
+    render.bounds  = resizeBoundsAroundCenter(
+      render.bounds,
+      window.innerWidth,
+      window.innerHeight
+    );
     // `setPixelRatio` will have the renderer update the canvas, so this is a nice work-around
-    Render.setPixelRatio(render, window.devicePixelRatio);
+    Render.setPixelRatio(render, 1);
     camera.updateBounds();
   };
 

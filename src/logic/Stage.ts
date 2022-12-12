@@ -7,6 +7,8 @@ import StageGraphics from './StageGraphics';
 import {Building, StrayItem, Throwable} from "../todoTypes";
 import {WorldPart} from "../types";
 import Planet from "./Planet";
+import Character from "../Character";
+import {NPC} from "../NPC";
 
 class Stage implements WorldPart {
 
@@ -15,6 +17,8 @@ class Stage implements WorldPart {
   public readonly buildings: Building[];
 
   public planets: Planet[];
+
+  public npcs: NPC[];
 
   public strayItems: StrayItem[];
   public throwables: Throwable[];
@@ -34,6 +38,7 @@ class Stage implements WorldPart {
     this.buildings     = [];
     this.planets       = [];
     this.bodyQueue     = [];
+    this.npcs          = [];
 
     this.addedBodies = [];
   }
@@ -48,6 +53,10 @@ class Stage implements WorldPart {
       // Add body pre-provision phase
       this.bodyQueue.push(body);
     }
+  }
+
+  addNPC(npc: NPC) {
+    this.npcs.push(npc);
   }
 
   removeBody(body) {
@@ -125,11 +134,14 @@ class Stage implements WorldPart {
    * and "link up" the world with this Stage so that bodies can be added at runtime
    */
   provision(world) {
+
     assert(!this.provisioned, 'Cannot provision Stage twice.');
     this.provisioned = true;
-    for (const body of this.bodyQueue) {
-      Composite.add(world, body);
-    }
+
+    for (const body of this.bodyQueue) Composite.add(world, body);
+
+    for (const character of this.npcs) character.provision(world);
+
     this._world      = world;
     this.addedBodies = this.bodyQueue;
     this.bodyQueue   = null;

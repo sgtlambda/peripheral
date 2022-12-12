@@ -9,4 +9,6 @@ export interface WorldPart {
   provision(world: World): this;
 }
 
-export type PressedKeys = Record<string, boolean>; // TODO keymap-specific index (?)
+export type KeyMap = Record<string, string>;
+
+export type KeysOn = Record<string, boolean>;

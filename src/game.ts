@@ -18,13 +18,13 @@ import mouseController from './mouseController';
 import uiController from './uiController';
 import interactionController from './interactionController';
 
-import planetaryStage from './stages/planetary';
+import sandboxStage from './stages/sandbox';
 
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
 import backgroundLayer from './rendering/layers/backgroundLayer.js';
-import stageLayers from './rendering/layers/stageLayers';
+import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import playerInteractionLayer from './rendering/layers/playerInteractionLayer';
 import rotateContext from './rendering/layers/rotateContext';
@@ -36,8 +36,10 @@ import drill from "./data/itemTypes/drill";
 import grenade from './data/itemTypes/grenade';
 import nuke from './data/itemTypes/nuke';
 import crate from './data/itemTypes/crate';
-import {laser} from './data/itemTypes/laser';
+import {createLaser} from './data/itemTypes/laser';
 import debugDraw from './data/itemTypes/debugDraw.js';
+import {createMarkupGuiRenderer} from "./rendering/markupGuiLayer";
+import {npcObserver} from "./ui/npcObserver";
 
 // cleanup (for hot reload, if applicable)
 const canvas = document.getElementsByTagName('canvas').item(0);
@@ -55,23 +57,19 @@ if ('lastStop' in window) window.lastStop();
 
     const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: laser});
+    playerState.addToInventory({itemType: createLaser(400, 3)});
     playerState.addToInventory({itemType: grenade, amount: 99});
     playerState.addToInventory({itemType: nuke, amount: 99});
     playerState.addToInventory({itemType: drill, amount: 800});
     playerState.addToInventory({itemType: crate, amount: 800});
     playerState.addToInventory({itemType: debugDraw, slot: 7});
 
-    world.gravity.scale = 0;
-
     const {keysOn, destroy: destroyPlayerController} = playerController();
     const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
     const {destroy: destroyUiController} = uiController({playerState});
     const {destroy: destroyBrowserWindowController} = browserWindowController({render, camera});
 
-    const stage = planetaryStage();
-
-    console.log({stage});
+    const stage = sandboxStage();
 
     const player = new Player({
         stage, keys: keysOn, mouse: gameMouse,
@@ -80,7 +78,7 @@ if ('lastStop' in window) window.lastStop();
 
     camera.trackPlayer(player);
 
-    const interactionHandler = new InteractionHandler({gameMouse, stage, player, playerState});
+    const interactionHandler = new InteractionHandler({stage, player, playerState});
 
     const {destroy: destroyInteractionController} = interactionController({
         mouseEmitter: render.canvas,
@@ -88,20 +86,26 @@ if ('lastStop' in window) window.lastStop();
     });
 
     const worldParts = [stage, player];
-    const engineHooks = [player, interactionHandler, camera];
+    const engineHooks = [player, interactionHandler, camera, npcObserver(stage, player)];
 
     const {before: rotate, after: unrotate} = rotateContext();
+
+    const markupGuiRenderer = createMarkupGuiRenderer();
 
     const layers = [
         unrotate, // Note this layer MUST be first
 
         backgroundLayer(),
         playerInteractionLayer({player, playerState}),
-        ...stageLayers({stage}),
+        ...createStageLayers(stage),
         ...uiLayers({gameMouse, player, playerState}),
+        markupGuiRenderer.layer,
 
         rotate, // Note this layer MUST be last
     ];
+
+    const c: HTMLCanvasElement = render.canvas;
+    c.parentNode.appendChild(markupGuiRenderer.element);
 
     worldParts.forEach(p => p.provision(world));
     engineHooks.forEach(e => e.attach(engine));

@@ -16,7 +16,7 @@ export default ({
     const updateGameMouse = () => {
         const bounds = camera.bounds;
 
-        const _gameMouseRotate = Vector.rotateAbout(screenMouse, camera.currentAngle, camera.onscreenCenter);
+        const _gameMouseRotate = Vector.rotateAbout(screenMouse, 0, camera.onscreenCenter);
 
         const _gameMouse = Vector.add(_gameMouseRotate, bounds.min);
 
