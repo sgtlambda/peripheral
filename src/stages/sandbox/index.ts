@@ -1,5 +1,6 @@
 import Stage from "../../logic/Stage";
 import Planet from "../../logic/Planet";
+import {NPC} from "../../NPC";
 
 export default () => {
   const stage = new Stage({x: 0, y: 0});
@@ -18,6 +19,11 @@ export default () => {
       {x: -1000, y: 2000},
     ],
     name:     'sandbox-planet',
+  }));
+  stage.addNPC(new NPC({
+    stage,
+    x: -100,
+    y: 0,
   }));
   return stage;
 };
