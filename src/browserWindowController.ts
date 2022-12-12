@@ -17,7 +17,6 @@ export const browserWindowController = ({render, camera}: {
       width:  window.innerWidth,
       height: window.innerHeight,
     };
-    // TODO first calculate
     render.bounds  = resizeBoundsAroundCenter(
       render.bounds,
       window.innerWidth,
