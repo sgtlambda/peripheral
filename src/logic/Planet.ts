@@ -4,6 +4,7 @@ import {cloneDeep} from "lodash";
 import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
+import centroid from "@turf/centroid";
 
 export default class Planet {
 
@@ -21,7 +22,7 @@ export default class Planet {
       y = 0,
       vertices,
       name,
-      density = .05,
+      density = .001,
       isStatic = true,
     }: {
       x?: number;
@@ -50,7 +51,7 @@ export default class Planet {
         render:          planetDebugRender,
         collisionFilter: {category: cTerrain},
         density,
-        friction:        .9,
+        friction:        .99,
         isStatic:        false,
       }
     );
