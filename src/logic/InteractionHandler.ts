@@ -8,6 +8,7 @@ import Player from "../Player";
 import Stage from "./Stage";
 import PlayerState from "./PlayerState";
 import {NPC} from "../NPC";
+import {processPrompt} from "./language";
 
 export const ITEM_DROP_COOLDOWN = 45;
 
@@ -89,6 +90,14 @@ class InteractionHandler {
     if (!pickup) return;
     this.pickup(pickup);
     this.updatePlayerInteractionPotentials();
+  }
+
+  interactWithNpc() {
+    const npc = this.getNearbyNpc();
+    if (!npc) return;
+    const input  = window.prompt(`Say something to ${npc.name}...`);
+    const result = processPrompt(npc, input);
+    // TODO process using GPT-3
   }
 
   getPlayerEmitVelocity(force) {
