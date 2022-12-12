@@ -9,7 +9,7 @@ export const createLaser = (depth: number = 100, width: number = 6, taperTo: num
   availableIntents: [
     applyIntent({
       primary:          true,
-      continuous:       false,
+      continuous:       true,
       applyActionLabel: 'fire laser',
       apply(player, stage) {
 
