@@ -22,12 +22,10 @@ class InteractionHandler {
         stage,
         player,
         playerState,
-        gameMouse,
     }) {
         this.stage       = stage;
         this.player      = player;
         this.playerState = playerState;
-        this.gameMouse   = gameMouse;
     }
 
     getNearbyStrayItem() {
@@ -56,7 +54,7 @@ class InteractionHandler {
         this.playerState.potentialPickup = this.getNearbyStrayItem();
     }
 
-    beforeUpdate(engine) {
+    beforeUpdate() {
         this.updatePotentialPickup();
         this.stage.throwables.forEach(throwable => throwable.step(this));
     }

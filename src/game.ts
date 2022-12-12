@@ -76,7 +76,7 @@ if ('lastStop' in window) window.lastStop();
 
     camera.trackPlayer(player);
 
-    const interactionHandler = new InteractionHandler({gameMouse, stage, player, playerState});
+    const interactionHandler = new InteractionHandler({stage, player, playerState});
 
     const {destroy: destroyInteractionController} = interactionController({
         mouseEmitter: render.canvas,
