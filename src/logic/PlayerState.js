@@ -21,7 +21,6 @@ class PlayerState {
     constructor({
         inventory = null,
         activeInventorySlot = 0,
-        angle = 0,
     } = {}) {
         this.inventory = inventory === null ? createInventory() : inventory;
         this.selectSlot(activeInventorySlot);
