@@ -12,6 +12,7 @@ export default class Planet {
   sourceVertices: Vector[];
 
   density: number;
+  friction: number;
 
   sourcePosition: Vector;
 
@@ -21,7 +22,8 @@ export default class Planet {
       y = 0,
       vertices,
       name,
-      density = .001,
+      density = .01,
+      friction = .5,
       isStatic = true,
     }: {
       x?: number;
@@ -29,6 +31,7 @@ export default class Planet {
       vertices: Vector[];
       name: string;
       density?: number;
+      friction?: number;
       isStatic?: boolean;
     }
   ) {
@@ -50,7 +53,7 @@ export default class Planet {
         render:          planetDebugRender,
         collisionFilter: {category: cTerrain},
         density,
-        friction:        .99,
+        friction,
         isStatic:        false,
       }
     );
@@ -66,6 +69,7 @@ export default class Planet {
 
     // For descendent planets
     this.density = density;
+    this.friction = friction;
 
     this.lockSourcePosition();
   }

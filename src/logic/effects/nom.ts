@@ -33,6 +33,7 @@ export function nom(stage: Stage, bite: Vector[]) {
         vertices: path,
         name:     name,
         density:  planet.density,
+        friction: planet.friction,
         isStatic: path === mainPath && planet.body.isStatic,
       });
 
