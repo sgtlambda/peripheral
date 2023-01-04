@@ -4,7 +4,6 @@ import {cloneDeep} from "lodash";
 import circleVertices from '../common/circleVertices';
 import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
-import centroid from "@turf/centroid";
 
 export default class Planet {
 
