@@ -9,6 +9,7 @@ export default ({x, y, velocity}) => new Throwable({
             stage:  interactionHandler.stage, ...position,
             radius: 300,
             force:  1.5e-1,
+            rand:  .1,
         });
     }
 })
