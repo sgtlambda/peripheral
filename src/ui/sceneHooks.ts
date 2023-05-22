@@ -10,6 +10,9 @@ export type SceneUiNpcInfo = {
   proximity: number;
 };
 
+/**
+ * Placeholder 'noop' function for the global NPCs state setter.
+ */
 export let _setNpcs = (updater: (value: Record<number, SceneUiNpcInfo>) => Record<number, SceneUiNpcInfo>) => {
   console.warn("setNpcs called before it was initialized");
 };
