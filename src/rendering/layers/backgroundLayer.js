@@ -6,7 +6,7 @@ export default () => new Layer({
     render(context, renderer) {
         const canvas                     = renderer.canvas;
         context.globalCompositeOperation = 'source-in';
-        context.fillStyle                = "transparent";
+        context.fillStyle                = 'transparent';
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.globalCompositeOperation = 'source-over';
     }

@@ -38,6 +38,9 @@ export const createStageLayers = (stage: Stage) => [
             stage.planets.forEach(planet => {
                 renderVertices(context, planet.getCurrentVertices());
                 context.strokeStyle = 'white';
+                // TODO how to update fill color of the planets?
+                // context.fillStyle = 'white';
+                // context.fill();
                 context.stroke();
             });
         }

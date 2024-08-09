@@ -40,6 +40,7 @@ import {createLaser} from './data/itemTypes/laser';
 import debugDraw from './data/itemTypes/debugDraw.js';
 import {createMarkupGuiRenderer} from "./rendering/markupGuiLayer";
 import {npcObserver} from "./ui/npcObserver";
+import Layer from "./rendering/Layer";
 
 // cleanup (for hot reload, if applicable)
 const canvas = document.getElementsByTagName('canvas').item(0);
@@ -92,7 +93,7 @@ if ('lastStop' in window) window.lastStop();
 
     const markupGuiRenderer = createMarkupGuiRenderer();
 
-    const layers = [
+    const layers: Layer[] = [
         unrotate, // Note this layer MUST be first
 
         backgroundLayer(),
