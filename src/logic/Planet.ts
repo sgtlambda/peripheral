@@ -1,9 +1,9 @@
 import {Bodies, Body, Vector, Vertices} from 'matter-js';
 import {cloneDeep} from "lodash";
+import Color from "color";
 
 import circleVertices from '../common/circleVertices';
 import {cTerrain} from '../data/collisionGroups';
-import Color from "color";
 
 export default class Planet {
 
@@ -59,7 +59,7 @@ export default class Planet {
     this.body = Bodies.fromVertices(
       0,
       0,
-      cloneDeep(this.sourceVertices),
+      [cloneDeep(this.sourceVertices)],
       {
         render:          {
           fillStyle:   actualColor,
@@ -73,6 +73,8 @@ export default class Planet {
         isStatic:        false,
       },
     );
+
+    // TODO velocity, angular velocity, inertia, etc.!
 
     // Set the final position
     Body.setPosition(this.body, {x: bodyX, y: bodyY});
