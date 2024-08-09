@@ -27,6 +27,8 @@ export default class Planet {
       density = .001,
       isStatic = true,
       integrity = 1,
+      angularVelocity = null,
+      velocity = null,
     }: {
       x?: number;
       y?: number;
@@ -36,6 +38,8 @@ export default class Planet {
       isStatic?: boolean;
       color: string;
       integrity?: number;
+      angularVelocity?: number;
+      velocity?: Vector;
     },
   ) {
 
@@ -76,7 +80,11 @@ export default class Planet {
     // TODO velocity, angular velocity, inertia, etc.!
 
     // Set the final position
+    // NOTE before this, i tried instantiating the body with the same position
+    // but that caused a myriad of bugs where the body would spawn somewhere close to 0,0
     Body.setPosition(this.body, {x: bodyX, y: bodyY});
+    if (angularVelocity) Body.setAngularVelocity(this.body, angularVelocity);
+    if (velocity) Body.setVelocity(this.body, velocity);
 
     this.body.isStatic = isStatic;
 

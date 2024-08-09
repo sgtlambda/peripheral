@@ -49,12 +49,14 @@ export function nom(
       if (area < disappearAreaThreshold) return
 
       const newPlanet = new Planet({
-        vertices:  path,
-        name:      name,
-        density:   planet.density,
-        isStatic:  isStatic,
-        color:     planet.color,
-        integrity: integrity,
+        vertices:        path,
+        name:            name,
+        density:         planet.density,
+        isStatic:        isStatic,
+        color:           planet.color,
+        integrity:       integrity,
+        angularVelocity: planet.body.angularVelocity,
+        velocity:        planet.body.velocity
       });
 
       stage.addPlanet(newPlanet);
