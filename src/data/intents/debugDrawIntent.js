@@ -10,13 +10,12 @@ export default ({
 } = {}) => new ItemIntent({
     primary,
     type:        INTENT_DEBUG_DRAW,
-    description: `draw [lmb]`,
-    trigger({gameMouse}) {
+    description: 'draw [lmb]',
+    trigger(a) {
+        const gameMouse = a.player.mouse;
         debugDrawGlobal.path.push({
             x: Math.round(gameMouse.x * 10) / 10,
             y: Math.round(gameMouse.y * 10) / 10,
         });
-        console.log(JSON.stringify(debugDrawGlobal.path));
-        // element.value = JSON.stringify(debugDrawGlobal.path);
     }
 });

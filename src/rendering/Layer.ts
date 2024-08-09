@@ -6,6 +6,9 @@ export type LayerRendererFn = (context: CanvasRenderingContext2D, renderer: Rend
 
 export type RenderEvent = 'afterRender' | 'beforeRender';
 
+/**
+ * Render layer
+ */
 export default class Layer {
 
   _render: LayerRendererFn;
@@ -42,10 +45,6 @@ export default class Layer {
     return this.over ? 'afterRender' : 'beforeRender'
   }
 
-  /**
-   * @param {Render} renderer
-   * @param {Camera} camera
-   */
   render(renderer: Render, camera: Camera) {
     const context = renderer.context;
     if (!this.persistMatrix) context.save();

@@ -17,4 +17,4 @@ export default (context, {position, itemType, amount = null}, size = 10) => {
         context.textBaseline = 'middle';
         context.fillText(amount, position.x, position.y);
     }
-}
+};

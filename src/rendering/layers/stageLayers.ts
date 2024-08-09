@@ -18,7 +18,6 @@ export const createStageLayers = (stage: Stage) => [
   new Layer({
     over: false,
     render(context) {
-      // Render base layers - currently unused
       stage.graphics.renderUnderLayers(context);
     }
   }),
@@ -32,7 +31,6 @@ export const createStageLayers = (stage: Stage) => [
       stage.buildings.forEach(building => {
         renderBuilding(context, building);
       });
-      // Render "over layers" (not sure if currently used)
       stage.graphics.renderOverLayers(context);
     }
   }),

@@ -82,7 +82,7 @@ const renderControls = ({playerState, context, x, y, itemType}) => {
         y += 20;
     }
 
-    if(playerState.potentialInteractiveNpc) {
+    if (playerState.potentialInteractiveNpc) {
         renderTextWithShadow({context, text: `interact with ${playerState.potentialInteractiveNpc.name} [f]`, x, y});
         y += 20;
     }
