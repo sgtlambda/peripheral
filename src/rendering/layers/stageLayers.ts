@@ -19,7 +19,7 @@ export const createStageLayers = (stage: Stage) => [
     over: false,
     render(context) {
       // Render base layers - currently unused
-      stage.graphics.renderBaseLayers(context);
+      stage.graphics.renderUnderLayers(context);
     }
   }),
   new Layer({

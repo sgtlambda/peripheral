@@ -1,6 +1,7 @@
+import {createRoot} from "react-dom/client";
+
 import Layer from "./Layer";
 import Camera from "./Camera";
-import {createRoot} from "react-dom/client";
 import {uiRoot} from "../ui/uiRoot";
 
 /**
@@ -11,13 +12,13 @@ import {uiRoot} from "../ui/uiRoot";
 function toTransform(element: HTMLElement, camera: Camera): string {
 
   const elementBounds = element.getBoundingClientRect();
-  const scale         = element.getBoundingClientRect().width / (camera.bounds.max.x - camera.bounds.min.x);
 
   const desiredCenter = {
     x: (camera.bounds.max.x + camera.bounds.min.x) / 2,
     y: (camera.bounds.max.y + camera.bounds.min.y) / 2,
   };
 
+  // const scale         = element.getBoundingClientRect().width / (camera.bounds.max.x - camera.bounds.min.x);
   // TODO something with scale (?)
 
   return `translate(${elementBounds.width / 2 - desiredCenter.x}px, ${elementBounds.height / 2 - desiredCenter.y}px)`;

@@ -7,30 +7,30 @@ export type StageGraphicsLayer = {
  */
 export default class StageGraphics {
 
-  baseLayers: StageGraphicsLayer[];
+  underLayers: StageGraphicsLayer[];
   overLayers: StageGraphicsLayer[];
 
   constructor({
-                baseLayers = [],
+                underLayers = [],
                 overLayers = [],
               }: {
-    baseLayers?: StageGraphicsLayer[];
+    underLayers?: StageGraphicsLayer[];
     overLayers?: StageGraphicsLayer[];
   } = {}) {
-    this.baseLayers = baseLayers;
-    this.overLayers = overLayers;
+    this.underLayers = underLayers;
+    this.overLayers  = overLayers;
   }
 
-  addBaseLayer(layer) {
-    this.baseLayers.push(layer);
+  addUnderLayer(layer: StageGraphicsLayer): void {
+    this.underLayers.push(layer);
   }
 
-  addOverLayer(layer) {
+  addOverLayer(layer: StageGraphicsLayer): void {
     this.overLayers.push(layer);
   }
 
-  renderBaseLayers(context: CanvasRenderingContext2D) {
-    this.baseLayers.forEach(layer => {
+  renderUnderLayers(context: CanvasRenderingContext2D) {
+    this.underLayers.forEach(layer => {
       layer.drawTo({context});
     });
   }

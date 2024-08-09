@@ -172,7 +172,7 @@ class InteractionHandler {
     if (!itemType) return;
     const primaryIntent = itemType.getPrimaryIntent();
 
-    // TODO below should be a switch statement handled by the item itself
+    // TODO below should be handled by the item / item type definition itself
     if (!primaryIntent) return;
     if (primaryIntent.type === INTENT_BUILD) return this.buildItem();
     if (primaryIntent.type === INTENT_THROW) return this.throwItem();
