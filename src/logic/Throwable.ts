@@ -28,10 +28,11 @@ export class Throwable implements HasStep {
 
   private readonly trigger: ThrowableTriggerHandler;
 
-  constructor({name, x, y, velocity = null, trigger, ttl}: {
+  constructor({name, x, y, radius, velocity = null, trigger, ttl}: {
     name: string;
     x: number;
     y: number;
+    radius: number;
     velocity?: Vector;
     trigger: ThrowableTriggerHandler;
     ttl: number;
@@ -39,10 +40,10 @@ export class Throwable implements HasStep {
     this.name    = name;
     this.ttl     = ttl;
     this.trigger = trigger;
-    this.prepareBodies({x, y, velocity});
+    this.prepareBodies({x, y, radius, velocity});
   }
 
-  prepareBodies({x, y, velocity = null, radius = 8}: {
+  prepareBodies({x, y, velocity = null, radius}: {
     x: number;
     y: number;
     velocity?: Vector;
@@ -73,6 +74,7 @@ export class Throwable implements HasStep {
   step(event: EngineStep, interactionHandler: InteractionHandler) {
     this.ttl -= event.delta;
     this.collider.render.strokeStyle = !shouldBlink(this.ttl) ? 'white' : debugRender.strokeStyle;
+    this.collider.render.fillStyle   = !shouldBlink(this.ttl) ? 'white' : debugRender.fillStyle;
     if (this.ttl <= 0) {
       this.trigger({position: {...this.position}, throwable: this, interactionHandler});
       interactionHandler.stage.removeThrowable(this);

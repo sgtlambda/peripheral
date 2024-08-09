@@ -3,7 +3,7 @@ import Throwable from '../../logic/Throwable';
 import applyExplosion from '../../logic/effects/applyExplosion';
 
 export default ({x, y, velocity}) => new Throwable({
-    name: 'nuke', x, y, velocity, ttl: 3000,
+    name: 'nuke', x, y, radius: 40, velocity, ttl: 3000,
     trigger({position, interactionHandler}) {
         applyExplosion({
             stage:  interactionHandler.stage, ...position,
