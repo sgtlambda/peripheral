@@ -18,7 +18,6 @@ class Player extends Character {
   public readonly frictionWhileMoving: number;
   public readonly friction: number;
 
-
   constructor(
     {
       keys, mouse,
@@ -49,6 +48,9 @@ class Player extends Character {
   }
 
   beforeStep() {
+
+    // TODO should applied force be based on engine step delta?
+
     const xForce = (this.keys.left ? -this.moveForce : 0) + (this.keys.right ? this.moveForce : 0);
     const yForce = this.keys.up ? -this.jetpackForce : 0;
 

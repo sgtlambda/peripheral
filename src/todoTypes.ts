@@ -2,7 +2,6 @@ export type Building = any; // TODO
 
 export type ItemType = any; // TODO
 
-// TODO `attach()` and `detach()` interface
 
 // TODO apply controller type to all controllers
 
@@ -12,3 +11,5 @@ export type ItemType = any; // TODO
 // TODO _eAfterStep ??
 
 // TODO ItemIntent where `option` specifies with types the functions (e.g. applyIntent) take..
+
+// TODO all engine components can automatically be subscribed instead of having to manually bind to 'beforeUpdate'

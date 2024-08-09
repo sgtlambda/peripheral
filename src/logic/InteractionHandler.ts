@@ -11,6 +11,8 @@ import {NPC} from "../NPC";
 import {processPrompt} from "./language";
 import {EngineStep} from "../engineStep";
 
+import {EngineComponent} from "../types";
+
 export const ITEM_DROP_COOLDOWN_MS = 1000;
 
 export const ITEM_PICKUP_DISTANCE = 30;
@@ -25,7 +27,7 @@ export const NPC_INTERACTION_DISTANCE = 50;
  * Takes care of interactions between the player and the world
  * TODO item-specific interactions should be implemented at the corresponding item type
  */
-class InteractionHandler {
+class InteractionHandler implements EngineComponent {
 
   stage: Stage;
   player: Player;

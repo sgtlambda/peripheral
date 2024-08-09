@@ -1,10 +1,12 @@
-import {Bodies, Body, Events, World} from 'matter-js';
+import {Bodies, Body, Engine, Events, World} from 'matter-js';
 
 import {cPlayer, cTerrain} from './data/collisionGroups';
 
 import debugRender from './data/debugRender';
 
 import Stage from "./logic/Stage";
+
+import {EngineComponent} from "./types";
 
 export type CharacterConstructorProps = {
   x: number,
@@ -14,7 +16,7 @@ export type CharacterConstructorProps = {
   friction?: number,
 };
 
-class Character {
+class Character implements EngineComponent {
 
   public readonly stage: Stage;
 
@@ -64,12 +66,12 @@ class Character {
     return this.collider.position;
   }
 
-  provision(world) {
+  provision(world: World) {
     World.add(world, [this.collider]);
     return this;
   }
 
-  attach(engine) {
+  attach(engine: Engine) {
     this._eBeforeStep = this.beforeStep.bind(this);
     this._eAfterStep  = this.afterStep.bind(this);
     Events.on(engine, 'beforeUpdate', this._eBeforeStep);
@@ -77,7 +79,7 @@ class Character {
     return this;
   }
 
-  detach(engine) {
+  detach(engine: Engine) {
     Events.off(engine, 'beforeUpdate', this._eBeforeStep);
     Events.off(engine, 'beforeUpdate', this._eAfterStep);
     this._eBeforeStep = null;

@@ -1,8 +1,8 @@
-// TODO apply this type to all controllers
-import {World} from "matter-js";
+import {Engine, World} from "matter-js";
 import {EngineStep} from "./engineStep";
 import InteractionHandler from "./logic/InteractionHandler";
 
+// TODO apply this type to all controllers
 export type Controller<Objects extends object = {}> = {
   destroy?: () => void;
 } & Objects;
@@ -17,4 +17,10 @@ export type KeysOn = Record<string, boolean>;
 
 export interface HasStep {
   step(event: EngineStep, interactionHandler: InteractionHandler): void;
+}
+
+export interface EngineComponent {
+  attach(engine: Engine): void;
+
+  detach(engine: Engine): void;
 }

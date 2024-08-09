@@ -1,87 +1,89 @@
-import {Bounds, Events, Render} from 'matter-js';
+import {Bounds, Engine, Events, Render} from 'matter-js';
 import {boundsHeight, boundsWidth} from "../common/bounds";
 
-class Camera {
+import {EngineComponent} from "../types";
 
-    width: number;
-    height: number;
-    render: Render;
-    smooth: number;
-    player: any;
-    _callback: (e: any) => void;
+class Camera implements EngineComponent {
 
-    constructor({render, smooth = 8}) {
+  width: number;
+  height: number;
+  render: Render;
+  smooth: number;
+  player: any;
+  _callback: (e: any) => void;
 
-        this.smooth = smooth;
-        this.render = render;
-        this.updateBounds();
-        Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
-    }
+  constructor({render, smooth = 8}) {
 
-    updateBounds() {
-        this.width = boundsWidth(this.render.bounds);
-        this.height = boundsHeight(this.render.bounds);
-    }
+    this.smooth = smooth;
+    this.render = render;
+    this.updateBounds();
+    Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
+  }
 
-    get trackBody() {
-        return this.player ? this.player.body : null;
-    }
+  updateBounds() {
+    this.width  = boundsWidth(this.render.bounds);
+    this.height = boundsHeight(this.render.bounds);
+  }
 
-    get bounds() {
-        return this.render.bounds;
-    }
+  get trackBody() {
+    return this.player ? this.player.body : null;
+  }
 
-    trackPlayer(player) {
-        this.player = player;
-        const boundsTarget = this.getBoundsTarget();
-        Bounds.shift(this.render.bounds, boundsTarget);
-    }
+  get bounds() {
+    return this.render.bounds;
+  }
 
-    getBoundsTarget() {
-        return {
-            x: this.trackBody.position.x - this.width / 2,
-            y: this.trackBody.position.y - this.height / 2,
-        };
-    }
+  trackPlayer(player) {
+    this.player        = player;
+    const boundsTarget = this.getBoundsTarget();
+    Bounds.shift(this.render.bounds, boundsTarget);
+  }
 
-    get currentBounds() {
-        return this.render.bounds.min;
-    }
+  getBoundsTarget() {
+    return {
+      x: this.trackBody.position.x - this.width / 2,
+      y: this.trackBody.position.y - this.height / 2,
+    };
+  }
 
-    get onscreenCenter() {
-        return {
-            x: this.render.options.width / 2,
-            y: this.render.options.height / 2,
-        };
-    }
+  get currentBounds() {
+    return this.render.bounds.min;
+  }
 
-    rotate(context) {
-        const center = this.onscreenCenter;
-        context.translate(center.x, center.y);
-        context.translate(-center.x, -center.y);
-    }
+  get onscreenCenter() {
+    return {
+      x: this.render.options.width / 2,
+      y: this.render.options.height / 2,
+    };
+  }
 
-    beforeTick() {
-        if (!this.trackBody) return;
+  rotate(context) {
+    const center = this.onscreenCenter;
+    context.translate(center.x, center.y);
+    context.translate(-center.x, -center.y);
+  }
 
-        const {x: targetX, y: targetY} = this.getBoundsTarget();
-        const {x: actualX, y: actualY} = this.currentBounds;
-        const shiftToX = (targetX + actualX * this.smooth) / (this.smooth + 1);
-        const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1);
+  beforeTick() {
+    if (!this.trackBody) return;
 
-        Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
-    }
+    const {x: targetX, y: targetY} = this.getBoundsTarget();
+    const {x: actualX, y: actualY} = this.currentBounds;
+    const shiftToX                 = (targetX + actualX * this.smooth) / (this.smooth + 1);
+    const shiftToY                 = (targetY + actualY * this.smooth) / (this.smooth + 1);
 
-    attach(engine) {
-        this._callback = this.beforeTick.bind(this);
-        Events.on(engine, 'beforeUpdate', this._callback);
-        return this;
-    }
+    Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
+  }
 
-    detach(engine) {
-        if (this._callback) Events.off(engine, 'beforeUpdate', this._callback);
-        this._callback = null;
-    }
+  attach(engine: Engine) {
+    this._callback = this.beforeTick.bind(this);
+    Events.on(engine, 'beforeUpdate', this._callback);
+    return this;
+  }
+
+  detach(engine: Engine) {
+    if (this._callback) Events.off(engine, 'beforeUpdate', this._callback);
+    this._callback = null;
+  }
 }
 
 export default Camera;

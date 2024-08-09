@@ -1,17 +1,5 @@
 import {browserWindowController} from "./browserWindowController";
-
-declare global {
-    interface Window {
-        lastStop: any;
-        decomp: any;
-    }
-}
-
-window.decomp = require('poly-decomp');
-
-import {Engine, Runner} from 'matter-js';
-
-import {Render} from 'matter-js';
+import {Engine, Render, Runner} from 'matter-js';
 import createRenderer from './createRenderer';
 import playerController from './playerController';
 import mouseController from './mouseController';
@@ -42,6 +30,17 @@ import {createMarkupGuiRenderer} from "./rendering/markupGuiLayer";
 import {npcObserver} from "./ui/npcObserver";
 import Layer from "./rendering/Layer";
 
+import {EngineComponent} from "./types";
+
+declare global {
+  interface Window {
+    lastStop: any;
+    decomp: any;
+  }
+}
+
+window.decomp = require('poly-decomp');
+
 // cleanup (for hot reload, if applicable)
 const canvas = document.getElementsByTagName('canvas').item(0);
 if (canvas) canvas.remove();
@@ -49,85 +48,93 @@ if ('lastStop' in window) window.lastStop();
 
 (() => {
 
-    const engine = Engine.create();
-    const runner = Runner.create({});
-    const world = engine.world;
-    const render = createRenderer({element: document.body, engine});
+  const engine = Engine.create();
+  const runner = Runner.create({});
+  const world  = engine.world;
+  const render = createRenderer({element: document.body, engine});
 
-    const camera = new Camera({render});
+  const camera = new Camera({render});
 
-    const playerState = new PlayerState();
+  const playerState = new PlayerState();
 
-    playerState.addToInventory({itemType: createLaser(400, 3)});
-    playerState.addToInventory({itemType: grenade, amount: 99});
-    playerState.addToInventory({itemType: nuke, amount: 99});
-    playerState.addToInventory({itemType: drill, amount: 800});
-    playerState.addToInventory({itemType: crate, amount: 800});
-    playerState.addToInventory({itemType: debugDraw, slot: 7});
+  playerState.addToInventory({itemType: createLaser(400, 3)});
+  playerState.addToInventory({itemType: grenade, amount: 99});
+  playerState.addToInventory({itemType: nuke, amount: 99});
+  playerState.addToInventory({itemType: drill, amount: 800});
+  playerState.addToInventory({itemType: crate, amount: 800});
+  playerState.addToInventory({itemType: debugDraw, slot: 7});
 
-    const {keysOn, destroy: destroyPlayerController} = playerController();
-    const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
-    const {destroy: destroyUiController} = uiController({playerState});
-    const {destroy: destroyBrowserWindowController} = browserWindowController({render, camera});
+  const {keysOn, destroy: destroyPlayerController}   = playerController();
+  const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
+  const {destroy: destroyUiController}               = uiController({playerState});
+  const {destroy: destroyBrowserWindowController}    = browserWindowController({render, camera});
 
-    const stage = sandboxStage();
+  const stage = sandboxStage();
 
-    const player = new Player({
-        stage, keys: keysOn, mouse: gameMouse,
-        ...stage.initialPlayerPos,
-    });
+  const player = new Player({
+    stage, keys: keysOn, mouse: gameMouse,
+    ...stage.initialPlayerPos,
+  });
 
-    camera.trackPlayer(player);
+  camera.trackPlayer(player);
 
-    const interactionHandler = new InteractionHandler({stage, player, playerState});
+  const interactionHandler = new InteractionHandler({stage, player, playerState});
 
-    const {destroy: destroyInteractionController} = interactionController({
-        mouseEmitter: render.canvas,
-        interactionHandler
-    });
+  const {destroy: destroyInteractionController} = interactionController({
+    mouseEmitter: render.canvas,
+    interactionHandler
+  });
 
-    const worldParts = [stage, player];
-    const engineHooks = [player, interactionHandler, camera, npcObserver(stage, player)];
+  const worldParts = [stage, player];
 
-    const {before: rotate, after: unrotate} = rotateContext();
+  const engineComponents: EngineComponent[] = [
+    player,
+    interactionHandler,
+    camera,
+    npcObserver(stage, player),
+  ];
 
-    const markupGuiRenderer = createMarkupGuiRenderer();
+  const {before: rotate, after: unrotate} = rotateContext();
 
-    const layers: Layer[] = [
-        unrotate, // Note this layer MUST be first
+  const markupGuiRenderer = createMarkupGuiRenderer();
 
-        backgroundLayer(),
-        playerInteractionLayer({player, playerState}),
-        ...createStageLayers(stage),
-        ...uiLayers({gameMouse, player, playerState}),
-        markupGuiRenderer.layer,
+  const layers: Layer[] = [
+    unrotate, // Note this layer MUST be first
 
-        rotate, // Note this layer MUST be last
-    ];
+    backgroundLayer(),
+    playerInteractionLayer({player, playerState}),
+    ...createStageLayers(stage),
+    ...uiLayers({gameMouse, player, playerState}),
+    markupGuiRenderer.layer,
 
-    const c: HTMLCanvasElement = render.canvas;
-    c.parentNode.appendChild(markupGuiRenderer.element);
+    rotate, // Note this layer MUST be last
+  ];
 
-    worldParts.forEach(p => p.provision(world));
-    engineHooks.forEach(e => e.attach(engine));
+  const c: HTMLCanvasElement = render.canvas;
+  c.parentNode.appendChild(markupGuiRenderer.element);
 
-    layers.forEach(r => r.attach(render, camera));
+  worldParts.forEach(p => p.provision(world));
 
-    Render.run(render);
-    Runner.run(runner, engine);
+  engineComponents.forEach(e => e.attach(engine));
 
-    window.lastStop = () => {
+  layers.forEach(r => r.attach(render, camera));
 
-        Render.stop(render);
-        Runner.stop(runner);
+  Render.run(render);
+  Runner.run(runner, engine);
 
-        engineHooks.forEach(e => e.detach(engine));
-        layers.forEach(r => r.detach(render));
+  window.lastStop = () => {
 
-        destroyPlayerController();
-        destroyUiController();
-        destroyMouseController();
-        destroyInteractionController();
-        destroyBrowserWindowController();
-    };
+    Render.stop(render);
+    Runner.stop(runner);
+
+    engineComponents.forEach(e => e.detach(engine));
+
+    layers.forEach(r => r.detach(render));
+
+    destroyPlayerController();
+    destroyUiController();
+    destroyMouseController();
+    destroyInteractionController();
+    destroyBrowserWindowController();
+  };
 })();
