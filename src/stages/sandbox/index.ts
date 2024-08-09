@@ -6,16 +6,16 @@ export default () => {
   const stage = new Stage({x: 0, y: 0});
   stage.addPlanet(new Planet({
     vertices: [
-      {x: -1000, y: 20},
+      {x: -2000, y: 20},
       {x: 200, y: 20},
       {x: 200, y: -120},
       {x: 210, y: -420},
       {x: 240, y: -420},
       {x: 250, y: -120},
       {x: 250, y: 20},
-      {x: 1000, y: 20},
-      {x: 1000, y: 2000},
-      {x: -1000, y: 2000},
+      {x: 2000, y: 20},
+      {x: 2000, y: 2000},
+      {x: -2000, y: 2000},
     ],
     name:     'sandbox-planet',
     color:    '#ffffff',

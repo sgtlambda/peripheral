@@ -52,7 +52,7 @@ export const createLaser = (depth: number = 100, width: number = 6, taperTo: num
 
         flash(stage, {
           duration: 400,
-          color:    '#7bea8d',
+          color:    '#fff58e',
           polygon:  shape,
         });
 
