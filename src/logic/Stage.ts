@@ -7,7 +7,6 @@ import StageGraphics from './StageGraphics';
 import {Building, StrayItem, Throwable} from "../todoTypes";
 import {WorldPart} from "../types";
 import Planet from "./Planet";
-import Character from "../Character";
 import {NPC} from "../NPC";
 
 class Stage implements WorldPart {
@@ -55,10 +54,6 @@ class Stage implements WorldPart {
     }
   }
 
-  addNPC(npc: NPC) {
-    this.npcs.push(npc);
-  }
-
   removeBody(body) {
     if (this._world) {
       Composite.remove(this._world, body);
@@ -68,12 +63,16 @@ class Stage implements WorldPart {
     }
   }
 
+  addNPC(npc: NPC) {
+    this.npcs.push(npc);
+  }
+
   /**
    * Please note: don't call "addTerrainBody" for the planet body,
    * that is already taken care of internally
    * @param {Planet} planet
    */
-  addPlanet(planet) {
+  addPlanet(planet: Planet) {
     this.planets.push(planet);
     this.addTerrainBody(planet.body);
     return planet;
@@ -83,7 +82,7 @@ class Stage implements WorldPart {
    * Add a stray (floating) item to this stage
    * @param {StrayItem} strayItem
    */
-  addStrayItem(strayItem) {
+  addStrayItem(strayItem: StrayItem) {
     this.strayItems.push(strayItem);
     this.addBody(strayItem.collider);
   }
@@ -92,7 +91,7 @@ class Stage implements WorldPart {
    * Add a throwable item to this stage
    * @param {Throwable} throwable
    */
-  addThrowable(throwable) {
+  addThrowable(throwable: Throwable) {
     this.throwables.push(throwable);
     this.addBody(throwable.collider);
   }
@@ -109,7 +108,7 @@ class Stage implements WorldPart {
    * Add a building to this stage
    * @param building
    */
-  addBuilding(building) {
+  addBuilding(building: Building) {
     this.buildings.push(building);
     this.addBody(building.body);
   }
