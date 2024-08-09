@@ -43,6 +43,7 @@ export function nom(
 
       const area = Vertices.area(path, true);
 
+      // TODO this should incorporate the area (if it's super big the threshold should be lower)
       if (integrity < disappearIntegrityThreshold) return;
 
       if (area < disappearAreaThreshold) return
