@@ -18,8 +18,8 @@ export const createLaser = (depth: number = 100, width: number = 6, taperTo: num
 
         for (let i = 0; i < steps; i++) {
           coords.push({
-            x: (depth / steps) * i + (i === 0 ? 0 : Math.random() * random),
-            y: (i === 0 ? 0 : Math.random() * random),
+            x: 12 + (depth / steps) * i + (i === 0 ? 0 : (Math.random() - .5) * random),
+            y: (i === 0 ? 0 : (Math.random() - .5) * random),
           });
         }
 

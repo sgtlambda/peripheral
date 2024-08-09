@@ -34,7 +34,7 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
 
   flash(stage, {
     duration: 200,
-    color:    '#ff0000',
+    color:    '#ff7758',
     polygon:  explosionVertices,
   });
 
