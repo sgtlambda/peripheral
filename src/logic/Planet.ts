@@ -65,7 +65,6 @@ export default class Planet {
           fillStyle:   actualColor,
           strokeStyle: actualColor,
           lineWidth:   1,
-          // opacity:     integrity,
         },
         collisionFilter: {category: cTerrain},
         density,

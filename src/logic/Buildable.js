@@ -25,13 +25,9 @@ export default class Buildable {
 
     constructor({
         name,
-        strength = 100,
-        sprite,
         makeCollider = null,
     }) {
         this.name         = name;
-        this.strength     = strength;
-        this.sprite       = sprite;
         this.makeCollider = makeCollider;
     }
 
