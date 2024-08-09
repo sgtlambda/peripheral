@@ -8,7 +8,12 @@ import {subtract} from "../../common/terrainOps";
 /**
  * Take a "bite" out of all planets on the given stage, with the given shape
  */
-export function nom(stage: Stage, bite: Vector[]) {
+export function nom(
+  stage: Stage,
+  bite: Vector[],
+  disappearIntegrityThreshold: number = .3,
+  disappearAreaThreshold: number      = 100,
+) {
 
   stage.planets.forEach(planet => {
 
@@ -36,8 +41,11 @@ export function nom(stage: Stage, bite: Vector[]) {
 
       const integrity = planet.integrity * ((isStatic || isMain) ? 1 : .8);
 
-      // TODO this should take into consideration the weight of the planet (?)
-      if (integrity < .3) return;
+      const area = Vertices.area(path, true);
+
+      if (integrity < disappearIntegrityThreshold) return;
+
+      if (area < disappearAreaThreshold) return
 
       const newPlanet = new Planet({
         vertices:  path,
