@@ -19,6 +19,7 @@ export default () => {
       {x: -1000, y: 2000},
     ],
     name:     'sandbox-planet',
+    color:    '#ffffff',
   }));
   stage.addNPC(new NPC({
     id:                   1, name: 'Barry', stage, x: -100, y: 0,

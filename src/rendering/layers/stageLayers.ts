@@ -2,10 +2,9 @@ import Layer from '../Layer';
 
 import renderItem from '../renderItem';
 
-import renderVertices from '../../common/renderVertices';
 import Stage from "../../logic/Stage";
 
-const renderBuilding = (context, building) => {
+const renderBuilding = (context: CanvasRenderingContext2D, building) => {
     const position       = building.body.position;
     context.font         = '10px monospace';
     context.fillStyle    = 'rgba(255,255,255,.4)';
@@ -15,10 +14,11 @@ const renderBuilding = (context, building) => {
 };
 
 export const createStageLayers = (stage: Stage) => [
+    // "under" layer - goes under matter.js renderer
     new Layer({
         over: false,
         render(context) {
-            // Render base layers (?)
+            // Render base layers - currently unused
             stage.graphics.renderBaseLayers(context);
         }
     }),
@@ -36,12 +36,13 @@ export const createStageLayers = (stage: Stage) => [
             stage.graphics.renderOverLayers(context);
             // Render planets
             stage.planets.forEach(planet => {
-                renderVertices(context, planet.getCurrentVertices());
-                context.strokeStyle = 'white';
-                // TODO how to update fill color of the planets?
-                // context.fillStyle = 'white';
-                // context.fill();
-                context.stroke();
+                // TODO If you enable these, you'll see the outline is sometimes off
+                //  from the actual planetary part. We'll have to look into this.
+                //   it might not even really be such a problem, just have to see
+                //   if the center of mass is OK
+                // renderVertices(context, planet.getCurrentVertices());
+                // context.strokeStyle = 'white';
+                // context.stroke();
             });
         }
     }),

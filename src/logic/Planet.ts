@@ -2,7 +2,6 @@ import {Bodies, Body, Vector, Vertices} from 'matter-js';
 import {cloneDeep} from "lodash";
 
 import circleVertices from '../common/circleVertices';
-import {planetDebugRender} from '../data/debugRender';
 import {cTerrain} from '../data/collisionGroups';
 
 export default class Planet {
@@ -12,6 +11,7 @@ export default class Planet {
   sourceVertices: Vector[];
 
   density: number;
+  color: string;
 
   sourcePosition: Vector;
 
@@ -21,6 +21,7 @@ export default class Planet {
       y = 0,
       vertices,
       name,
+      color,
       density = .001,
       isStatic = true,
     }: {
@@ -30,7 +31,8 @@ export default class Planet {
       name: string;
       density?: number;
       isStatic?: boolean;
-    }
+      color: string;
+    },
   ) {
 
     this.name = name;
@@ -47,7 +49,11 @@ export default class Planet {
       y + centroid.y,
       cloneDeep(this.sourceVertices),
       {
-        render:          planetDebugRender,
+        render:          {
+          fillStyle:   color,
+          strokeStyle: color,
+          lineWidth:   1,
+        },
         collisionFilter: {category: cTerrain},
         density,
         friction:        .99,
@@ -66,6 +72,7 @@ export default class Planet {
 
     // For descendent planets
     this.density = density;
+    this.color   = color;
 
     this.lockSourcePosition();
   }
@@ -88,8 +95,10 @@ export default class Planet {
     return Vector.sub(this.body.position, this.sourcePosition);
   }
 
-  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0}) {
+  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color}: {
+    name: string, radius: number, density: number, resolution?: number, rand?: number, x?: number, y?: number, color,
+  }) {
     const vertices = circleVertices(radius, resolution, rand);
-    return new Planet({x, y, name, vertices, density});
+    return new Planet({x, y, name, vertices, density, color});
   }
 }

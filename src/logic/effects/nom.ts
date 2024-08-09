@@ -34,6 +34,7 @@ export function nom(stage: Stage, bite: Vector[]) {
         name:     name,
         density:  planet.density,
         isStatic: path === mainPath && planet.body.isStatic,
+        color: planet.color,
       });
 
       stage.addPlanet(newPlanet);
