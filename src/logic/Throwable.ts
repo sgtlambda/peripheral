@@ -6,6 +6,7 @@ import {cItems, cTerrain} from '../data/collisionGroups';
 import {HasStep} from "../types";
 import InteractionHandler from "./InteractionHandler";
 import {EngineStep} from "../engineStep";
+import {shouldBlink} from "../common/blink";
 
 export type ThrowableTriggerHandler = ({position, throwable, interactionHandler}: {
   position: Vector;
@@ -71,6 +72,7 @@ export class Throwable implements HasStep {
 
   step(event: EngineStep, interactionHandler: InteractionHandler) {
     this.ttl -= event.delta;
+    this.collider.render.strokeStyle = !shouldBlink(this.ttl) ? 'white' : debugRender.strokeStyle;
     if (this.ttl <= 0) {
       this.trigger({position: {...this.position}, throwable: this, interactionHandler});
       interactionHandler.stage.removeThrowable(this);

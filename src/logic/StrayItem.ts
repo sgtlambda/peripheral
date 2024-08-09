@@ -11,7 +11,7 @@ import InteractionHandler from "./InteractionHandler";
 class StrayItem implements HasStep {
 
   // src/rendering/layers/uiLayers.js:83
-  private readonly itemType: ItemType;
+  public readonly itemType: ItemType;
   private cooldown: number;
   private collider: Body;
 
