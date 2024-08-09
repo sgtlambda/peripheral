@@ -31,6 +31,7 @@ export const createStageLayers = (stage: Stage) => [
       stage.buildings.forEach(building => {
         renderBuilding(context, building);
       });
+
       stage.graphics.renderOverLayers(context);
     }
   }),

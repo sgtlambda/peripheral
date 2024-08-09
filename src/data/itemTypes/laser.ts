@@ -2,6 +2,7 @@ import ItemType from '../../logic/ItemType';
 import applyIntent from "../intents/applyIntent";
 import {nom} from "../../logic/effects/nom";
 import {Vector} from "matter-js";
+import {flash} from "../../logic/effects/flash";
 
 export const createLaser = (depth: number = 100, width: number = 6, taperTo: number = 0, steps: number = 8, random: number = 30) => new ItemType({
   name:             `laser`,
@@ -47,6 +48,12 @@ export const createLaser = (depth: number = 100, width: number = 6, taperTo: num
             {...player.position},
             Vector.rotate(vector, player.aimAngle),
           );
+        });
+
+        flash(stage, {
+          duration: 400,
+          color:    '#7bea8d',
+          polygon:  shape,
         });
 
         nom(stage, shape)

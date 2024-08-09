@@ -1,4 +1,4 @@
-export type StageGraphicsLayer = {
+export interface StageGraphicsLayer {
   drawTo(args: { context: CanvasRenderingContext2D }): void;
 }
 

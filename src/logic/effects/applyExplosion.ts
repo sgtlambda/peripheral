@@ -3,6 +3,7 @@ import {Body, Vector, Vertices} from 'matter-js';
 import circleVertices from '../../common/circleVertices';
 import {nom} from './nom';
 import Stage from "../Stage";
+import {flash} from "./flash";
 
 const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}: {
   stage: Stage;
@@ -30,6 +31,12 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
   });
 
   const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), origin, 1);
+
+  flash(stage, {
+    duration: 200,
+    color:    '#ff0000',
+    polygon:  explosionVertices,
+  });
 
   nom(stage, explosionVertices);
 };

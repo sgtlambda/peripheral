@@ -2,7 +2,6 @@ export type Building = any; // TODO
 
 export type ItemType = any; // TODO
 
-
 // TODO apply controller type to all controllers
 
 // TODO interface / type for everything with a "collider" property

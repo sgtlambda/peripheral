@@ -28,7 +28,7 @@ export default class Layer {
       hud = false,
       over = true,
       persistMatrix = false,
-      render
+      render,
     }: {
       hud?: boolean;
       over?: boolean;

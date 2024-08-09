@@ -86,6 +86,7 @@ class InteractionHandler implements EngineComponent {
   beforeUpdate(event: EngineStep) {
     this.stage.throwables.forEach(throwable => throwable.step(event, this));
     this.stage.strayItems.forEach(strayItem => strayItem.step(event, this));
+    this.stage.flashEffects.forEach(strayItem => strayItem.step(event, this));
     this.updatePlayerInteractionPotentials();
   }
 

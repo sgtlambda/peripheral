@@ -10,6 +10,7 @@ import Planet from "./Planet";
 import {NPC} from "../NPC";
 import Throwable from "./Throwable";
 import StrayItem from "./StrayItem";
+import {FlashEffect} from "../FlashEffect";
 
 class Stage implements WorldPart {
 
@@ -22,6 +23,7 @@ class Stage implements WorldPart {
   public npcs: NPC[];
 
   public strayItems: StrayItem[];
+  public flashEffects: FlashEffect[];
   public throwables: Throwable[];
   public bodyQueue: Body[];
   public addedBodies: Body[];
@@ -34,6 +36,7 @@ class Stage implements WorldPart {
   ) {
     this.graphics      = new StageGraphics();
     this.strayItems    = [];
+    this.flashEffects  = [];
     this.throwables    = [];
     this.terrainBodies = [];
     this.buildings     = [];
@@ -69,11 +72,6 @@ class Stage implements WorldPart {
     this.npcs.push(npc);
   }
 
-  /**
-   * Please note: don't call "addTerrainBody" for the planet body,
-   * that is already taken care of internally
-   * @param {Planet} planet
-   */
   addPlanet(planet: Planet) {
     this.planets.push(planet);
     this.addTerrainBody(planet.body);
@@ -101,7 +99,7 @@ class Stage implements WorldPart {
   /**
    * Add a terrain body to this stage
    */
-  addTerrainBody(terrainBody: Body) {
+  private addTerrainBody(terrainBody: Body) {
     this.terrainBodies.push(terrainBody);
     this.addBody(terrainBody);
   }
