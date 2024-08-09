@@ -54,7 +54,7 @@ class Stage implements WorldPart {
     }
   }
 
-  removeBody(body) {
+  removeBody(body: Body) {
     if (this._world) {
       Composite.remove(this._world, body);
       this.addedBodies = without(this.addedBodies, body);
@@ -113,17 +113,17 @@ class Stage implements WorldPart {
     this.addBody(building.body);
   }
 
-  removeStrayItem(strayItem) {
+  removeStrayItem(strayItem: StrayItem) {
     this.strayItems = without(this.strayItems, strayItem);
     this.removeBody(strayItem.collider);
   }
 
-  removeThrowable(throwable) {
+  removeThrowable(throwable: Throwable) {
     this.throwables = without(this.throwables, throwable);
     this.removeBody(throwable.collider);
   }
 
-  removePlanet(planet) {
+  removePlanet(planet: Planet) {
     this.planets = without(this.planets, planet);
     this.removeBody(planet.body);
   }
@@ -132,7 +132,7 @@ class Stage implements WorldPart {
    * Add all terrain bodies belonging to this stage to the given physics world
    * and "link up" the world with this Stage so that bodies can be added at runtime
    */
-  provision(world) {
+  provision(world: World) {
 
     assert(!this.provisioned, 'Cannot provision Stage twice.');
     this.provisioned = true;
