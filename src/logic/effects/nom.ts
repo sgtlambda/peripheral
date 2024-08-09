@@ -34,13 +34,18 @@ export function nom(stage: Stage, bite: Vector[]) {
 
       const isStatic = isMain && planet.body.isStatic;
 
+      const integrity = planet.integrity * ((isStatic || isMain) ? 1 : .8);
+
+      // TODO this should take into consideration the weight of the planet (?)
+      if (integrity < .3) return;
+
       const newPlanet = new Planet({
         vertices:  path,
         name:      name,
         density:   planet.density,
         isStatic:  isStatic,
         color:     planet.color,
-        integrity: planet.integrity * (isStatic ? 1 : .8),
+        integrity: integrity,
       });
 
       stage.addPlanet(newPlanet);
