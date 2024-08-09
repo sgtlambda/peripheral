@@ -1,4 +1,4 @@
-import {Events, Vector} from 'matter-js';
+import {Engine, Events, Vector} from 'matter-js';
 import StrayItem from './StrayItem';
 
 import {INTENT_BUILD} from '../data/intents/buildIntent';
@@ -9,8 +9,9 @@ import Stage from "./Stage";
 import PlayerState from "./PlayerState";
 import {NPC} from "../NPC";
 import {processPrompt} from "./language";
+import {EngineStep} from "../engineStep";
 
-export const ITEM_DROP_COOLDOWN = 45;
+export const ITEM_DROP_COOLDOWN_MS = 1000;
 
 export const ITEM_PICKUP_DISTANCE = 30;
 
@@ -67,7 +68,7 @@ class InteractionHandler {
   }
 
   getNearbyStrayItem(): StrayItem | null {
-    return this.getNearbyThing(this.stage.strayItems, ITEM_PICKUP_DISTANCE, strayItem => strayItem.cooldown <= 0);
+    return this.getNearbyThing(this.stage.strayItems, ITEM_PICKUP_DISTANCE, strayItem => strayItem.isReady());
   }
 
   getNearbyNpc(): NPC | null {
@@ -79,9 +80,9 @@ class InteractionHandler {
     this.playerState.potentialInteractiveNpc = this.getNearbyNpc();
   }
 
-  beforeUpdate() {
-    this.stage.throwables.forEach(throwable => throwable.step(this));
-    this.stage.strayItems.forEach(strayItem => strayItem.step(this));
+  beforeUpdate(event: EngineStep) {
+    this.stage.throwables.forEach(throwable => throwable.step(event, this));
+    this.stage.strayItems.forEach(strayItem => strayItem.step(event, this));
     this.updatePlayerInteractionPotentials();
   }
 
@@ -110,7 +111,7 @@ class InteractionHandler {
     if (itemType && itemType.droppable) {
       const dropped  = this.playerState.removeFromInventory();
       const position = {...this.player.position};
-      const cooldown = ITEM_DROP_COOLDOWN;
+      const cooldown = ITEM_DROP_COOLDOWN_MS;
       const velocity = this.getPlayerEmitVelocity(ITEM_DROP_FORCE);
       this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
     }
@@ -188,18 +189,18 @@ class InteractionHandler {
     if (primaryIntent.continuous) this.triggerPrimary();
   }
 
-  pickup(strayItem) {
+  pickup(strayItem: StrayItem) {
     const added = this.playerState.addToInventory({itemType: strayItem.itemType});
     if (added) this.stage.removeStrayItem(strayItem);
   }
 
-  attach(engine) {
-    this._beforeUpdate = () => this.beforeUpdate();
+  attach(engine: Engine) {
+    this._beforeUpdate = (event: EngineStep) => this.beforeUpdate(event);
     Events.on(engine, 'beforeUpdate', this._beforeUpdate);
     return this;
   }
 
-  detach(engine) {
+  detach(engine: Engine) {
     if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', this._beforeUpdate);
     this._beforeUpdate = null;
   }

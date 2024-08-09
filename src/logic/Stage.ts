@@ -4,10 +4,12 @@ import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
 import StageGraphics from './StageGraphics';
-import {Building, StrayItem, Throwable} from "../todoTypes";
+import {Building} from "../todoTypes";
 import {WorldPart} from "../types";
 import Planet from "./Planet";
 import {NPC} from "../NPC";
+import Throwable from "./Throwable";
+import StrayItem from "./StrayItem";
 
 class Stage implements WorldPart {
 
@@ -84,7 +86,7 @@ class Stage implements WorldPart {
    */
   addStrayItem(strayItem: StrayItem) {
     this.strayItems.push(strayItem);
-    this.addBody(strayItem.collider);
+    this.addBody(strayItem.getCollider());
   }
 
   /**
@@ -93,7 +95,7 @@ class Stage implements WorldPart {
    */
   addThrowable(throwable: Throwable) {
     this.throwables.push(throwable);
-    this.addBody(throwable.collider);
+    this.addBody(throwable.getCollider());
   }
 
   /**
@@ -115,12 +117,12 @@ class Stage implements WorldPart {
 
   removeStrayItem(strayItem: StrayItem) {
     this.strayItems = without(this.strayItems, strayItem);
-    this.removeBody(strayItem.collider);
+    this.removeBody(strayItem.getCollider());
   }
 
   removeThrowable(throwable: Throwable) {
     this.throwables = without(this.throwables, throwable);
-    this.removeBody(throwable.collider);
+    this.removeBody(throwable.getCollider());
   }
 
   removePlanet(planet: Planet) {

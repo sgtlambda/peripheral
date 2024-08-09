@@ -8,6 +8,8 @@ import renderTextWithShadow from '../../common/renderTextWithShadow';
 
 import {debugDrawGlobal} from '../../data/intents/debugDrawIntent';
 
+// TODO typescript!!
+
 const inventoryPadding  = 4;
 const inventorySlotSize = 48;
 

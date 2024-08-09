@@ -1,12 +1,12 @@
 import {times, find} from 'lodash';
 
 import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
-import {StrayItem} from "../todoTypes";
+import {ItemType, StrayItem} from "../todoTypes";
 import {NPC} from "../NPC";
 
 class InventorySlot {
 
-    itemType: any; // TODO
+    itemType: ItemType;
     amount: number;
     keyBind: any; // TODO;
 

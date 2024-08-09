@@ -1,6 +1,6 @@
-export type StrayItem = any; // TODO
-export type Throwable = any; // TODO
 export type Building = any; // TODO
+
+export type ItemType = any; // TODO
 
 // TODO `attach()` and `detach()` interface
 
