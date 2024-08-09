@@ -51,11 +51,14 @@ export default class Planet {
     // TODO if we use 'alpha' / opacity here, the rendering of the stroke will cause
     //  outlines to appear. This is because the stroke is drawn on top of the fill
     //  if we don't use outlines, it looks as if there are gaps between the planets
-    const actualColor = Color(color).darken((1 - integrity) * .6).rgb().string();
+    const actualColor = isStatic ? 'blue' : Color(color).darken((1 - integrity) * .6).rgb().string();
+
+    const bodyX = x + centroid.x;
+    const bodyY = y + centroid.y;
 
     this.body = Bodies.fromVertices(
-      x + centroid.x,
-      y + centroid.y,
+      bodyX,
+      bodyY,
       cloneDeep(this.sourceVertices),
       {
         render:          {
@@ -68,13 +71,13 @@ export default class Planet {
         density,
         friction:        .99,
         isStatic:        false,
-      }
+      },
     );
 
-    if (isStatic) {
-      // This solves a weird positioning bug, no idea why
-      this.body.isStatic = true;
-    }
+    this.body.isStatic = isStatic;
+
+    // IF THIS DIFFERS, THERE IS A PROBLEM
+    console.log(bodyX - this.body.position.x, bodyY - this.body.position.y);
 
     this.sourceVertices = vertices;
 
