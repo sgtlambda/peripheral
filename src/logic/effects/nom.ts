@@ -9,6 +9,7 @@ import {subtract} from "../../common/terrainOps";
  * Take a "bite" out of all planets on the given stage, with the given shape
  */
 export function nom(stage: Stage, bite: Vector[]) {
+
   stage.planets.forEach(planet => {
 
     const currentVertices = planet.getCurrentVertices();
@@ -29,12 +30,17 @@ export function nom(stage: Stage, bite: Vector[]) {
 
       const name = `${planet.name}.${index}`;
 
+      const isMain = path === mainPath;
+
+      const isStatic = isMain && planet.body.isStatic;
+
       const newPlanet = new Planet({
-        vertices: path,
-        name:     name,
-        density:  planet.density,
-        isStatic: path === mainPath && planet.body.isStatic,
-        color: planet.color,
+        vertices:  path,
+        name:      name,
+        density:   planet.density,
+        isStatic:  isStatic,
+        color:     planet.color,
+        integrity: planet.integrity * (isStatic ? 1 : .8),
       });
 
       stage.addPlanet(newPlanet);

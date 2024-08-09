@@ -3,6 +3,7 @@ import {cloneDeep} from "lodash";
 
 import circleVertices from '../common/circleVertices';
 import {cTerrain} from '../data/collisionGroups';
+import Color from "color";
 
 export default class Planet {
 
@@ -12,6 +13,7 @@ export default class Planet {
 
   density: number;
   color: string;
+  integrity?: number;
 
   sourcePosition: Vector;
 
@@ -24,6 +26,7 @@ export default class Planet {
       color,
       density = .001,
       isStatic = true,
+      integrity = 1,
     }: {
       x?: number;
       y?: number;
@@ -32,6 +35,7 @@ export default class Planet {
       density?: number;
       isStatic?: boolean;
       color: string;
+      integrity?: number;
     },
   ) {
 
@@ -44,15 +48,21 @@ export default class Planet {
       y: v.y - centroid.y,
     }));
 
+    // TODO if we use 'alpha' / opacity here, the rendering of the stroke will cause
+    //  outlines to appear. This is because the stroke is drawn on top of the fill
+    //  if we don't use outlines, it looks as if there are gaps between the planets
+    const actualColor = Color(color).darken((1 - integrity) * .6).rgb().string();
+
     this.body = Bodies.fromVertices(
       x + centroid.x,
       y + centroid.y,
       cloneDeep(this.sourceVertices),
       {
         render:          {
-          fillStyle:   color,
-          strokeStyle: color,
+          fillStyle:   actualColor,
+          strokeStyle: actualColor,
           lineWidth:   1,
+          // opacity:     integrity,
         },
         collisionFilter: {category: cTerrain},
         density,
@@ -71,8 +81,9 @@ export default class Planet {
     this.body.label = "planet";
 
     // For descendent planets
-    this.density = density;
-    this.color   = color;
+    this.density   = density;
+    this.color     = color;
+    this.integrity = integrity;
 
     this.lockSourcePosition();
   }
@@ -96,7 +107,14 @@ export default class Planet {
   }
 
   static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color}: {
-    name: string, radius: number, density: number, resolution?: number, rand?: number, x?: number, y?: number, color,
+    name: string,
+    radius: number,
+    density: number,
+    resolution?: number,
+    rand?: number,
+    x?: number,
+    y?: number,
+    color: string,
   }) {
     const vertices = circleVertices(radius, resolution, rand);
     return new Planet({x, y, name, vertices, density, color});

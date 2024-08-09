@@ -12,8 +12,10 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@types/color": "^3.0.6",
     "@types/matter-js": "^0.18.2",
     "@types/react": "^18.0.26",
+    "color": "^4.2.3",
     "eslint": "^7.16.0",
     "lodash": "^4.17.10",
     "matter-js": "^0.18.0",
