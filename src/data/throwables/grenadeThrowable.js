@@ -12,4 +12,4 @@ export default ({x, y, velocity}) => new Throwable({
             rand: .2,
         });
     }
-})
+});
