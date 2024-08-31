@@ -1,5 +1,3 @@
 import Buildable from '../../logic/Buildable';
 
-export default new Buildable({
-    name: 'crate',
-});
+export default new Buildable('crate');

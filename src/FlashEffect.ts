@@ -8,12 +8,12 @@ import InteractionHandler from "./logic/InteractionHandler";
 export type FlashEffectProps = {
   duration: number;
   color?: string;
-  polygon?: Vector[];
+  polygon: Vector[];
 };
 
 /**
  * Temporarily renders some polygon to the screen, like a flash of light.
- * TODO CLEAN UP after lifecycle
+ * TODO CLEAN UP after lifecycle!!
  */
 export class FlashEffect implements StageGraphicsLayer, HasStep {
 

@@ -13,9 +13,9 @@ export default class Planet {
 
   density: number;
   color: string;
-  integrity?: number;
+  integrity: number;
 
-  sourcePosition: Vector;
+  sourcePosition!: Vector;
 
   constructor(
     {
@@ -27,8 +27,8 @@ export default class Planet {
       density = .001,
       isStatic = true,
       integrity = 1,
-      angularVelocity = null,
-      velocity = null,
+      angularVelocity,
+      velocity,
     }: {
       x?: number;
       y?: number;

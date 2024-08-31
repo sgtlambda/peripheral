@@ -9,7 +9,7 @@ class ItemType {
         this.droppable        = droppable;
     }
 
-    getIntentOf(type) {
+    getIntentByType(type) {
         return find(this.availableIntents, {type});
     }
 

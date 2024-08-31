@@ -25,11 +25,11 @@ class Stage implements WorldPart {
   public strayItems: StrayItem[];
   public flashEffects: FlashEffect[];
   public throwables: Throwable[];
-  public bodyQueue: Body[];
+  public bodyQueue: Body[] = [];
   public addedBodies: Body[];
 
-  private provisioned: boolean;
-  private _world: World;
+  private provisioned: boolean = false;
+  private _world!: World;
 
   constructor(
     public readonly initialPlayerPos: Vector,
@@ -143,7 +143,7 @@ class Stage implements WorldPart {
 
     this._world      = world;
     this.addedBodies = this.bodyQueue;
-    this.bodyQueue   = null;
+    this.bodyQueue   = [];
     return this;
   }
 }

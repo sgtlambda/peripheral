@@ -2,6 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "ES5",
-    "jsx": "react"
+    "jsx": "react",
+    "strict": true
   }
 }

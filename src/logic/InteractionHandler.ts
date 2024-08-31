@@ -12,6 +12,7 @@ import {processPrompt} from "./language";
 import {EngineStep} from "../engineStep";
 
 import {EngineComponent} from "../types";
+import {ItemType} from "../todoTypes";
 
 export const ITEM_DROP_COOLDOWN_MS = 1000;
 
@@ -29,17 +30,23 @@ export const NPC_INTERACTION_DISTANCE = 50;
  */
 class InteractionHandler implements EngineComponent {
 
-  stage: Stage;
-  player: Player;
-  playerState: PlayerState;
+  readonly stage: Stage;
+  readonly player: Player;
+  readonly playerState: PlayerState;
 
   _beforeUpdate: any; // TODO
 
-  constructor({
-                stage,
-                player,
-                playerState,
-              }) {
+  constructor(
+    {
+      stage,
+      player,
+      playerState,
+    }: {
+      stage: Stage,
+      player: Player,
+      playerState: PlayerState,
+    },
+  ) {
     this.stage       = stage;
     this.player      = player;
     this.playerState = playerState;
@@ -106,7 +113,7 @@ class InteractionHandler implements EngineComponent {
     }
   }
 
-  getPlayerEmitVelocity(force) {
+  getPlayerEmitVelocity(force: number) {
     return Vector.rotate({x: force, y: 0}, this.player.aimAngle);
   }
 
@@ -125,16 +132,16 @@ class InteractionHandler implements EngineComponent {
     return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.aimAngle));
   }
 
-  getActiveItemType() {
+  getActiveItemType(): ItemType | undefined {
     const slot = this.playerState.getActiveSlot();
-    if (!slot.itemType || !slot.amount) return null;
+    if (!slot.itemType || !slot.amount) return undefined;
     return slot.itemType;
   }
 
-  getActiveItemIntentOf(type) {
+  getActiveItemIntentOf(type: Symbol) {
     const itemType = this.getActiveItemType();
     if (!itemType) return null;
-    return itemType.getIntentOf(type);
+    return itemType.getIntentByType(type);
   }
 
   buildItem() {

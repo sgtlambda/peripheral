@@ -1,4 +1,4 @@
-import {Bodies, Body} from 'matter-js';
+import {Bodies, Body, Vector} from 'matter-js';
 
 import debugRender from '../data/debugRender';
 
@@ -13,15 +13,28 @@ class StrayItem implements HasStep {
   // src/rendering/layers/uiLayers.js:83
   public readonly itemType: ItemType;
   private cooldown: number;
-  private collider: Body;
+  private collider!: Body;
 
-  constructor({itemType, x, y, velocity = null, cooldown = 0}) {
+  // TODO this shares a lot of logic with `Throwable`, deduplicate or create common superclass
+
+  constructor({itemType, x, y, velocity, cooldown = 0}: {
+    itemType: ItemType,
+    x: number,
+    y: number,
+    velocity?: Vector;
+    cooldown?: number,
+  }) {
     this.itemType = itemType;
     this.cooldown = cooldown;
     this.prepareBodies({x, y, velocity});
   }
 
-  prepareBodies({x, y, velocity = null, radius = 8}) {
+  prepareBodies({x, y, velocity, radius = 8}: {
+    x: number;
+    y: number;
+    velocity?: Vector;
+    radius?: number;
+  }) {
     this.collider = Bodies.circle(x, y, radius, {
       restitution:     .5,
       inertia:         Infinity,

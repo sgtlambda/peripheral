@@ -48,8 +48,8 @@ export const drawVertices = ({context, vertices, fillStyle = null, strokeStyle =
 export default ({player, playerState}) => new Layer({
     render(context) {
         const itemType = playerState.getActiveSlot().itemType;
-        if (itemType && itemType.getIntentOf(INTENT_BUILD)) {
-            const buildable = itemType.getIntentOf(INTENT_BUILD).options.buildable;
+        if (itemType && itemType.getIntentByType(INTENT_BUILD)) {
+            const buildable = itemType.getIntentByType(INTENT_BUILD).options.buildable;
             const vertices  = buildableVertices({buildable, angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         } else {

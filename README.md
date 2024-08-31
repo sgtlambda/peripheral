@@ -10,3 +10,12 @@ yarn start
 ```
 
 Then go to http://localhost:1234
+
+## TODOs
+
+- Convert DTO classes to simple typed objects
+- Explosions should "blow away" nearby characters and objects
+- Explosion design
+- Hitscannig / raycasting
+- Try interesting stage design (with ropes / wires)
+- Character could maybe be a wall-e esque robot floating with a thruster.

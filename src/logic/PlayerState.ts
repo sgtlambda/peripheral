@@ -1,91 +1,98 @@
-import {times, find} from 'lodash';
+import {find, times} from 'lodash';
 
 import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
-import {ItemType, StrayItem} from "../todoTypes";
+import {ItemType} from "../todoTypes";
 import {NPC} from "../NPC";
+import StrayItem from "./StrayItem";
 
 class InventorySlot {
 
-    itemType: ItemType;
-    amount: number;
-    keyBind: any; // TODO;
+  itemType?: ItemType;
+  amount?: number;
+  keyBind?: string;
 
-    constructor({itemType = null, amount = 0, keyBind = null} = {}) {
-        this.itemType = itemType;
-        this.amount   = amount;
-        this.keyBind  = keyBind;
-    }
+  constructor({itemType, amount = 0, keyBind}: {
+    itemType?: ItemType;
+    amount?: number;
+    keyBind?: string;
+  }) {
+    this.itemType = itemType;
+    this.amount   = amount;
+    this.keyBind  = keyBind;
+  }
 }
 
 const createInventory = (slots = defaultInventorySize) => {
-    return times(slots, x => {
-        return new InventorySlot({keyBind: keyBinds[x]});
-    });
+  return times(slots, x => {
+    return new InventorySlot({keyBind: keyBinds[x]});
+  });
 };
 
 class PlayerState {
 
-    inventory: InventorySlot[];
+  inventory: InventorySlot[];
 
-    potentialPickup: StrayItem | null;
-    potentialInteractiveNpc: NPC | null;
+  potentialPickup: StrayItem | null   = null;
+  potentialInteractiveNpc: NPC | null = null;
 
-    activeInventorySlot: number;
+  activeInventorySlot!: number;
 
-    constructor({
-        inventory = null,
-        activeInventorySlot = 0,
-    } = {}) {
-        this.inventory = inventory === null ? createInventory() : inventory;
-        this.selectSlot(activeInventorySlot);
-        this.potentialPickup = null;
+  constructor(
+    {
+      inventory = null,
+      activeInventorySlot = 0,
+    }: {
+      inventory?: InventorySlot[] | null;
+      activeInventorySlot?: number;
+    } = {}
+  ) {
+    this.inventory = inventory === null ? createInventory() : inventory;
+    this.selectSlot(activeInventorySlot);
+  }
+
+  firstEmptySlot() {
+    return find(this.inventory, slot => !slot.itemType);
+  }
+
+  selectSlot(index: number) {
+    this.activeInventorySlot = index;
+  }
+
+  getActiveSlot(): InventorySlot {
+    return this.inventory[this.activeInventorySlot];
+  }
+
+  /**
+   * Remove the given amount from the active inventory slot.
+   */
+  removeFromInventory(amount = 1): ItemType | undefined {
+    const targetSlot = this.getActiveSlot();
+    if (targetSlot.itemType === null || (targetSlot.amount ?? 0) < amount) return undefined;
+    else {
+      const removedItemType = targetSlot.itemType;
+      targetSlot.amount! -= amount;
+      if (targetSlot.amount === 0) targetSlot.itemType = null;
+      return removedItemType;
     }
+  }
 
-    firstEmptySlot() {
-        return find(this.inventory, {itemType: null});
+  addToInventory({itemType, amount = 1, slot: overrideSlot}: {
+    itemType: ItemType;
+    amount?: number;
+    slot?: number;
+  }) {
+    const slot = find(this.inventory, {itemType});
+    if (slot) slot.amount! += amount;
+    else {
+      const emptySlot = overrideSlot ? this.inventory[overrideSlot] : this.firstEmptySlot();
+      if (!emptySlot) return false;
+      else {
+        emptySlot.itemType = itemType;
+        emptySlot.amount   = amount;
+      }
     }
-
-    selectSlot(index) {
-        this.activeInventorySlot = index;
-    }
-
-    /**
-     * @returns {InventorySlot}
-     */
-    getActiveSlot() {
-        return this.inventory[this.activeInventorySlot];
-    }
-
-    /**
-     * Remove the given amount from the inventory slot at the given index (defaults to active slot)
-     * @param amount
-     * @param slot
-     * @returns {*}
-     */
-    removeFromInventory(amount = 1, slot = null) {
-        const activeSlot = slot === null ? this.getActiveSlot() : slot;
-        if (activeSlot.itemType === null || activeSlot.amount < amount) return false;
-        else {
-            const removedItemType = activeSlot.itemType;
-            activeSlot.amount -= amount;
-            if (activeSlot.amount === 0) activeSlot.itemType = null;
-            return removedItemType;
-        }
-    }
-
-    addToInventory({itemType, amount = 1, slot: overrideSlot = null}) {
-        const slot = find(this.inventory, {itemType});
-        if (slot) slot.amount += amount;
-        else {
-            const emptySlot = overrideSlot ? this.inventory[overrideSlot] : this.firstEmptySlot();
-            if (!emptySlot) return false;
-            else {
-                emptySlot.itemType = itemType;
-                emptySlot.amount   = amount;
-            }
-        }
-        return true;
-    }
+    return true;
+  }
 }
 
 export default PlayerState;

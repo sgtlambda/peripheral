@@ -1,5 +1,3 @@
-import ItemIntent from './../../logic/ItemIntent';
-
 export const debugDrawGlobal = {path: []};
 window.debugDrawGlobal       = debugDrawGlobal;
 
@@ -7,7 +5,7 @@ export const INTENT_DEBUG_DRAW = Symbol('INTENT_DEBUG_DRAW');
 
 export default ({
     primary = true,
-} = {}) => new ItemIntent({
+} = {}) => ({
     primary,
     type:        INTENT_DEBUG_DRAW,
     description: 'draw [lmb]',

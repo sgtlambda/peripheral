@@ -19,16 +19,19 @@ export type ThrowableTriggerHandler = ({position, throwable, interactionHandler}
  */
 export class Throwable implements HasStep {
 
-  private readonly name: string;
+  public readonly name: string;
 
   // TODO convert to time-based (using the event thing in step)
+  //  this is already the case for `StrayItem`.
   private ttl: number;
 
-  private collider: Body;
+  private collider!: Body;
 
   private readonly trigger: ThrowableTriggerHandler;
 
-  constructor({name, x, y, radius, velocity = null, trigger, ttl}: {
+  // TODO this shares a lot of logic with `StrayItem`, deduplicate or create common superclass
+
+  constructor({name, x, y, radius, velocity, trigger, ttl}: {
     name: string;
     x: number;
     y: number;
@@ -43,11 +46,11 @@ export class Throwable implements HasStep {
     this.prepareBodies({x, y, radius, velocity});
   }
 
-  prepareBodies({x, y, velocity = null, radius}: {
+  prepareBodies({x, y, velocity, radius}: {
     x: number;
     y: number;
     velocity?: Vector;
-    radius?: number;
+    radius: number;
   }) {
     this.collider = Bodies.circle(x, y, radius, {
       restitution:     .5,
