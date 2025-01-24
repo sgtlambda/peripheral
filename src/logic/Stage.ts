@@ -4,13 +4,13 @@ import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
 import StageGraphics from './StageGraphics';
-import {Building} from "../todoTypes";
 import {WorldPart} from "../types";
 import Planet from "./Planet";
 import {NPC} from "../NPC";
 import Throwable from "./Throwable";
 import StrayItem from "./StrayItem";
 import {FlashEffect} from "../FlashEffect";
+import Building from "./Building";
 
 class Stage implements WorldPart {
 

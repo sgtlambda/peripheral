@@ -20,7 +20,7 @@ class Character implements EngineComponent {
 
   public readonly stage: Stage;
 
-  public collider: Body;
+  public collider!: Body;
 
   public readonly friction: number;
 

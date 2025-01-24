@@ -18,22 +18,22 @@ const playerController = (
 
   const keysOn: KeysOn = {};
 
-  const press = e => {
+  const press = (e: KeyboardEvent) => {
     if (e.key in keyMap) keysOn[keyMap[e.key]] = true;
   };
 
-  const release = e => {
+  const release = (e: KeyboardEvent) => {
     if (e.key in keyMap) keysOn[keyMap[e.key]] = false;
   };
 
-  emitter.addEventListener('keydown', press);
-  emitter.addEventListener('keyup', release);
+  emitter.addEventListener('keydown', press as EventListener);
+  emitter.addEventListener('keyup', release as EventListener);
 
   return {
     keysOn,
     destroy() {
-      emitter.removeEventListener('keydown', press);
-      emitter.removeEventListener('keyup', release);
+      emitter.removeEventListener('keydown', press as EventListener);
+      emitter.removeEventListener('keyup', release as EventListener);
     },
   };
 };

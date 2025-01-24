@@ -3,6 +3,8 @@ import {ItemIntent} from "../../logic/ItemIntent";
 
 export const INTENT_BUILD = Symbol('INTENT_BUILD');
 
+export type BuildIntentOptions = { requires: number; buildable: Buildable };
+
 export default (
   {
     buildable,
@@ -15,7 +17,7 @@ export default (
     requires?: number;
     keyBind?: string;
   },
-): ItemIntent => ({
+): ItemIntent<BuildIntentOptions> => ({
   keyBind, primary,
   type:        INTENT_BUILD,
   description: `build ${buildable.name} using ${requires} [lmb] [${keyBind}]`,

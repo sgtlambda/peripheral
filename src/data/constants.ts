@@ -1,0 +1,1 @@
+export const PLAYER_AIM_OFFSET = 35; // TODO should this be hardcoded?

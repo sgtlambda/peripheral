@@ -19,18 +19,12 @@ import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
 import Camera from './rendering/Camera';
-
-import drill from "./data/itemTypes/drill";
-import grenade from './data/itemTypes/grenade';
-import nuke from './data/itemTypes/nuke';
-import crate from './data/itemTypes/crate';
-import {createLaser} from './data/itemTypes/laser';
-import debugDraw from './data/itemTypes/debugDraw.js';
 import {createMarkupGuiRenderer} from "./rendering/markupGuiLayer";
 import {npcObserver} from "./ui/npcObserver";
 import Layer from "./rendering/Layer";
 
 import {EngineComponent} from "./types";
+import {defaultInventory} from "./defaultInventory";
 
 declare global {
   interface Window {
@@ -57,12 +51,9 @@ if ('lastStop' in window) window.lastStop();
 
   const playerState = new PlayerState();
 
-  playerState.addToInventory({itemType: createLaser(400, 3)});
-  playerState.addToInventory({itemType: grenade, amount: 99});
-  playerState.addToInventory({itemType: nuke, amount: 99});
-  playerState.addToInventory({itemType: drill, amount: 800});
-  playerState.addToInventory({itemType: crate, amount: 800});
-  playerState.addToInventory({itemType: debugDraw, slot: 7});
+  for (const slot of defaultInventory) {
+    playerState.addToInventory(slot);
+  }
 
   const {keysOn, destroy: destroyPlayerController}   = playerController();
   const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});

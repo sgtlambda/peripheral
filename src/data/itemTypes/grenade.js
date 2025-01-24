@@ -9,10 +9,8 @@ export default new ItemType({
     color:            '#666',
     availableIntents: [
         throwIntent({
-            throwable: {
-                name: 'grenade',
-                make: armedGrenade,
-            },
+            name: 'grenade',
+            make: armedGrenade,
         }),
     ],
 });

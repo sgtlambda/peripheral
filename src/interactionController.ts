@@ -1,5 +1,7 @@
 import {KeyMap, KeysOn} from "./types";
 
+const CONTINUOUS_INTERVAL = 80;
+
 export default (
   {
     mouseEmitter = window,
@@ -23,24 +25,24 @@ export default (
 
   const keysOn: KeysOn = {};
 
-  const press = e => {
+  const press = (e: KeyboardEvent) => {
     const method = keyMap[e.key];
     if (method && interactionHandler[method])
       interactionHandler[method].call(interactionHandler);
   };
 
-  let _triggerContinuous;
+  let _triggerContinuous: any;
 
   const mouseDown = () => {
     interactionHandler.triggerPrimary();
-    _triggerContinuous = setInterval(() => interactionHandler.triggerContinuous(), 200);
+    _triggerContinuous = setInterval(() => interactionHandler.triggerContinuous(), CONTINUOUS_INTERVAL);
   };
 
   const mouseUp = () => {
     clearInterval(_triggerContinuous);
   };
 
-  keyEmitter.addEventListener('keydown', press);
+  keyEmitter.addEventListener('keydown', press as EventListener);
 
   mouseEmitter.addEventListener('mousedown', mouseDown);
   mouseEmitter.addEventListener('mouseup', mouseUp);
@@ -48,7 +50,7 @@ export default (
   return {
     keysOn,
     destroy() {
-      keyEmitter.removeEventListener('keydown', press);
+      keyEmitter.removeEventListener('keydown', press as EventListener);
       mouseEmitter.removeEventListener('mousedown', mouseDown);
       mouseEmitter.removeEventListener('mouseup', mouseUp);
     },

@@ -9,10 +9,8 @@ export default new ItemType({
     color:            '#7597b8',
     availableIntents: [
         throwIntent({
-            throwable: {
-                name: 'nuke',
-                make: nukeThrowable,
-            },
+            name: 'nuke',
+            make: nukeThrowable,
         }),
     ],
 });

@@ -4,9 +4,9 @@ import debugRender from '../data/debugRender';
 
 import {cItems, cTerrain} from '../data/collisionGroups';
 import {HasStep} from "../types";
-import {ItemType} from "../todoTypes";
 import {EngineStep} from "../engineStep";
 import InteractionHandler from "./InteractionHandler";
+import ItemType from "./ItemType";
 
 class StrayItem implements HasStep {
 

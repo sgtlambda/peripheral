@@ -15,6 +15,8 @@ export function nom(
   disappearAreaThreshold: number      = 100,
 ) {
 
+  // TODO optimize with `Query.region`
+
   stage.planets.forEach(planet => {
 
     const currentVertices = planet.getCurrentVertices();

@@ -1,6 +1,7 @@
 import {Vector} from "matter-js";
 
 const paper = require('paper/dist/paper-core.min'); // TODO (?)
+
 paper.setup();
 
 type PaperPath = any; // TODO
@@ -15,7 +16,7 @@ const toPaperPath = (points: Vector[]): PaperPath => {
 };
 
 const fromPaperPath = (path: PaperPath): Vector[] => {
-  return path._segments.map(segment => {
+  return path._segments.map((segment: any) => {
     return {x: segment._point.x, y: segment._point.y};
   });
 };

@@ -9,12 +9,10 @@ export default new ItemType({
     color:            '#b8866e',
     availableIntents: [
         throwIntent({
-            continuous: true,
-            throwable:  {
-                name:  'drill',
-                make:  drillThrowable,
-                throwableSpawnOffset: 20,
-            },
+            continuous:           true,
+            name:                 'drill',
+            make:                 drillThrowable,
+            throwableSpawnOffset: 20,
         }),
     ],
 });

@@ -1,9 +1,9 @@
 import {find, times} from 'lodash';
 
 import {keyBinds, slots as defaultInventorySize} from '../data/inventory';
-import {ItemType} from "../todoTypes";
 import {NPC} from "../NPC";
 import StrayItem from "./StrayItem";
+import ItemType from "./ItemType";
 
 class InventorySlot {
 
@@ -71,7 +71,7 @@ class PlayerState {
     else {
       const removedItemType = targetSlot.itemType;
       targetSlot.amount! -= amount;
-      if (targetSlot.amount === 0) targetSlot.itemType = null;
+      if (targetSlot.amount === 0) targetSlot.itemType = undefined;
       return removedItemType;
     }
   }

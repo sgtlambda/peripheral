@@ -5,6 +5,7 @@ import Layer from '../Layer.ts';
 import circle from '../../common/circle';
 
 import {INTENT_BUILD} from '../../data/intents/buildIntent';
+import {PLAYER_AIM_OFFSET} from "../../data/constants";
 
 export const arrowVertices = ({offset = 20, length = 10, width = 5, angle, x, y}) => {
     const vertices = [
@@ -17,7 +18,7 @@ export const arrowVertices = ({offset = 20, length = 10, width = 5, angle, x, y}
     return vertices;
 };
 
-export const buildableVertices = ({buildable, offset = 35, size = 32, angle, x, y}) => {
+export const buildableVertices = ({buildable, offset = PLAYER_AIM_OFFSET, size = 32, angle, x, y}) => {
     const vertices = [
         {x: offset, y: size / 2},
         {x: offset, y: -size / 2},

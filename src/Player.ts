@@ -1,6 +1,4 @@
 import {Body, Vector} from 'matter-js';
-
-import Stage from "./logic/Stage";
 import {KeysOn} from "./types";
 import Character, {CharacterConstructorProps} from "./Character";
 
@@ -9,14 +7,10 @@ class Player extends Character {
   public aimAngle: number;
   public keys: KeysOn;
   public mouse: Vector;
-  public readonly stage: Stage;
-
-  public collider: Body;
 
   public readonly moveForce: number;
   public readonly jetpackForce: number;
   public readonly frictionWhileMoving: number;
-  public readonly friction: number;
 
   constructor(
     {
@@ -61,6 +55,14 @@ class Player extends Character {
 
   afterStep() {
     this.aimAngle = Vector.angle(this.position, this.mouse);
+  }
+
+  getAimVector(size: number) {
+    return Vector.rotate({x: size, y: 0}, this.aimAngle);
+  }
+
+  getAimPosition(offset: number) {
+    return Vector.add(this.position, this.getAimVector(offset));
   }
 }
 

@@ -15,7 +15,8 @@ Then go to http://localhost:1234
 
 - Convert DTO classes to simple typed objects
 - Explosions should "blow away" nearby characters and objects
-- Explosion design
+- Explosion design / animation
 - Hitscannig / raycasting
+- Item icons
 - Try interesting stage design (with ropes / wires)
 - Character could maybe be a wall-e esque robot floating with a thruster.

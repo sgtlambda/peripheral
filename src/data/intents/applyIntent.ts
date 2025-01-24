@@ -6,6 +6,13 @@ import {ItemIntent} from "../../logic/ItemIntent";
 //  (i.e. `trigger` handler)
 export const INTENT_APPLY = Symbol('INTENT_APPLY');
 
+export type ApplyFunction = (player: Player, stage: Stage) => void;
+
+export type ApplyIntentOptions = { apply: ApplyFunction; };
+
+/**
+ * Intent with a custom 'apply' action.
+ */
 const createApplyIntent = (
   {
     apply,
@@ -13,11 +20,11 @@ const createApplyIntent = (
     continuous = false,
     applyActionLabel,
   }: {
-    apply: (player: Player, stage: Stage) => void;
+    apply: ApplyFunction;
     primary?: boolean;
     continuous: boolean;
     applyActionLabel: string;
-  }): ItemIntent => {
+  }): ItemIntent<ApplyIntentOptions> => {
   const keyBind = 'c';  // TODO bind to src/interactionController.ts:14 more explicitly
   return {
     keyBind,

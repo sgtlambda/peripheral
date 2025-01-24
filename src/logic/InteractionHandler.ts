@@ -1,9 +1,9 @@
 import {Engine, Events, Vector} from 'matter-js';
 import StrayItem from './StrayItem';
 
-import {INTENT_BUILD} from '../data/intents/buildIntent';
-import {INTENT_THROW} from '../data/intents/throwIntent';
-import {INTENT_APPLY} from '../data/intents/applyIntent';
+import {BuildIntentOptions, INTENT_BUILD} from '../data/intents/buildIntent';
+import {INTENT_THROW, ThrowIntentOptions} from '../data/intents/throwIntent';
+import {ApplyIntentOptions, INTENT_APPLY} from '../data/intents/applyIntent';
 import Player from "../Player";
 import Stage from "./Stage";
 import PlayerState from "./PlayerState";
@@ -12,7 +12,9 @@ import {processPrompt} from "./language";
 import {EngineStep} from "../engineStep";
 
 import {EngineComponent} from "../types";
-import {ItemType} from "../todoTypes";
+import {ItemIntent} from "./ItemIntent";
+import ItemType from "./ItemType";
+import {PLAYER_AIM_OFFSET} from "../data/constants";
 
 export const ITEM_DROP_COOLDOWN_MS = 1000;
 
@@ -113,42 +115,34 @@ class InteractionHandler implements EngineComponent {
     }
   }
 
-  getPlayerEmitVelocity(force: number) {
-    return Vector.rotate({x: force, y: 0}, this.player.aimAngle);
-  }
-
   dropItem() {
     const itemType = this.getActiveItemType();
     if (itemType && itemType.droppable) {
-      const dropped  = this.playerState.removeFromInventory();
+      const dropped  = this.playerState.removeFromInventory()!;
       const position = {...this.player.position};
       const cooldown = ITEM_DROP_COOLDOWN_MS;
-      const velocity = this.getPlayerEmitVelocity(ITEM_DROP_FORCE);
+      const velocity = this.player.getAimVector(ITEM_DROP_FORCE);
       this.stage.addStrayItem(new StrayItem({itemType: dropped, ...position, velocity, cooldown}));
     }
   }
 
-  getPlayerBuildPosition(offset = 35 + 16) {
-    return Vector.add(this.player.position, Vector.rotate({x: offset, y: 0}, this.player.aimAngle));
-  }
-
-  getActiveItemType(): ItemType | undefined {
+  protected getActiveItemType(): ItemType | undefined {
     const slot = this.playerState.getActiveSlot();
     if (!slot.itemType || !slot.amount) return undefined;
     return slot.itemType;
   }
 
-  getActiveItemIntentOf(type: Symbol) {
+  getActiveItemIntentOf<IntentOptions>(type: Symbol): ItemIntent<IntentOptions> | undefined {
     const itemType = this.getActiveItemType();
-    if (!itemType) return null;
+    if (!itemType) return undefined;
     return itemType.getIntentByType(type);
   }
 
   buildItem() {
-    const buildIntent = this.getActiveItemIntentOf(INTENT_BUILD);
+    const buildIntent = this.getActiveItemIntentOf<BuildIntentOptions>(INTENT_BUILD);
     if (!buildIntent) return;
     if (this.playerState.removeFromInventory(buildIntent.options.requires)) {
-      const position = this.getPlayerBuildPosition();
+      const position = this.player.getAimPosition(PLAYER_AIM_OFFSET + 16); // TODO this should be in the item definition, or at least not hardcoded
       this.stage.addBuilding(buildIntent.options.buildable.toBuilding({
         angle: this.player.aimAngle,
         ...position,
@@ -157,23 +151,23 @@ class InteractionHandler implements EngineComponent {
   }
 
   applyItem() {
-    const applyIntent = this.getActiveItemIntentOf(INTENT_APPLY);
-    applyIntent.options.apply(this.player, this.stage);
+    const applyIntent = this.getActiveItemIntentOf<ApplyIntentOptions>(INTENT_APPLY);
+    applyIntent!.options.apply(this.player, this.stage);
   }
 
   throwItem() {
-    const throwIntent = this.getActiveItemIntentOf(INTENT_THROW);
+    const throwIntent = this.getActiveItemIntentOf<ThrowIntentOptions>(INTENT_THROW);
     if (!throwIntent) return;
     if (this.playerState.removeFromInventory(1)) {
 
-      const {make, throwableSpawnOffset = 0} = throwIntent.options.throwable;
+      const {make, throwableSpawnOffset = 0} = throwIntent.options;
 
       const position = Vector.add(
         {...this.player.position},
         Vector.rotate({x: throwableSpawnOffset, y: 0}, this.player.aimAngle)
       );
 
-      const velocity = this.getPlayerEmitVelocity(ITEM_THROW_FORCE);
+      const velocity = this.player.getAimVector(ITEM_THROW_FORCE);
 
       this.stage.addThrowable(make({...position, velocity}));
     }
@@ -197,7 +191,7 @@ class InteractionHandler implements EngineComponent {
     const itemType = this.getActiveItemType();
     if (!itemType) return;
     const primaryIntent = itemType.getPrimaryIntent();
-    if (primaryIntent.continuous) this.triggerPrimary();
+    if (primaryIntent?.continuous) this.triggerPrimary();
   }
 
   pickup(strayItem: StrayItem) {
