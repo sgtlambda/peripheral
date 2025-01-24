@@ -11,6 +11,16 @@ export const ChatBubble: CSSProperties = {
   fontSize:     13,
 };
 
+export const ChatTitle: CSSProperties = {
+  background:   'white',
+  fontWeight:   'bold',
+  borderRadius: 3,
+  padding:      '8px 10px',
+  marginBottom: 10,
+  fontFamily:   'Arial',
+  fontSize:     13,
+};
+
 export const OwnChatBubble: CSSProperties = {
   textAlign:  'right',
   background: '#3bb0d5',
@@ -30,7 +40,7 @@ export const NpcChatLog: React.FC<{
       filter:    `blur(${5 - npc.proximity * 5}px)`,
     }}
   >
-    <div style={ChatBubble}>(talk to {npc.npc.name})</div>
+    <div style={ChatTitle}>{npc.npc.name}</div>
     {npc.npc.interactionLog.results.map((message, i) => {
       const isOwn = message.prefix === NpcInteractionLog.PlayerPrefix;
       return (

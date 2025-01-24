@@ -21,7 +21,7 @@ export class NpcInteractionLog {
     const lines = [
       `This is an in-game interaction between a player and an NPC. ${this.getNpcContext()}`,
       ...this.results.map(result => `${result.prefix}${result.text}`),
-      this.npcPrefix,
+      'What would the NPC say next? Exclude the prefix and don\'t continue the conversation past the NPC\'s next response.',
     ];
     console.log(lines);
     return lines.join('\n');

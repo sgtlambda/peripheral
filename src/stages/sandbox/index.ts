@@ -21,12 +21,12 @@ export default () => {
     color:    '#ffffff',
   }));
   stage.addNPC(new NPC({
-    id:                   1, name: 'Guard', stage, x: 300, y: 0,
-    additionalNpcContext: "Barry speaks broken German with some English mixed in, but always with a derogatory tone.",
+    id:                   1, name: 'Outside Guard', stage, x: 300, y: 0,
+    additionalNpcContext: "This NPC is somewhat grumpy but once the player engages with him in an empathic manner, he will reveal that he is about to retire, but only if pushed to have some chit-chat. The player also needs to provide some (fake) credentials and talk with full confidence, to be allowed entrance to the building. The NPC can choose to include [accept], [hold] (needs more persuasion), or [deny] (fails the test) in his response."
   }));
   stage.addNPC(new NPC({
-    id:                   2, name: 'Janitor', stage, x: 600, y: 0,
-    additionalNpcContext: "Karel will always accuse the player of looking like a tiny rat, no matter what the player says to try and convince him otherwise."
+    id:                   2, name: 'Inside Guard', stage, x: 600, y: 0,
+    additionalNpcContext: ""
   }));
   return stage;
 };
