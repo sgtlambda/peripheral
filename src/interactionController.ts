@@ -14,7 +14,7 @@ export default (
       e: 'takeItem',
       t: 'throwItem',
       c: 'applyItem',
-      f: 'interactWithNpc',
+      '/': 'interactWithNpc',
     },
   }: {
     mouseEmitter?: EventTarget;
