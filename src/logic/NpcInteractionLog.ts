@@ -4,6 +4,8 @@ export class NpcInteractionLog {
 
   npcPrefix = 'NPC: ';
 
+  systemPrefix = 'System: ';
+
   results: { prefix: string; text: string }[];
 
   getNpcContext: () => string;
@@ -31,7 +33,8 @@ export class NpcInteractionLog {
     this.results.push({prefix: NpcInteractionLog.PlayerPrefix, text: question});
   }
 
-  public addAnswer(answer: string) {
+  public addAnswer(answer: string, systemMessage?: string) {
     this.results.push({prefix: this.npcPrefix, text: answer});
+    if (systemMessage) this.results.push({prefix: this.systemPrefix, text: systemMessage});
   }
 }

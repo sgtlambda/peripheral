@@ -12,7 +12,9 @@ export const ChatBubble: CSSProperties = {
 };
 
 export const ChatTitle: CSSProperties = {
-  background:   'white',
+  // background:   'white',
+  textAlign:    'center',
+  color:        'white',
   fontWeight:   'bold',
   borderRadius: 3,
   padding:      '8px 10px',
@@ -31,8 +33,8 @@ export const NpcChatLog: React.FC<{
 }> = ({npc}) => {
   return <div
     style={{
-      left:      npc.x - 100,
-      width:     200,
+      left:      npc.x - 150,
+      width:     300,
       top:       npc.y - 30,
       transform: 'translateY(-100%)',
       position:  "absolute",
