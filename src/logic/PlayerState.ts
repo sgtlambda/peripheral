@@ -5,7 +5,7 @@ import {NPC} from "../NPC";
 import StrayItem from "./StrayItem";
 import ItemType from "./ItemType";
 
-class InventorySlot {
+export class InventorySlot {
 
   itemType?: ItemType;
   amount?: number;

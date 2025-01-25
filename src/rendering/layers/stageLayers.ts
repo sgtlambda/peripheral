@@ -1,6 +1,6 @@
 import Layer from '../Layer';
 
-import renderItem from '../renderItem';
+import {renderItem} from '../renderItem';
 
 import Stage from "../../logic/Stage";
 

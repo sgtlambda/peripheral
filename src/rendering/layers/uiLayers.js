@@ -1,4 +1,4 @@
-import renderItem from '../renderItem';
+import {renderItem} from '../renderItem';
 
 import roundRect from '../../common/roundrect';
 
