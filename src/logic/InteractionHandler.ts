@@ -24,7 +24,7 @@ export const ITEM_DROP_FORCE = 5;
 
 export const ITEM_THROW_FORCE = 12;
 
-export const NPC_INTERACTION_DISTANCE = 50;
+export const NPC_INTERACTION_DISTANCE = 80;
 
 /**
  * Takes care of interactions between the player and the world

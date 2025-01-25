@@ -14,8 +14,8 @@ function toTransform(element: HTMLElement, camera: Camera): string {
   const elementBounds = element.getBoundingClientRect();
 
   const desiredCenter = {
-    x: (camera.bounds.max.x + camera.bounds.min.x) / 2,
-    y: (camera.bounds.max.y + camera.bounds.min.y) / 2,
+    x: Math.round((camera.bounds.max.x + camera.bounds.min.x) / 2),
+    y: Math.round((camera.bounds.max.y + camera.bounds.min.y) / 2),
   };
 
   // const scale         = element.getBoundingClientRect().width / (camera.bounds.max.x - camera.bounds.min.x);
