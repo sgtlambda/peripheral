@@ -39,13 +39,16 @@ export const NpcChatLog: React.FC<{
 }> = ({npc}) => {
   return <div
     style={{
-      left:      npc.x - 150,
-      width:     300,
-      top:       npc.y - 30,
-      transform: 'translateY(-100%)',
-      position:  "absolute",
-      opacity:   npc.proximity,
-      filter:    `blur(${5 - npc.proximity * 5}px)`,
+      left:         npc.x - 150,
+      width:        300,
+      top:          npc.y - 30,
+      transform:    'translateY(-100%)',
+      position:     "absolute",
+      opacity:      npc.proximity,
+      filter:       `blur(${5 - npc.proximity * 5}px)`,
+      background:   npc.npc.interactionLog.messages.length ? 'rgba(255, 255, 255, 0.1)' : undefined,
+      borderRadius: 5,
+      padding:      '0 10px',
     }}
   >
     <div style={ChatTitle}>{npc.npc.name}</div>
@@ -64,7 +67,7 @@ export const NpcChatLog: React.FC<{
   </div>;
 };
 
-export const ReactNpcDialogOverlay: React.FC = ({}) => {
+export const NpcDialogOverlay: React.FC = ({}) => {
 
   const npcs = useNpcs();
 

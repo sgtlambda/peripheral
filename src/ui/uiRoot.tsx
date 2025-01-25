@@ -1,5 +1,5 @@
 import React from "react";
 
-import {ReactNpcDialogOverlay} from "./ReactNpcDialogOverlay";
+import {NpcDialogOverlay} from "./NpcDialogOverlay";
 
-export const uiRoot = <ReactNpcDialogOverlay/>;
+export const uiRoot = <NpcDialogOverlay/>;

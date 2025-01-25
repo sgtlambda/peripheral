@@ -10,14 +10,23 @@ class Camera implements EngineComponent {
   render: Render;
   smooth: number;
   player: any;
+  trackOffset?: { x: number; y: number };
   _callback: (e: any) => void;
 
-  constructor({render, smooth = 8}) {
+  constructor({render, smooth = 8, trackOffset}: {
+    render: Render;
+    smooth?: number;
+    trackOffset?: { x: number; y: number };
+  }) {
 
     this.smooth = smooth;
     this.render = render;
+    this.trackOffset = trackOffset;
     this.updateBounds();
-    Bounds.shift(this.render.bounds, {x: -this.width / 2, y: -this.height / 2});
+    Bounds.shift(this.render.bounds, {
+      x: -this.width / 2 + (trackOffset?.x || 0),
+      y: -this.height / 2 + (trackOffset?.y || 0),
+    });
   }
 
   updateBounds() {
@@ -41,8 +50,8 @@ class Camera implements EngineComponent {
 
   getBoundsTarget() {
     return {
-      x: this.trackBody.position.x - this.width / 2,
-      y: this.trackBody.position.y - this.height / 2,
+      x: this.trackBody.position.x - this.width / 2 + (this.trackOffset?.x || 0),
+      y: this.trackBody.position.y - this.height / 2 + (this.trackOffset?.y || 0),
     };
   }
 

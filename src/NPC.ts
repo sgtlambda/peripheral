@@ -1,5 +1,6 @@
 import Character, {CharacterConstructorProps} from "./Character";
 import {NpcInteractionLog} from "./logic/NpcInteractionLog";
+import {getSceneContext} from "./sceneContext";
 
 export type ProcessIncomingMessage = (message: string) => undefined | {
   message: string;
@@ -33,7 +34,7 @@ export class NPC extends Character {
     this.name                   = name;
     this.id                     = id;
     this.interactionLog         = new NpcInteractionLog(
-      () => `This NPC is called ${this.name}.${additionalNpcContext ? ` ${additionalNpcContext}` : ''}`,
+      () => `The assistant represents an NPC interacting with the user (player). ${getSceneContext()}${additionalNpcContext ? ` ${additionalNpcContext}` : ''}`,
     );
     this.processIncomingMessage = processIncomingMessage;
   }

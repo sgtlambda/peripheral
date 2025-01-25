@@ -47,7 +47,10 @@ if ('lastStop' in window) window.lastStop();
   const world  = engine.world;
   const render = createRenderer({element: document.body, engine});
 
-  const camera = new Camera({render});
+  const camera = new Camera({
+    render,
+    trackOffset: {x: 0, y: -120},
+  });
 
   const playerState = new PlayerState();
 
