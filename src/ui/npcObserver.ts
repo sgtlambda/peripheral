@@ -29,7 +29,7 @@ export const npcObserver = (stage: Stage, player: Player): EngineComponent => {
         if (
           existingNpcs[npc.id]?.x !== Math.round(npc.body.position.x)
           || existingNpcs[npc.id]?.y !== Math.round(npc.body.position.y)
-          || existingNpcs[npc.id]?.messages !== npc.interactionLog.results.length
+          || existingNpcs[npc.id]?.messages !== npc.interactionLog.messages.length
           || existingNpcs[npc.id]?.proximity !== proximity
         ) {
           doUpdate = true;
@@ -43,7 +43,7 @@ export const npcObserver = (stage: Stage, player: Player): EngineComponent => {
             [npc.id]: {
               x:         Math.round(npc.body.position.x),
               y:         Math.round(npc.body.position.y),
-              messages:  npc.interactionLog.results.length,
+              messages:  npc.interactionLog.messages.length,
               proximity: getProximity(npc, player),
               npc,
             },

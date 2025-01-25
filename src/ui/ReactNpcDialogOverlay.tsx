@@ -1,6 +1,5 @@
 import React, {CSSProperties} from "react";
 import {SceneUiNpcInfo, useNpcs} from "./sceneHooks";
-import {NpcInteractionLog} from "../logic/NpcInteractionLog";
 
 export const ChatBubble: CSSProperties = {
   background:   'white',
@@ -9,10 +8,10 @@ export const ChatBubble: CSSProperties = {
   marginBottom: 10,
   fontFamily:   'Arial',
   fontSize:     13,
+  width:        'fit-content',
 };
 
 export const ChatTitle: CSSProperties = {
-  // background:   'white',
   textAlign:    'center',
   color:        'white',
   fontWeight:   'bold',
@@ -23,9 +22,16 @@ export const ChatTitle: CSSProperties = {
   fontSize:     13,
 };
 
+export const SystemText: CSSProperties = {
+  fontStyle: 'italic',
+  marginTop: '5px',
+  color:     '#1489ae',
+};
+
 export const OwnChatBubble: CSSProperties = {
   textAlign:  'right',
   background: '#3bb0d5',
+  marginLeft: 'auto',
 }
 
 export const NpcChatLog: React.FC<{
@@ -43,13 +49,16 @@ export const NpcChatLog: React.FC<{
     }}
   >
     <div style={ChatTitle}>{npc.npc.name}</div>
-    {npc.npc.interactionLog.results.map((message, i) => {
-      const isOwn = message.prefix === NpcInteractionLog.PlayerPrefix;
+    {npc.npc.interactionLog.messages.map((message, i) => {
+      const isOwn = message.isPlayer;
       return (
         <div key={i} style={{
           ...ChatBubble,
           ...(isOwn ? OwnChatBubble : {}),
-        }}>{message.text}</div>
+        }}>
+          {message.text}
+          {message.systemMessage && <div style={{...SystemText}}>{message.systemMessage}</div>}
+        </div>
       );
     })}
   </div>;

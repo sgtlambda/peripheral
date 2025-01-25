@@ -22,7 +22,13 @@ export default () => {
   }));
   stage.addNPC(new NPC({
     id:                     1, name: 'Outer Guard', stage, x: 300, y: 0,
-    additionalNpcContext:   "This NPC is somewhat grumpy but once the player engages with him in an empathic manner, he will reveal that he is about to retire, but only if pushed to have some chit-chat. The player also needs to provide some (fake) credentials and talk with full confidence, to be allowed entrance to the building. The NPC, until convinced, talks in short industry sentences and doesn't let on too many hints. The NPC can choose to include [accept] (allow the player in once sufficiently \"proven\" themselves), [hold] (needs some more persuasion), or [deny] (fails the test and the level - red flags were raised) in his response.",
+    additionalNpcContext:   "This NPC is somewhat uninterested but once the player engages with him in an empathic manner, " +
+                              "he will reveal that he is about to retire, but only if pushed to have some chit-chat. " +
+                              "The player also needs to provide some (fake) credentials and talk with full confidence, " +
+                              "to be allowed entrance to the building. The NPC, until convinced, talks in short industry " +
+                              "sentences and doesn't let on too many hints. The NPC can choose to include [accept] (allow " +
+                              "the player in once sufficiently \"proven\" themselves), [hold] (needs some more persuasion), " +
+                              "or [deny] (fails the test and the level - red flags were raised) in his response. The NPC takes a second to trust the player as his peer but once he does, he accepts him. He also doesn't like too much small talk, so the player needs to be concise and to the point. At some point the NPC may concede simply because he is tired of the player's persistence.",
     processIncomingMessage: (message: string) => {
       if (message.includes('[accept]')) {
         return {

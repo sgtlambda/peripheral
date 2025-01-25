@@ -34,7 +34,6 @@ export class NPC extends Character {
     this.id                     = id;
     this.interactionLog         = new NpcInteractionLog(
       () => `This NPC is called ${this.name}.${additionalNpcContext ? ` ${additionalNpcContext}` : ''}`,
-      `NPC ${this.name}: `,
     );
     this.processIncomingMessage = processIncomingMessage;
   }

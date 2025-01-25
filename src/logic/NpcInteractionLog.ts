@@ -1,40 +1,39 @@
 export class NpcInteractionLog {
 
-  static PlayerPrefix = 'Player: ';
-
-  npcPrefix = 'NPC: ';
-
-  systemPrefix = 'System: ';
-
-  results: { prefix: string; text: string }[];
+  messages: { isPlayer: boolean; text: string; systemMessage?: string }[];
 
   getNpcContext: () => string;
 
   constructor(
     getNpcContext: () => string,
-    npcPrefix?: string,
   ) {
-    this.results       = [];
+    this.messages = [];
     this.getNpcContext = getNpcContext;
-    if (npcPrefix) this.npcPrefix = npcPrefix;
   }
 
-  public getFullPrompt(): string {
-    const lines = [
-      `This is an in-game interaction between a player and an NPC. ${this.getNpcContext()}`,
-      ...this.results.map(result => `${result.prefix}${result.text}`),
-      'What would the NPC say next? Exclude the prefix and don\'t continue the conversation past the NPC\'s next response.',
+  public getOpenAIMessages(): { role: 'system' | 'user' | 'assistant'; content: string }[] {
+    const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+      { role: 'system', content: `This is an in-game interaction between a player and an NPC. ${this.getNpcContext()}` }
     ];
-    console.log(lines);
-    return lines.join('\n');
+
+    for (const msg of this.messages) {
+      messages.push({
+        role: msg.isPlayer ? 'user' : 'assistant',
+        content: msg.text
+      });
+      if (msg.systemMessage) {
+        messages.push({ role: 'system', content: msg.systemMessage });
+      }
+    }
+
+    return messages;
   }
 
   public addQuestion(question: string) {
-    this.results.push({prefix: NpcInteractionLog.PlayerPrefix, text: question});
+    this.messages.push({ isPlayer: true, text: question });
   }
 
   public addAnswer(answer: string, systemMessage?: string) {
-    this.results.push({prefix: this.npcPrefix, text: answer});
-    if (systemMessage) this.results.push({prefix: this.systemPrefix, text: systemMessage});
+    this.messages.push({ isPlayer: false, text: answer, systemMessage });
   }
 }

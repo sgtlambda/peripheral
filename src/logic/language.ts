@@ -15,11 +15,11 @@ export async function processPrompt(npc: NPC, input: string) {
 
   interactionLog.addQuestion(input);
 
-  const prompt = interactionLog.getFullPrompt();
+  const messages = interactionLog.getOpenAIMessages();
 
   const gptResponse = await openai.chat.completions.create({
     model:             'gpt-4o',
-    messages:          [{role: 'system', content: prompt}],
+    messages,
     max_tokens:        100,
     temperature:       0.9,
     top_p:             1,
