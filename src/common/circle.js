@@ -1,4 +1,4 @@
-export default function roundRect(ctx, x, y, radius, fill, stroke) {
+export default function circle(ctx, x, y, radius, fill, stroke) {
     if (typeof stroke == 'undefined') {
         stroke = true;
     }
