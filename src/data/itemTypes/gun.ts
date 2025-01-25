@@ -10,6 +10,7 @@ import {nom} from "../../logic/effects/nom";
 const {raycast} = require('../../common/ray');
 
 const GUN_RAY_WIDTH = 1;
+const GUN_PREVIEW_SIZE = 8;
 
 // TODO add accuracy, etc. maybe ray 'width' as well.
 
@@ -20,6 +21,16 @@ export const createGun = (
 ) => new ItemType({
   name:             'gun',
   color:            '#dd6363',
+  renderPlayerInteractionPreview: (context, x, y, angle) => {
+    // TODO ray cast
+    context.save();
+    context.translate(x, y);
+    context.rotate(angle);
+    context.translate(PLAYER_AIM_OFFSET, 0);
+    context.strokeStyle = 'rgba(255,255,255,0.5)';
+    context.strokeRect(-GUN_PREVIEW_SIZE/2, -GUN_PREVIEW_SIZE/2, GUN_PREVIEW_SIZE, GUN_PREVIEW_SIZE);
+    context.restore();
+  },
   availableIntents: [
     applyIntent({
       primary:          true,

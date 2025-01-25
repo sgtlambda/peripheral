@@ -103,7 +103,9 @@ interface PlayerInteractionLayerProps {
 export default ({player, playerState}: PlayerInteractionLayerProps): Layer => new Layer({
     render(context: CanvasRenderingContext2D) {
         const itemType = playerState.getActiveSlot().itemType;
-        if (itemType && itemType.getIntentByType(INTENT_BUILD)) {
+        if (itemType?.renderPlayerInteractionPreview) {
+            itemType.renderPlayerInteractionPreview(context, player.position.x, player.position.y, player.aimAngle);
+        } else if (itemType && itemType.getIntentByType(INTENT_BUILD)) {
             const buildable = itemType.getIntentByType<{
                 buildable: any; // TODO: Define proper type when available
             }>(INTENT_BUILD)!.options.buildable;
