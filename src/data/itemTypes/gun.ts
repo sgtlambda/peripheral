@@ -21,7 +21,7 @@ export const createGun = (
 ) => new ItemType({
   name:             'gun',
   color:            '#dd6363',
-  renderPlayerInteractionPreview: (context, x, y, angle) => {
+  renderPlayerInteractionPreview: (stage, context, x, y, angle) => {
     // TODO ray cast
     context.save();
     context.translate(x, y);

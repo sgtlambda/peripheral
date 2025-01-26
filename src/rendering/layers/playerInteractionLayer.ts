@@ -9,6 +9,7 @@ import {PLAYER_AIM_OFFSET} from '../../data/constants';
 
 import Player from '../../Player';
 import PlayerState from '../../logic/PlayerState';
+import Stage from "../../logic/Stage";
 
 interface ArrowVerticesOptions {
     offset?: number;
@@ -95,16 +96,15 @@ export const drawVertices = ({
     }
 };
 
-interface PlayerInteractionLayerProps {
+export const playerInteractionLayer = ({player, playerState, stage}: {
     player: Player;
     playerState: PlayerState;
-}
-
-export default ({player, playerState}: PlayerInteractionLayerProps): Layer => new Layer({
+    stage: Stage;
+}): Layer => new Layer({
     render(context: CanvasRenderingContext2D) {
         const itemType = playerState.getActiveSlot().itemType;
         if (itemType?.renderPlayerInteractionPreview) {
-            itemType.renderPlayerInteractionPreview(context, player.position.x, player.position.y, player.aimAngle);
+            itemType.renderPlayerInteractionPreview(stage, context, player.position.x, player.position.y, player.aimAngle);
         } else if (itemType && itemType.getIntentByType(INTENT_BUILD)) {
             const buildable = itemType.getIntentByType<{
                 buildable: any; // TODO: Define proper type when available

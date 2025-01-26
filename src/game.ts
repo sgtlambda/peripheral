@@ -14,7 +14,7 @@ import PlayerState from './logic/PlayerState';
 import backgroundLayer from './rendering/layers/backgroundLayer.js';
 import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
-import playerInteractionLayer from './rendering/layers/playerInteractionLayer';
+import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
 import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
@@ -96,7 +96,7 @@ if ('lastStop' in window) window.lastStop();
     unrotate, // Note this layer MUST be first
 
     backgroundLayer(),
-    playerInteractionLayer({player, playerState}),
+    playerInteractionLayer({player, playerState, stage}),
     ...createStageLayers(stage),
     ...uiLayers({gameMouse, player, playerState}),
     markupGuiRenderer.layer,
