@@ -22,13 +22,25 @@ export const createGun = (
   name:             'gun',
   color:            '#dd6363',
   renderPlayerInteractionPreview: (stage, context, x, y, angle) => {
-    // TODO ray cast
     context.save();
     context.translate(x, y);
-    context.rotate(angle);
-    context.translate(PLAYER_AIM_OFFSET, 0);
+    // context.rotate(angle);
+    // context.translate(PLAYER_AIM_OFFSET, 0);
     context.strokeStyle = 'rgba(255,255,255,0.5)';
     context.strokeRect(-GUN_PREVIEW_SIZE/2, -GUN_PREVIEW_SIZE/2, GUN_PREVIEW_SIZE, GUN_PREVIEW_SIZE);
+
+    // New code to draw a line to the intersection point
+    const startPos = Vector.create(x, y);
+    const endPos = Vector.add(startPos, Vector.rotate({x: range, y: 0}, angle));
+    const bodies = stage.planets.map(planet => planet.body);
+    const collisions = raycast(bodies, startPos, endPos);
+    const endpoint = collisions.length ? collisions[0].point : endPos;
+
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(endpoint.x - x, endpoint.y - y);
+    context.stroke();
+
     context.restore();
   },
   availableIntents: [
