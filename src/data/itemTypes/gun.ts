@@ -1,4 +1,4 @@
-import {Vector, Vertices} from "matter-js";
+import Matter, {Vector, Vertices} from "matter-js";
 
 import ItemType from "../../logic/ItemType";
 import applyIntent from "../intents/applyIntent";
@@ -9,8 +9,9 @@ import {nom} from "../../logic/effects/nom";
 
 // const {raycast} = require('../../common/ray');
 import {raycast} from '../../common/ray';
+import {clone, cloneDeep} from "lodash";
 
-const GUN_RAY_WIDTH = 1;
+const GUN_RAY_WIDTH    = 1;
 const GUN_PREVIEW_SIZE = 8;
 
 // TODO add accuracy, etc. maybe ray 'width' as well.
@@ -20,44 +21,67 @@ export const createGun = (
   damage: number = 10,
   spread: number = 5,
 ) => new ItemType({
-  name:             'gun',
-  color:            '#dd6363',
+  name:                           'gun',
+  color:                          '#dd6363',
   renderPlayerInteractionPreview: (stage, context, x, y, angle) => {
     context.save();
     context.translate(x, y);
-    // context.rotate(angle);
-    // context.translate(PLAYER_AIM_OFFSET, 0);
-    context.strokeStyle = 'rgba(255,255,255,0.5)';
-    context.strokeRect(-GUN_PREVIEW_SIZE/2, -GUN_PREVIEW_SIZE/2, GUN_PREVIEW_SIZE, GUN_PREVIEW_SIZE);
 
-    // New code to draw a line to the intersection point
-    const startPos = Vector.create(x, y);
-    const endPos = Vector.add(startPos, Vector.rotate({x: range, y: 0}, angle));
-    const bodies = stage.planets.map(planet => planet.body);
-    const collisions = raycast(bodies, startPos, endPos);
-    const endpoint = collisions.length ? collisions[0].point : endPos;
+    for(let i = 10; i < range; i += 10) {
 
-    context.beginPath();
-    context.moveTo(0, 0);
-    context.lineTo(endpoint.x - x, endpoint.y - y);
-    context.stroke();
+      const startPos   = Vector.create(x, y);
+      const endPos     = Vector.add(startPos, Vector.rotate({x: i, y: 0}, angle));
+      const bodies     = stage.planets.map(planet => planet.body);
+      const collisions = raycast(
+        bodies,
+        startPos,
+        endPos
+      );
 
-    // New code to draw a circle around each collision point
-    collisions.forEach((collision: any) => {
-    context.beginPath();
-      context.arc(collision.point.x - x, collision.point.y - y, 5, 0, 2 * Math.PI);
-    context.strokeStyle = 'rgba(255, 0, 0, 0.5)'; // Red color for the circle
-    context.stroke();
-    });
+      // New code to draw a circle around each collision point
+      collisions.forEach((collision: any) => {
+        context.beginPath();
+        context.arc(collision.point.x - x, collision.point.y - y, 5, 0, 2 * Math.PI);
+        context.strokeStyle = 'rgba(255, 0, 0, 0.5)'; // Red color for the circle
+        context.stroke();
+      });
+
+
+      const kronk = [
+        ...Matter.Query.ray(cloneDeep(bodies), startPos, endPos),
+        ...Matter.Query.ray(bodies, endPos, startPos),
+      ];
+
+      kronk.forEach((collision) => {
+        context.beginPath();
+        context.arc(collision.bodyA.position.x - x, collision.bodyA.position.y - y, 8 + i /10, 0, 2 * Math.PI);
+        context.strokeStyle = 'rgba(0, 0, 255, 1)'; // Red color for the circle
+        context.stroke();
+
+        context.beginPath();
+        context.arc(collision.bodyB.position.x - x, collision.bodyB.position.y - y, 8 + i /10, 0, 2 * Math.PI);
+        context.strokeStyle = 'rgba(0, 0, 255, 1)'; // Red color for the circle
+        context.stroke();
+      });
+
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.lineTo(endPos.x -x, endPos.y - y);
+      context.stroke();
+    }
+
 
     context.restore();
   },
-  availableIntents: [
+  availableIntents:               [
     applyIntent({
       primary:          true,
       continuous:       true,
       applyActionLabel: 'fire gun',
       apply(player, stage) {
+
+        // TODO in order for this to work, I think we need to incrementally increase the 'range'
+        //  and check for collisions at each step.
 
         const angle = player.aimAngle + (Math.random() - 0.5) * (spread / 360 * Math.PI);
 
