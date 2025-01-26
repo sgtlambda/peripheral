@@ -41,6 +41,14 @@ export const createGun = (
     context.lineTo(endpoint.x - x, endpoint.y - y);
     context.stroke();
 
+    // New code to draw a circle around each collision point
+    collisions.forEach((collision: any) => {
+    context.beginPath();
+      context.arc(collision.point.x - x, collision.point.y - y, 5, 0, 2 * Math.PI);
+    context.strokeStyle = 'rgba(255, 0, 0, 0.5)'; // Red color for the circle
+    context.stroke();
+    });
+
     context.restore();
   },
   availableIntents: [
