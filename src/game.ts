@@ -33,7 +33,9 @@ declare global {
   }
 }
 
-window.decomp = require('poly-decomp');
+import decomp from 'poly-decomp';
+
+window.decomp = decomp;
 
 // cleanup (for hot reload, if applicable)
 const canvas = document.getElementsByTagName('canvas').item(0);

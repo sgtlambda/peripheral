@@ -1,8 +1,9 @@
 import {Vector} from "matter-js";
 
-const paper = require('paper/dist/paper-core.min'); // TODO (?)
+// const paper = require('paper/dist/paper-core.min'); // TODO (?)
+import paper from 'paper/dist/paper-core';
 
-paper.setup();
+paper.setup('');
 
 type PaperPath = any; // TODO
 

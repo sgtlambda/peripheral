@@ -7,7 +7,8 @@ import {flash} from "../../logic/effects/flash";
 import circleVertices from "../../common/circleVertices";
 import {nom} from "../../logic/effects/nom";
 
-const {raycast} = require('../../common/ray');
+// const {raycast} = require('../../common/ray');
+import {raycast} from '../../common/ray';
 
 const GUN_RAY_WIDTH = 1;
 const GUN_PREVIEW_SIZE = 8;
