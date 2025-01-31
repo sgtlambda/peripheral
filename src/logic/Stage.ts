@@ -1,5 +1,3 @@
-import assert from 'assert';
-
 import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
@@ -134,7 +132,10 @@ class Stage implements WorldPart {
    */
   provision(world: World) {
 
-    assert(!this.provisioned, 'Cannot provision Stage twice.');
+    if (this.provisioned) {
+      throw new Error('Cannot provision Stage twice.');
+    }
+
     this.provisioned = true;
 
     for (const body of this.bodyQueue) Composite.add(world, body);
