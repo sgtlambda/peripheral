@@ -4,10 +4,10 @@ import {NPC} from "../NPC";
 
 export async function processPrompt(npc: NPC, input: string) {
 
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY!
 
   const openai = new OpenAI({
-    apiKey:                  OPENAI_API_KEY!,
+    apiKey,
     dangerouslyAllowBrowser: true,
   });
 
