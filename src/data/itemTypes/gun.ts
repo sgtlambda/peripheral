@@ -91,6 +91,9 @@ export const createGun = (
 
         const bodies = stage.planets.map(planet => planet.body);
 
+        // NOTE TO SELF: with a higher 'step' dist in the function (such as 100),
+        //  this totally breaks and the gun will shoot "through" nearby bodies,
+        //   even though it would be much better for performance.
         const collision = scanRay(player.position, angle, 0, range, 10, bodies);
 
         const endpoint = collision ? collision.point : endPos;
@@ -110,7 +113,8 @@ export const createGun = (
 
         if (collision) {
           const collisionPoint = collision.point;
-          const vertices       = Vertices.translate(circleVertices(10, 6, .5), collisionPoint, 1);
+          // TODO random angle on the circleVertices..!
+          const vertices       = Vertices.translate(circleVertices(10, 4, .5), collisionPoint, 1);
           nom(stage, vertices);
           flash(stage, {
             duration: 200,
