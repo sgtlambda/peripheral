@@ -87,7 +87,7 @@ export const createGun = (
 
         const startPos = Vector.clone(player.position);
 
-        const endPos = Vector.add(player.position, Vector.rotate({x: PLAYER_AIM_OFFSET + range, y: 0}, angle));
+        const endPos = Vector.add(player.position, Vector.rotate({x: range, y: 0}, angle));
 
         const bodies = stage.planets.map(planet => planet.body);
 
