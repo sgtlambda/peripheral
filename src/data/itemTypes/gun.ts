@@ -1,4 +1,4 @@
-import Matter, {Vector, Vertices} from "matter-js";
+import {Vector, Vertices} from "matter-js";
 
 import ItemType from "../../logic/ItemType";
 import applyIntent from "../intents/applyIntent";
@@ -8,8 +8,6 @@ import circleVertices from "../../common/circleVertices";
 import {nom} from "../../logic/effects/nom";
 
 // const {raycast} = require('../../common/ray');
-import {raycast} from '../../common/ray';
-import {clone, cloneDeep} from "lodash";
 import {scanRay} from "../../common/scanRay";
 
 const GUN_RAY_WIDTH    = 1;
@@ -22,8 +20,8 @@ export const createGun = (
   damage: number = 10,
   spread: number = 5,
 ) => new ItemType({
-  name:                           'gun',
-  color:                          '#dd6363',
+  name:  'gun',
+  color: '#dd6363',
   // renderPlayerInteractionPreview: (stage, context, x, y, angle) => {
   //   context.save();
   //   context.translate(x, y);
@@ -74,7 +72,7 @@ export const createGun = (
   //
   //   context.restore();
   // },
-  availableIntents:               [
+  availableIntents: [
     applyIntent({
       primary:          true,
       continuous:       true,
@@ -87,15 +85,13 @@ export const createGun = (
 
         const angle = player.aimAngle + (Math.random() - 0.5) * (spread / 360 * Math.PI);
 
-        const startPos = Vector.add(player.position, Vector.rotate({x: 16, y: 0}, angle));
+        const startPos = Vector.clone(player.position);
 
-        const endPos   = Vector.add(startPos, Vector.rotate({x: PLAYER_AIM_OFFSET + range, y: 0}, angle));
+        const endPos = Vector.add(player.position, Vector.rotate({x: PLAYER_AIM_OFFSET + range, y: 0}, angle));
 
         const bodies = stage.planets.map(planet => planet.body);
 
-        // 10 is the 'seek accuracy' of the raycast here... TODO look at?
-        // TODO this doesn't actually seem to help the problem !
-        const collision= scanRay(player.position, angle, PLAYER_AIM_OFFSET, range, 10, bodies);
+        const collision = scanRay(player.position, angle, 0, range, 10, bodies);
 
         const endpoint = collision ? collision.point : endPos;
 
