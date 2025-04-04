@@ -1,12 +1,12 @@
-import {Vector, Body} from "matter-js";
+import {Vector, Body, Vertex} from "matter-js";
 
 import {raycast} from '../common/ray';
 
 export type RayCollision = {
-  body: any;  // TODO
+  body: Body;
   point: Vector;
   normal: Vector;
-  verts: any; // TODO
+  verts: [Vertex, Vertex];
 }
 
 export function scanRay(origin: Vector, angle: number, startDist: number, endDist: number, stepDist: number, bodies: Body[]): RayCollision | null {
