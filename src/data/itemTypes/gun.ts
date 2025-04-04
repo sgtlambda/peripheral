@@ -7,7 +7,6 @@ import {flash} from "../../logic/effects/flash";
 import circleVertices from "../../common/circleVertices";
 import {nom} from "../../logic/effects/nom";
 
-// const {raycast} = require('../../common/ray');
 import {scanRay} from "../../common/scanRay";
 
 const GUN_RAY_WIDTH    = 1;
@@ -22,6 +21,7 @@ export const createGun = (
 ) => new ItemType({
   name:  'gun',
   color: '#dd6363',
+  // TODO restore the 'aim' point (?)
   // renderPlayerInteractionPreview: (stage, context, x, y, angle) => {
   //   context.save();
   //   context.translate(x, y);
@@ -79,10 +79,6 @@ export const createGun = (
       applyActionLabel: 'fire gun',
       apply(player, stage) {
 
-        // TODO in order for this to work, I think we need to incrementally increase the 'range'
-        //  and check for collisions at each step.   edit: OR MAYBE NOT!?
-        // TODO this still doesn't seem to work just yet...
-
         const angle = player.aimAngle + (Math.random() - 0.5) * (spread / 360 * Math.PI);
 
         const startPos = Vector.clone(player.position);
@@ -113,8 +109,7 @@ export const createGun = (
 
         if (collision) {
           const collisionPoint = collision.point;
-          // TODO random angle on the circleVertices..!
-          const vertices       = Vertices.translate(circleVertices(10, 4, .5), collisionPoint, 1);
+          const vertices       = Vertices.translate(circleVertices(10, 4, .5, true), collisionPoint, 1);
           nom(stage, vertices);
           flash(stage, {
             duration: 200,
