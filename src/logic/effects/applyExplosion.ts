@@ -30,6 +30,8 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
     Body.applyForce(body, position, rotatedForceVector);
   });
 
+  // TODO also apply forces to crates, players, etc.
+
   const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), origin, 1);
 
   flash(stage, {
