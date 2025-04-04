@@ -13,7 +13,7 @@ export default ({x, y, velocity}: {
   velocity,
   name:    'grenade',
   radius:  8,
-  density: .008,
+  density: .004,
   ttl:     1500,
   trigger({position, interactionHandler}) {
     applyExplosion({
