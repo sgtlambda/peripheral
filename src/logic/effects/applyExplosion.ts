@@ -21,6 +21,7 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
   const affectedBodies = [
     ...stage.addedBodies,
     ...stage.strayItems.map(item => item.getCollider()),
+    ...stage.npcs.map(npc => npc.body),
   ];
 
   console.log(affectedBodies);
