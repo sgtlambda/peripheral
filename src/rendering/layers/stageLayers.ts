@@ -3,8 +3,9 @@ import Layer from '../Layer';
 import {renderItem} from '../renderItem';
 
 import Stage from "../../logic/Stage";
+import Building from "../../logic/Building";
 
-const renderBuilding = (context: CanvasRenderingContext2D, building) => {
+const renderBuilding = (context: CanvasRenderingContext2D, building: Building) => {
   const position       = building.body.position;
   context.font         = '10px monospace';
   context.fillStyle    = 'rgba(255,255,255,.4)';
