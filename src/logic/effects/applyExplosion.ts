@@ -18,6 +18,8 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
   const origin = {x, y};
 
   // TODO this can be optimized, don't need to create a new array every time
+  // TODO also affect player
+  // TODO also inflict damage on both the player and NPCs on the stage?
   const affectedBodies = [
     ...stage.addedBodies,
     ...stage.strayItems.map(item => item.getCollider()),
@@ -27,7 +29,7 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
   console.log(affectedBodies);
 
   // Apply outward force from the explosion
-  // Note that one of these bodies is probably gonna be the thing causing the explosion.. is that a problem (?)
+  // Note that one of these bodies is the thing causing the explosion.. is that a problem (?)
   affectedBodies.forEach(body => {
 
     const position = body.position;
