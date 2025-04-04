@@ -17,8 +17,17 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
 
   const origin = {x, y};
 
+  // TODO this can be optimized, don't need to create a new array every time
+  const affectedBodies = [
+    ...stage.addedBodies,
+    ...stage.strayItems.map(item => item.getCollider()),
+  ];
+
+  console.log(affectedBodies);
+
   // Apply outward force from the explosion
-  stage.addedBodies.forEach(body => {
+  // Note that one of these bodies is probably gonna be the thing causing the explosion.. is that a problem (?)
+  affectedBodies.forEach(body => {
 
     const position = body.position;
     const distance = Vector.magnitude(Vector.sub(position, origin));

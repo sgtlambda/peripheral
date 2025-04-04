@@ -31,7 +31,9 @@ export class Throwable implements HasStep {
 
   // TODO this shares a lot of logic with `StrayItem`, deduplicate or create common superclass
 
-  constructor({name, x, y, radius, velocity, trigger, ttl}: {
+
+  // Density default value: .001
+  constructor({name, x, y, radius, velocity, trigger, ttl, density}: {
     name: string;
     x: number;
     y: number;
@@ -39,23 +41,26 @@ export class Throwable implements HasStep {
     velocity?: Vector;
     trigger: ThrowableTriggerHandler;
     ttl: number;
+    density?: number;
   }) {
     this.name    = name;
     this.ttl     = ttl;
     this.trigger = trigger;
-    this.prepareBodies({x, y, radius, velocity});
+    this.prepareBodies({x, y, radius, velocity, density});
   }
 
-  prepareBodies({x, y, velocity, radius}: {
+  prepareBodies({x, y, velocity, radius, density}: {
     x: number;
     y: number;
     velocity?: Vector;
     radius: number;
+    density?: number;
   }) {
     this.collider = Bodies.circle(x, y, radius, {
-      restitution:     .5,
-      inertia:         Infinity,
-      render:          debugRender,
+      restitution: .5,
+      inertia:     Infinity,
+      render:      debugRender,
+      ...density ? {density} : {},
       collisionFilter: {
         category: cItems,
         mask:     cTerrain | cItems,
