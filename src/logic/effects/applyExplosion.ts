@@ -10,7 +10,7 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
   x: number;
   y: number;
   radius: number;
-  resolution: number;
+  resolution?: number;
   rand: number;
   force: number;
 }) => {
