@@ -4,7 +4,7 @@ import applyExplosion from '../../logic/effects/applyExplosion';
 import {plasma} from '../../gradients';
 
 export default ({x, y, velocity}) => new Throwable({
-    name: 'nuke', x, y, radius: 40, velocity, ttl: 3000,
+    name: 'plasmaGrenade', x, y, radius: 20, velocity, ttl: 3000,
     trigger({position, interactionHandler}) {
         applyExplosion({
             stage:        interactionHandler.stage, ...position,
