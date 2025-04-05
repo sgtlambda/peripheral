@@ -1,5 +1,6 @@
-import React, {useEffect, useMemo, useState, useRef} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {generateAnimatedExplosion} from "../common/explosion";
+import {renderExplosion} from "../common/renderExplosion";
 
 export const Default = () => {
 
@@ -35,10 +36,7 @@ export const Default = () => {
       const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
 
-      setTime(prevTime => {
-        const newTime = (prevTime + deltaTime / period) % 1;
-        return newTime;
-      });
+      setTime(prevTime => (prevTime + deltaTime / period) % 1);
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -61,51 +59,11 @@ export const Default = () => {
     ctx.fillStyle = 'rgb(20,20,20)';
     ctx.fillRect(0, 0, 500, 500);
 
-    // Create a separate temporary canvas for our shape with holes
-    const tempCanvas  = document.createElement('canvas');
-    tempCanvas.width  = 500;
-    tempCanvas.height = 500;
-    const tempCtx     = tempCanvas.getContext('2d');
-
-    if (!tempCtx) return;
-
-    if (explosionVertices.length > 0 && explosionVertices[0].length > 0) {
-      const mainPath = explosionVertices[0];
-
-      // Translate to center of canvas
-      tempCtx.translate(250, 250);
-
-      tempCtx.fillStyle = 'white';
-      tempCtx.beginPath();
-      tempCtx.moveTo(mainPath[0].x, mainPath[0].y);
-      for (let i = 1; i < mainPath.length; i++) {
-        tempCtx.lineTo(mainPath[i].x, mainPath[i].y);
-      }
-      tempCtx.closePath();
-      tempCtx.fill();
-
-      // Now cut holes with remaining paths
-      tempCtx.globalCompositeOperation = "destination-out";
-
-      for (let pathIndex = 1; pathIndex < explosionVertices.length; pathIndex++) {
-        const path = explosionVertices[pathIndex];
-        if (!path.length) continue;
-
-        tempCtx.beginPath();
-        tempCtx.moveTo(path[0].x, path[0].y);
-        for (let i = 1; i < path.length; i++) {
-          tempCtx.lineTo(path[i].x, path[i].y);
-        }
-        tempCtx.closePath();
-        tempCtx.fill();
-      }
-
-      tempCtx.globalCompositeOperation = "source-over";
-
-      ctx.drawImage(tempCanvas, 0, 0);
-
-      // TODO figure out how to do this without the temp canvas
-    }
+    // Render the explosion
+    renderExplosion(ctx, explosionVertices, {
+      fillStyle: 'white',
+      centered: true
+    });
   }, [explosionVertices]);
 
   return <div>
