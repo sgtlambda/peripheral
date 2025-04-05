@@ -1,9 +1,7 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {explosionTest} from "../common/explosionWorkInProgressStuff";
 
-export const World = () => {
-
-  // const delaunaySvgPath = circleVerticesDelaunay(10, 10, 0, true, 3);
+export const Default = () => {
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
@@ -14,9 +12,7 @@ export const World = () => {
   }, []);
 
   const explosionVertices = useMemo(() => {
-    const v = generateExplosionVertices(time);
-    console.log(v);
-    return v;
+    return generateExplosionVertices(time);
   }, [time, generateExplosionVertices]);
 
 
