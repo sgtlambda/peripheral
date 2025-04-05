@@ -48,33 +48,22 @@ export function explosionTest() {
 
     const gapPaths = gaps.map((gap) => {
       if (gap.delay > t) return null;
-      // console.log(t - gap.delay);
       const sizeScale = easing.inOutQuint(Math.min(1, (t - gap.delay) * 4));
-      // console.log({
-      //   t,
-      //   d:  gap.delay,
-      //   ss: sizeScale,
-      // })
       const cloned = gap.vectors.map(v => Vector.clone(v));
 
       return Vertices.translate(
-        // Vertices.scale(cloned, sizeScale, sizeScale + 1, {x: 0, y: 0}),
-        scaleVertices(cloned, sizeScale),
+        Vertices.scale(cloned, sizeScale, sizeScale, {x: 0, y: 0}),
         gap.center,
         1,
       );
-
-      // return Vertices.translate(
-      //   Vertices.translate(cloned, {x: 0, y: 0}, sizeScale),
-      //   gap.center,
-      //   1,
-      // );
     });
 
+    // paper based:
     // return gapPaths.reduce((result, gap) => {
     //   if (gap === null) return result;
     //   return result.flatMap(body => subtract(body, gap));
     // }, [mainExplosionThing]);
+
     return [
       mainExplosionThing,
       ...gapPaths.filter((path): path is Vector[] => path !== null && !!path.length),
