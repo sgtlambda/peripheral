@@ -2,21 +2,11 @@
 
 **Planetary physics-enabled game engine with realtime vector terrain manipulation, made with [Matter.js](https://github.com/liabru/matter-js) and [paper.js](https://github.com/paperjs/paper.js/)**
 
-![screencast](screencast.gif)
+## Development plan
 
-```bash
-yarn install
-yarn start
-```
-
-Then go to http://localhost:1234
-
-## TODOs
-
-- Convert DTO classes to simple typed objects
-- Explosions should "blow away" nearby characters and objects
-- Explosion design / animation
-- Hitscannig / raycasting
-- Item icons
-- Try interesting stage design (with ropes / wires)
-- Character could maybe be a wall-e esque robot floating with a thruster.
+ - Map textures onto the background (and foreground?)
+ - Explosion design / animation
+ - Item icons
+ - Character design
+   - Character could maybe be a wall-e esque robot floating with a thruster
+ - Make something akin to a sandbox/editor where I can at least draw and/or export vectors
