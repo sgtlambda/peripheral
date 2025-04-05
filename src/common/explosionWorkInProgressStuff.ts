@@ -5,7 +5,7 @@ import {easing} from "ts-easing";
 import {scaleVertices} from "./scaleVertices";
 
 /**
- * TODO
+ * prior art
  */
 // export default function circleVerticesDelaunay(
 //   radius: number,

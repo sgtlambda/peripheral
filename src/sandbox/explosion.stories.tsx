@@ -33,7 +33,6 @@ export const Default = () => {
 
     if (!tempCtx) return;
 
-    // Draw main shape (first path) on temp canvas
     if (explosionVertices.length > 0 && explosionVertices[0].length > 0) {
       const mainPath = explosionVertices[0];
 
