@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState, useRef} from "react";
-import {explosionTest} from "../common/explosionWorkInProgressStuff";
+import {generateAnimatedExplosion} from "../common/explosion";
 
 export const Default = () => {
 
@@ -10,7 +10,14 @@ export const Default = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const generateExplosionVertices = useMemo(() => {
-    return explosionTest();
+    return generateAnimatedExplosion({
+      radius: 100,
+      resolution: 30,
+      radiusRand: 0.25,
+      gapCount: 12,
+      swirlIntensity: 0.5 * Math.PI,
+      swirlRadius: 100
+    });
   }, []);
 
   const explosionVertices = useMemo(() => {
