@@ -1,6 +1,7 @@
 import Stage from "../../logic/Stage";
 import Planet from "../../logic/Planet";
 import {NPC, ProcessIncomingMessage} from "../../NPC";
+import {CameraShakeStack} from "../../CameraShakeStack";
 
 const processGuardTags: ProcessIncomingMessage = (message: string) => {
   if (message.includes('[accept]')) {

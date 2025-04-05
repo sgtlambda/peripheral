@@ -51,6 +51,12 @@ export const createLaser = (depth: number = 100, width: number = 6, taperTo: num
           );
         });
 
+        stage.cameraShakeStack.add({
+          x: 20,
+          y: 20,
+          duration: 100,
+        });
+
         flash(stage, {
           duration: 400,
           color:    '#fff58e',

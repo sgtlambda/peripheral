@@ -36,6 +36,12 @@ const applyExplosion = (
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
+  stage.cameraShakeStack.add({
+    x: 50,
+    y: 5,
+    duration: 400,
+  });
+
   // Create explosion visuals using our new animation system
   const explosionEffect = explosion({
     x,

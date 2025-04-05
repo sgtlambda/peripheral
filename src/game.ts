@@ -49,9 +49,12 @@ if ('lastStop' in window) window.lastStop();
   const world  = engine.world;
   const render = createRenderer({element: document.body, engine});
 
+  const stage = sandboxStage();
+
   const camera = new Camera({
     render,
     trackOffset: {x: 0, y: -120},
+    shakeStack:  stage.cameraShakeStack,
   });
 
   const playerState = new PlayerState();
@@ -65,7 +68,6 @@ if ('lastStop' in window) window.lastStop();
   const {destroy: destroyUiController}               = uiController({playerState});
   const {destroy: destroyBrowserWindowController}    = browserWindowController({render, camera});
 
-  const stage = sandboxStage();
 
   const player = new Player({
     stage, keys: keysOn, mouse: gameMouse,

@@ -4,7 +4,7 @@ export const fire: ColorStop[] = [
   {color: [255, 255, 100, 1] as ColorTuple, position: 0},     // Bright yellow-white center
   {color: [255, 255, 255, 1] as ColorTuple, position: 0.15},     // White "flash"
   {color: [255, 0, 0, 0.9] as ColorTuple, position: 0.25},     // Red
-  {color: [50, 50, 50, 0.7] as ColorTuple, position: .3}        // Dark red, semi-transparent
+  {color: [70, 70, 70, 0.8] as ColorTuple, position: .3}
 ];
 
 export const plasma: ColorStop[] = [

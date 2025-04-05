@@ -15,4 +15,4 @@ export default ({x, y, velocity}) => new Throwable({
             gradient:     plasma,
         });
     }
-})
+});
