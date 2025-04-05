@@ -29,6 +29,7 @@ export function renderExplosion(
     return;
   }
 
+  // workaround.... there's something about the 'main' shape not being place appropriately
   tempCtx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
   tempCtx.save();
