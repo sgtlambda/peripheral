@@ -126,7 +126,9 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {})
       );
     });
     
-    // Combine main shape with visible gaps
+    // we'll return an array that first contains the main explosion shape
+    // then all shapes that should be 'subtracted' from it (which should
+    // be done at the render stage)
     const paths = [
       mainExplosionShape,
       ...gapPaths.filter((path): path is Vector[] => path !== null && !!path.length),
