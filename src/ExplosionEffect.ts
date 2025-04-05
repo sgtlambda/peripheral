@@ -83,8 +83,8 @@ export class ExplosionEffect implements StageGraphicsLayer, HasStep {
     if (this.isFinished) return;
 
     // Calculate opacity based on progress
-    // Start fading out at 70% of the animation
-    const fadeStart = 0.7;
+    // Start fading out at `fadeStart` normalized time
+    const fadeStart = 0.4;
     const opacity = this.normalizedTime > fadeStart
       ? 1 - ((this.normalizedTime - fadeStart) / (1 - fadeStart))
       : 1;
