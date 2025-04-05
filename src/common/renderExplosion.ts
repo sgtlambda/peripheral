@@ -31,6 +31,11 @@ export function renderExplosion(
 
   tempCtx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
+  tempCtx.save();
+
+  // I don't know why this is necessary, but it is
+  tempCtx.translate(-centerX, -centerY);
+
   // Draw the main path (first path in the array)
   const mainPath    = explosionPaths[0];
   tempCtx.fillStyle = fillStyle;
@@ -41,6 +46,8 @@ export function renderExplosion(
   }
   tempCtx.closePath();
   tempCtx.fill();
+
+  tempCtx.restore();
 
   // Cut out holes (remaining paths)
   tempCtx.globalCompositeOperation = "destination-out";

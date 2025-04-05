@@ -89,14 +89,6 @@ export class ExplosionEffect implements StageGraphicsLayer, HasStep {
       ? 1 - ((this.normalizedTime - fadeStart) / (1 - fadeStart))
       : 1;
 
-    // Just as a test, render a huge red square over the whole canvas
-    // context.fillStyle = 'red';
-    // context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    // context.fillStyle = this.color;
-    // context.globalAlpha = 0.5;
-    // context.fillRect(0, 0, context.canvas.width, context.canvas.height);
-    // context.globalAlpha = 1;
-    
     // Save the context state
     context.save();
     
