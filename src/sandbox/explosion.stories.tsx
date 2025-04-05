@@ -1,11 +1,13 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useState, useRef} from "react";
 import {explosionTest} from "../common/explosionWorkInProgressStuff";
 
 export const Default = () => {
 
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number>();
 
   const [time, setTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const generateExplosionVertices = useMemo(() => {
     return explosionTest();
@@ -15,6 +17,33 @@ export const Default = () => {
     return generateExplosionVertices(time);
   }, [time, generateExplosionVertices]);
 
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    let lastTime = performance.now();
+    const animationSpeed = 0.5; // Hz
+    const period = 1000 / animationSpeed; // ms
+
+    const animate = (currentTime: number) => {
+      const deltaTime = currentTime - lastTime;
+      lastTime = currentTime;
+
+      setTime(prevTime => {
+        const newTime = (prevTime + deltaTime / period) % 1;
+        return newTime;
+      });
+
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isPlaying]);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
@@ -70,17 +99,22 @@ export const Default = () => {
   }, [explosionVertices]);
 
   return <div>
-    <input
-      type={"range"}
-      min={0}
-      max={1}
-      step={0.01}
-      value={time}
-      onChange={(e) => {
-        setTime(parseFloat(e.target.value));
-      }}
-      style={{display: 'block', width: 500}}
-    />
+    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+      <button onClick={() => setIsPlaying(!isPlaying)}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+      <input
+        type={"range"}
+        min={0}
+        max={1}
+        step={0.01}
+        value={time}
+        onChange={(e) => {
+          setTime(parseFloat(e.target.value));
+        }}
+        style={{flex: 1}}
+      />
+    </div>
     <canvas
       ref={canvasRef}
       width={500}
