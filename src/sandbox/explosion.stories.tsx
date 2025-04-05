@@ -65,6 +65,9 @@ export const Default = () => {
     if (explosionVertices.length > 0 && explosionVertices[0].length > 0) {
       const mainPath = explosionVertices[0];
 
+      // Translate to center of canvas
+      tempCtx.translate(250, 250);
+
       tempCtx.fillStyle = 'white';
       tempCtx.beginPath();
       tempCtx.moveTo(mainPath[0].x, mainPath[0].y);
