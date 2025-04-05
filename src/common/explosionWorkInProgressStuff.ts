@@ -27,13 +27,13 @@ const SWIRL_INTENSITY = .5 * Math.PI;
 export function explosionTest() {
   // Add a random swirl origin
   const swirlOrigin: [number, number] = [
-    50 + Math.random() * 100,
-    50 + Math.random() * 100
+    Math.random() * 100,
+    Math.random() * 100
   ];
 
   const mainExplosionThing = Vertices.translate(
     circleVertices(100, 30, RAND, true),
-    {x: 50, y: 50},
+    {x: 0, y: 0},
     1,
   );
 
