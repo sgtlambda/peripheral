@@ -19,7 +19,7 @@ export default ({x, y, velocity}: {
     applyExplosion({
       ...position,
       stage:  interactionHandler.stage,
-      radius: 120,
+      radius: 90,
       force:  5e-2,
       rand:   .2,
     });
