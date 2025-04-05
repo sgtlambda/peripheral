@@ -1,0 +1,20 @@
+---
+description: 
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+Prefer typescript types rather than interfaces.
+
+Example:
+
+```ts
+// Instead of this:
+export interface Thing {
+    property: string;
+}
+
+// Do this:
+export type Thing = {
+    property: string;
+};
+```

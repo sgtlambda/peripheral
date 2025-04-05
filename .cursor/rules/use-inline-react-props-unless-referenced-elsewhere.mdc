@@ -1,0 +1,17 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+Write React components using `React.FC` and define props inline, unless the props type is likely to be referenced elsewhere. If you do declare it separately, use a typescript type. When there are several props, put each of them on a separate line.
+
+Example:
+
+```tsx
+const Button: React.FC<{ 
+    label: string;
+    onClick: () => void;
+}> = ({ label, onClick }) => {
+    return <button onClick={onClick}>{label}</button>;
+};
+```
