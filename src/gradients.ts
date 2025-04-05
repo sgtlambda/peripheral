@@ -2,8 +2,8 @@ import {ColorStop, ColorTuple} from "./common/colorGradient";
 
 export const fire: ColorStop[] = [
   {color: [255, 255, 200, 1] as ColorTuple, position: 0},     // Bright yellow-white center
-  {color: [255, 165, 0, 1] as ColorTuple, position: 0.1},     // Orange
-  {color: [255, 0, 0, 0.9] as ColorTuple, position: 0.2},     // Red
+  {color: [255, 255, 255, 1] as ColorTuple, position: 0.15},     // White "flash"
+  {color: [255, 0, 0, 0.9] as ColorTuple, position: 0.25},     // Red
   {color: [50, 50, 50, 0.7] as ColorTuple, position: .3}        // Dark red, semi-transparent
 ];
 
