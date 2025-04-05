@@ -1,5 +1,6 @@
 import {Vector, Body, Vertex} from "matter-js";
 
+// @ts-ignore
 import {raycast} from '../common/ray';
 
 export type RayCollision = {
