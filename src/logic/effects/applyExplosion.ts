@@ -22,7 +22,7 @@ const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, 
 
   effectRadius ??= nomRadius;
 
-  const explosionVertices = Vertices.translate(circleVertices(nomRadius, resolution, rand), origin, 1);
+  const explosionVertices = Vertices.translate(circleVertices(nomRadius, resolution, rand, true), origin, 1);
 
   flash(stage, {
     duration: 400,
