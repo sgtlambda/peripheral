@@ -2,7 +2,6 @@ import circleVertices from "./circleVertices";
 import {Vector, Vertices} from "matter-js";
 import {times} from "lodash";
 import {easing} from "ts-easing";
-import {scaleVertices} from "./scaleVertices";
 
 /**
  * prior art
@@ -20,7 +19,7 @@ import {scaleVertices} from "./scaleVertices";
 //   return d.render();
 // }
 
-const RAND = .2;
+const RAND = .25;
 
 export function explosionTest() {
 
@@ -34,13 +33,13 @@ export function explosionTest() {
     vectors: Vector[];
     center: Vector;
     delay: number;
-  }[] = times(10, () => {
-    const radius = 50 + Math.random() * 40;
+  }[] = times(12, () => {
+    const radius = 40 + Math.random() * 40;
     const center = Vector.create(Math.random() * 120, Math.random() * 120);
     return ({
       center,
       vectors: circleVertices(radius, 30, RAND, true),
-      delay:   Math.random(),
+      delay:   Math.random() * .7,
     });
   });
 
@@ -49,7 +48,7 @@ export function explosionTest() {
     const gapPaths = gaps.map((gap) => {
       if (gap.delay > t) return null;
       const sizeScale = easing.inOutQuint(Math.min(1, (t - gap.delay) * 4));
-      const cloned = gap.vectors.map(v => Vector.clone(v));
+      const cloned    = gap.vectors.map(v => Vector.clone(v));
 
       return Vertices.translate(
         Vertices.scale(cloned, sizeScale, sizeScale, {x: 0, y: 0}),
