@@ -9,7 +9,7 @@ export const Default = () => {
   const [time, setTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const generateExplosionVertices = useMemo(() => {
+  const explosionGenerator = useMemo(() => {
     return generateAnimatedExplosion({
       radius: 100,
       resolution: 30,
@@ -21,8 +21,8 @@ export const Default = () => {
   }, []);
 
   const explosionVertices = useMemo(() => {
-    return generateExplosionVertices(time);
-  }, [time, generateExplosionVertices]);
+    return explosionGenerator.generate(time);
+  }, [time, explosionGenerator]);
 
   useEffect(() => {
     if (!isPlaying) return;

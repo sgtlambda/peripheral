@@ -35,12 +35,27 @@ export type ExplosionGeneratorConfig = {
 }
 
 /**
+ * Function that generates explosion paths for a specific time
+ */
+export type ExplosionPathGenerator = (t: number) => Vector[][];
+
+/**
+ * Object returned by the explosion generator
+ */
+export type ExplosionGenerator = {
+  /** The original main explosion shape */
+  originalShape: Vector[];
+  /** Function to generate explosion paths for a specific time */
+  generate: ExplosionPathGenerator;
+}
+
+/**
  * Generates an animated explosion effect with a swirl transform
  * 
  * @param config Configuration options for the explosion
- * @returns A function that takes a time value (0-1) and returns explosion paths
+ * @returns Object containing the original shape and a function that generates time-based explosion paths
  */
-export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {}) {
+export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {}): ExplosionGenerator {
   // Default configuration values
   const {
     radius = 100,
@@ -101,7 +116,7 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {})
    * @param t Time value from 0 to 1
    * @returns Array of path vertices
    */
-  return (t: number) => {
+  const generate: ExplosionPathGenerator = (t: number) => {
     // Swirl intensity increases with time
     const currentSwirlIntensity = swirlIntensity * t;
 
@@ -148,5 +163,11 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {})
     });
 
     return swirledPaths;
+  };
+
+  // Return both the original shape and the generator function
+  return {
+    originalShape: mainExplosionShape,
+    generate
   };
 } 
