@@ -31,8 +31,6 @@ export async function processPrompt(npc: NPC, input: string) {
 
   const answer = gptResponse.choices[0].message.content ?? "I'm sorry, I don't understand.";
 
-  console.log(gptResponse);
-
   const processed = npc.processIncomingMessage?.(answer);
 
   if (processed) {

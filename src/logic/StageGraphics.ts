@@ -2,21 +2,19 @@ export interface StageGraphicsLayer {
   drawTo(args: { context: CanvasRenderingContext2D }): void;
 }
 
-/**
- * Additional / overlay graphics or HUD, seems currently unused
- */
 export default class StageGraphics {
 
   underLayers: StageGraphicsLayer[];
   overLayers: StageGraphicsLayer[];
 
-  constructor({
-                underLayers = [],
-                overLayers = [],
-              }: {
-    underLayers?: StageGraphicsLayer[];
-    overLayers?: StageGraphicsLayer[];
-  } = {}) {
+  constructor(
+    {
+      underLayers = [],
+      overLayers = [],
+    }: {
+      underLayers?: StageGraphicsLayer[];
+      overLayers?: StageGraphicsLayer[];
+    } = {}) {
     this.underLayers = underLayers;
     this.overLayers  = overLayers;
   }
@@ -40,4 +38,6 @@ export default class StageGraphics {
       layer.drawTo({context});
     });
   }
+
+  // TODO cleanup (invoke `isFinished` on the layer to see if it should be removed)
 }

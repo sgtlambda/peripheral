@@ -13,7 +13,7 @@ export type FlashEffectProps = {
 
 /**
  * Temporarily renders some polygon to the screen, like a flash of light.
- * TODO CLEAN UP after lifecycle!!
+ * TODO CLEAN UP after lifecycle!!!!
  */
 export class FlashEffect implements StageGraphicsLayer, HasStep {
 
@@ -29,6 +29,7 @@ export class FlashEffect implements StageGraphicsLayer, HasStep {
       color = "white",
       polygon,
     }: FlashEffectProps) {
+
     this.duration = duration;
     this.color    = color;
     this.polygon  = polygon;
