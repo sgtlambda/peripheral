@@ -6,6 +6,7 @@ import {EngineStep} from "./engineStep";
 import InteractionHandler from "./logic/InteractionHandler";
 import {ExplosionGenerator, ExplosionGeneratorConfig, generateAnimatedExplosion} from "./common/explosion";
 import {renderExplosion} from "./common/renderExplosion";
+import {ColorStop, colorTupleToRgba, getGradientColor} from "./common/colorGradient";
 
 export type ExplosionEffectProps = {
   /** Duration of the explosion effect in milliseconds */
@@ -14,8 +15,8 @@ export type ExplosionEffectProps = {
   position: Vector;
   /** The explosion radius */
   radius: number;
-  /** Color of the explosion */
-  color?: string;
+  /** Optional color gradient for the explosion */
+  colorGradient: ColorStop[];
   /** Resolution of the explosion (number of vertices) */
   resolution?: number;
   /** Random factor for vertex positions (0-1) */
@@ -31,34 +32,35 @@ export type ExplosionEffectProps = {
 export class ExplosionEffect implements StageGraphicsLayer, HasStep {
   /** The original position of the explosion */
   private readonly position: Vector;
-  /** The explosion color */
-  private readonly color: string;
+  /** Optional color gradient */
+  private readonly colorGradient: ColorStop[];
   /** Total duration of the effect in milliseconds */
   private readonly duration: number;
   /** The explosion generator with all animation data */
   private readonly explosionGenerator: ExplosionGenerator;
-  
+
   /** Time elapsed since creation */
-  private timeElapsed: number = 0;
+  private timeElapsed: number    = 0;
   /** Normalized time value (0-1) for animation progress */
   private normalizedTime: number = 0;
 
   /**
    * Create a new explosion effect
    */
-  constructor({
-    position,
-    radius,
-    duration,
-    color = 'white',
-    resolution = 30,
-    radiusRand = 0.25,
-    explosionConfig = {}
-  }: ExplosionEffectProps) {
-    this.position = position;
-    this.color = color;
-    this.duration = duration;
-    
+  constructor(
+    {
+      position,
+      radius,
+      duration,
+      colorGradient,
+      resolution = 30,
+      radiusRand = 0.25,
+      explosionConfig = {}
+    }: ExplosionEffectProps) {
+    this.position      = position;
+    this.colorGradient = colorGradient;
+    this.duration      = duration;
+
     // Generate the explosion with combined configuration
     this.explosionGenerator = generateAnimatedExplosion({
       radius,
@@ -85,26 +87,28 @@ export class ExplosionEffect implements StageGraphicsLayer, HasStep {
     // Calculate opacity based on progress
     // Start fading out at `fadeStart` normalized time
     const fadeStart = 0.4;
-    const opacity = this.normalizedTime > fadeStart
+    const opacity   = this.normalizedTime > fadeStart
       ? 1 - ((this.normalizedTime - fadeStart) / (1 - fadeStart))
       : 1;
 
     // Save the context state
     context.save();
-    
+
     // Set the global alpha for fading
     context.globalAlpha = opacity;
 
     // Generate the current explosion paths based on normalized time
     const explosionPaths = this.explosionGenerator.generate(this.normalizedTime);
-    
+
+    const fillColor = getGradientColor(this.colorGradient, this.normalizedTime);
+
     // Render using our specialized renderer
     renderExplosion(context, explosionPaths, {
-      fillStyle: this.color,
-      centerX: this.position.x,
-      centerY: this.position.y
+      centerX:   this.position.x,
+      centerY:   this.position.y,
+      fillStyle: colorTupleToRgba(fillColor),
     });
-    
+
     // Restore the context
     context.restore();
   }
@@ -115,14 +119,9 @@ export class ExplosionEffect implements StageGraphicsLayer, HasStep {
   step(event: EngineStep, handler: InteractionHandler): void {
     // Update the elapsed time
     this.timeElapsed += event.delta;
-    
+
     // Calculate normalized time (0-1) clamped at 1
     this.normalizedTime = Math.min(1, this.timeElapsed / this.duration);
-
-    console.log({
-      elapsed: this.timeElapsed,
-      normalized: this.normalizedTime,
-    })
   }
 
   /**

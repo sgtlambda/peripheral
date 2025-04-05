@@ -17,7 +17,11 @@ export function renderExplosion(
     return;
   }
 
-  const {fillStyle = 'white', centerX = 0, centerY = 0} = options;
+  const {
+          fillStyle = 'white',
+          centerX   = 0,
+          centerY   = 0,
+        } = options;
 
   // Create a separate temporary canvas for our shape with holes
   const tempCanvas  = document.createElement('canvas');
@@ -34,12 +38,13 @@ export function renderExplosion(
 
   tempCtx.save();
 
+  tempCtx.fillStyle = fillStyle;
+
   // I don't know why this is necessary, but it is
   tempCtx.translate(-centerX, -centerY);
 
   // Draw the main path (first path in the array)
-  const mainPath    = explosionPaths[0];
-  tempCtx.fillStyle = fillStyle;
+  const mainPath = explosionPaths[0];
   tempCtx.beginPath();
   tempCtx.moveTo(mainPath[0].x, mainPath[0].y);
   for (let i = 1; i < mainPath.length; i++) {

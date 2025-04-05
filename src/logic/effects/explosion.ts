@@ -1,6 +1,7 @@
 import {ExplosionEffect, ExplosionEffectProps} from "../../ExplosionEffect";
 import Stage from "../Stage";
 import {ExplosionGeneratorConfig} from "../../common/explosion";
+import {ColorStop} from "../../common/colorGradient";
 
 /**
  * Parameters for creating an explosion effect
@@ -16,8 +17,7 @@ export interface ExplosionParams {
   radius?: number;
   /** Duration of the explosion animation in milliseconds (default: 1000) */
   duration?: number;
-  /** Color of the explosion (default: '#ff4040') */
-  color?: string;
+  colorGradient: ColorStop[];
   /** Resolution/detail of the explosion shape (default: 30) */
   resolution?: number;
   /** Random factor for vertex positions (0-1) (default: 0.25) */
@@ -29,31 +29,32 @@ export interface ExplosionParams {
 /**
  * Creates and adds an animated explosion effect to the stage
  */
-export function explosion({
-  x,
-  y,
-  stage,
-  radius = 100,
-  duration = 1000,
-  color = '#ff4040',
-  resolution = 30,
-  radiusRand = 0.25,
-  explosionConfig = {}
-}: ExplosionParams): ExplosionEffect {
+export function explosion(
+  {
+    x,
+    y,
+    stage,
+    radius = 100,
+    duration = 1000,
+    colorGradient,
+    resolution = 30,
+    radiusRand = 0.25,
+    explosionConfig = {}
+  }: ExplosionParams): ExplosionEffect {
 
   // Create the explosion effect
   const effect = new ExplosionEffect({
-    position: { x, y },
+    position: {x, y},
     radius,
     duration,
-    color,
+    colorGradient,
     resolution,
     radiusRand,
     explosionConfig
   });
-  
+
   stage.stepEffects.push(effect);
   stage.graphics.addOverLayer(effect);
-  
+
   return effect;
 } 

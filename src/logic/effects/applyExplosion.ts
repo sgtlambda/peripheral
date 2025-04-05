@@ -4,6 +4,7 @@ import circleVertices from '../../common/circleVertices';
 import {nom} from './nom';
 import Stage from "../Stage";
 import {explosion} from './explosion';
+import {ColorStop} from '../../common/colorGradient';
 
 /**
  * Applies an explosion effect - visual effect, terrain destruction, and physics force
@@ -19,7 +20,7 @@ const applyExplosion = (
     rand = 0,
     force,
     duration = 800,
-    color = '#ff4040'
+    gradient,
   }: {
     stage: Stage;
     x: number;
@@ -30,27 +31,25 @@ const applyExplosion = (
     rand: number;
     force: number;
     duration?: number;
-    color?: string;
+    gradient: ColorStop[];
   }) => {
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
-  // Create explosion visuals using our new animation system3
+  // Create explosion visuals using our new animation system
   const explosionEffect = explosion({
     x,
     y,
     stage,
-    radius:          nomRadius,
+    radius: nomRadius,
     duration,
-    color,
+    colorGradient: gradient,
     resolution,
-    radiusRand:      rand,
+    radiusRand: rand,
     explosionConfig: {
       // We can configure additional explosion parameters here
+      gapCount: Math.floor(nomRadius / 10), // Scale gaps with explosion size
       swirlIntensity: 0.5 * Math.PI * (rand + 0.5), // Add some randomness to swirl
-      gapSpread:      nomRadius * 2, // Spread gaps over a larger area
-      minGapSize:     nomRadius / 4, // Minimum gap size
-      maxGapSize:     nomRadius, // Maximum gap size
     }
   });
 
