@@ -2,6 +2,7 @@ import circleVertices from "./circleVertices";
 import {Vector, Vertices} from "matter-js";
 import {times} from "lodash";
 import {easing} from "ts-easing";
+import {applySwirl} from "./swirl";
 
 /**
  * prior art
@@ -21,7 +22,14 @@ import {easing} from "ts-easing";
 
 const RAND = .25;
 
+const SWIRL_INTENSITY = .5 * Math.PI;
+
 export function explosionTest() {
+  // Add a random swirl origin
+  const swirlOrigin: [number, number] = [
+    50 + Math.random() * 100,
+    50 + Math.random() * 100
+  ];
 
   const mainExplosionThing = Vertices.translate(
     circleVertices(100, 30, RAND, true),
@@ -44,6 +52,9 @@ export function explosionTest() {
   });
 
   return (t: number) => {
+    // Calculate swirl intensity based on time
+    const swirlIntensity = SWIRL_INTENSITY * t; // Full rotation at t=1
+    const swirlRadius = 100; // Adjust this to control the falloff distance
 
     const gapPaths = gaps.map((gap) => {
       if (gap.delay > t) return null;
@@ -62,10 +73,25 @@ export function explosionTest() {
     //   if (gap === null) return result;
     //   return result.flatMap(body => subtract(body, gap));
     // }, [mainExplosionThing]);
-
-    return [
+    
+    const paths =  [
       mainExplosionThing,
       ...gapPaths.filter((path): path is Vector[] => path !== null && !!path.length),
     ];
+
+    const swirledPaths = paths.map(path => {
+      return path.map(v => {
+        const [swirledX, swirledY] = applySwirl(
+          [v.x, v.y],
+          swirlOrigin,
+          swirlIntensity,
+          swirlRadius
+        );
+        return Vector.create(swirledX, swirledY);
+      });
+    });
+
+    return swirledPaths;
+    
   };
 }
