@@ -8,41 +8,55 @@ import {explosion} from './explosion';
 /**
  * Applies an explosion effect - visual effect, terrain destruction, and physics force
  */
-const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, rand = 0, force, duration = 800, color = '#ff4040'}: {
-  stage: Stage;
-  x: number;
-  y: number;
-  nomRadius: number;
-  effectRadius?: number;
-  resolution?: number;
-  rand: number;
-  force: number;
-  duration?: number;
-  color?: string;
-}) => {
+const applyExplosion = (
+  {
+    stage,
+    x,
+    y,
+    nomRadius,
+    effectRadius,
+    resolution = 32,
+    rand = 0,
+    force,
+    duration = 800,
+    color = '#ff4040'
+  }: {
+    stage: Stage;
+    x: number;
+    y: number;
+    nomRadius: number;
+    effectRadius?: number;
+    resolution?: number;
+    rand: number;
+    force: number;
+    duration?: number;
+    color?: string;
+  }) => {
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
-  // Create explosion visuals using our new animation system
+  // Create explosion visuals using our new animation system3
   const explosionEffect = explosion({
     x,
     y,
     stage,
-    radius: nomRadius,
+    radius:          nomRadius,
     duration,
     color,
     resolution,
-    radiusRand: rand,
+    radiusRand:      rand,
     explosionConfig: {
       // We can configure additional explosion parameters here
-      gapCount: Math.floor(nomRadius / 10), // Scale gaps with explosion size
       swirlIntensity: 0.5 * Math.PI * (rand + 0.5), // Add some randomness to swirl
+      gapSpread:      nomRadius * 2, // Spread gaps over a larger area
+      minGapSize:     nomRadius / 4, // Minimum gap size
+      maxGapSize:     nomRadius, // Maximum gap size
     }
   });
 
   // Use the original shape for terrain destruction
   const explosionVertices = explosionEffect.originalShape;
-  
+
   // Translate the vertices to the explosion origin
   const translatedVertices = Vertices.translate(
     [...explosionVertices], // Clone to avoid modifying the original
@@ -72,7 +86,7 @@ const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, 
 
     if (distance > effectRadius!) return;
 
-    const forceVector = {x: (1 - (distance / effectRadius!)) * force, y: 0};
+    const forceVector        = {x: (1 - (distance / effectRadius!)) * force, y: 0};
     const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(origin, position));
     Body.applyForce(body, position, rotatedForceVector);
   });
