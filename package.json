@@ -10,7 +10,6 @@
     "pretest": "npm run eslint"
   },
   "dependencies": {
-    "@babel/core": "^7.2.0",
     "@types/color": "^3.0.6",
     "@types/lodash": "^4.17.7",
     "@types/matter-js": "^0.19.7",
