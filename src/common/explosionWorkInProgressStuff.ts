@@ -52,6 +52,7 @@ export function explosionTest() {
   });
 
   return (t: number) => {
+
     // Calculate swirl intensity based on time
     const swirlIntensity = SWIRL_INTENSITY * t; // Full rotation at t=1
     const swirlRadius = 100; // Adjust this to control the falloff distance
