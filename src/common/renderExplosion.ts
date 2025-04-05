@@ -2,13 +2,9 @@ import {Vector} from "matter-js";
 
 /**
  * Renders explosion paths to a canvas context
- * 
- * @param ctx The canvas rendering context
- * @param explosionPaths Array of paths to render (first is main shape, others are holes)
- * @param options Rendering options
  */
 export function renderExplosion(
-  ctx: CanvasRenderingContext2D, 
+  ctx: CanvasRenderingContext2D,
   explosionPaths: Vector[][],
   options: {
     fillStyle?: string;
@@ -21,31 +17,22 @@ export function renderExplosion(
     return;
   }
 
-  const {
-    fillStyle = 'white',
-    centerX = 0,
-    centerY = 0
-  } = options;
-
-  // Save the current context state
-  ctx.save();
+  const {fillStyle = 'white', centerX = 0, centerY = 0} = options;
 
   // Create a separate temporary canvas for our shape with holes
-  const tempCanvas = document.createElement('canvas');
-  tempCanvas.width = ctx.canvas.width;
+  const tempCanvas  = document.createElement('canvas');
+  tempCanvas.width  = ctx.canvas.width;
   tempCanvas.height = ctx.canvas.height;
-  const tempCtx = tempCanvas.getContext('2d');
+  const tempCtx     = tempCanvas.getContext('2d');
 
   if (!tempCtx) {
-    ctx.restore();
     return;
   }
 
-  // Copy transform from the original context
-  // tempCtx.setTransform(ctx.getTransform());
+  tempCtx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
   // Draw the main path (first path in the array)
-  const mainPath = explosionPaths[0];
+  const mainPath    = explosionPaths[0];
   tempCtx.fillStyle = fillStyle;
   tempCtx.beginPath();
   tempCtx.moveTo(mainPath[0].x, mainPath[0].y);
@@ -75,8 +62,5 @@ export function renderExplosion(
   tempCtx.globalCompositeOperation = "source-over";
 
   // Draw the temp canvas to the main canvas
-  ctx.drawImage(tempCanvas, 0, 0);
-
-  // Restore the context state
-  ctx.restore();
-} 
+  ctx.drawImage(tempCanvas, centerX - ctx.canvas.width / 2, centerY - ctx.canvas.height / 2);
+}
