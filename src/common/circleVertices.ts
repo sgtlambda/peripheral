@@ -1,11 +1,11 @@
 import {Vector, Vertices} from "matter-js";
 
-export default (
+export default function circleVertices(
   radius: number,
   resolution: number,
   radiusRand          = 0,
   rotateRand: boolean = false,
-): Vector[] => {
+): Vector[] {
   const r = [];
   for (let i = 0; i < resolution; i++) {
     const distort    = Math.random() * radiusRand * radius - (radiusRand * radius / 2);

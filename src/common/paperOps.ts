@@ -28,6 +28,7 @@ const fromPaperPath = (path: PaperPath): Vector[] => {
 const normalizePaths = (path: PaperPath): PaperPath[] => {
   if (path._segments) return [path];
   else return path._children;
+  // TODO recursively normalize (?)
 };
 
 export const subtract = (from: Vector[], remove: Vector[]): Vector[][] => {

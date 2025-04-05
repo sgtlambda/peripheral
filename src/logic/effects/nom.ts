@@ -3,7 +3,7 @@ import {cloneDeep, sortBy} from "lodash";
 import Planet from "../Planet";
 import Stage from "../Stage";
 
-import {subtract} from "../../common/terrainOps";
+import {subtract} from "../../common/paperOps";
 
 /**
  * Take a "bite" out of all planets on the given stage, with the given shape
