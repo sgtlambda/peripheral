@@ -9,7 +9,7 @@ import {applySwirl} from "./swirl";
  */
 export type ExplosionGeneratorConfig = {
   /** Main explosion radius (default: 100) */
-  radius?: number;
+  radius: number;
   /** Number of vertices in the explosion shape (default: 30) */
   resolution?: number;
   /** Randomness factor for the vertices (0-1, default: 0.25) */
@@ -55,22 +55,28 @@ export type ExplosionGenerator = {
  * @param config Configuration options for the explosion
  * @returns Object containing the original shape and a function that generates time-based explosion paths
  */
-export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {}): ExplosionGenerator {
-  // Default configuration values
-  const {
-    radius = 100,
+export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {radius: 0}): ExplosionGenerator {
+
+  let {
+    radius,
     resolution = 30,
     radiusRand = 0.25,
     rotateRand = true,
     gapCount = 15,
-    minGapSize = 20,
-    maxGapSize = 80,
-    gapSpread = 150,
+    minGapSize,
+    maxGapSize,
+    gapSpread,
     maxGapDelay = 0.7,
     swirlIntensity = 0.5 * Math.PI,
-    swirlRadius = 100,
+    swirlRadius,
     gapGrowthSpeed = 4
   } = config;
+
+  minGapSize ??= radius / 2;
+  maxGapSize ??= radius * 0.8;
+  gapSpread ??= radius * 1.2;
+
+  swirlRadius ??= radius;
 
   // Generate swirl origin within the explosion area
   const swirlOrigin: [number, number] = [
@@ -95,11 +101,11 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {})
     delay: number;
   }[] = times(gapCount, () => {
     // Random size between min and max
-    const gapRadius = minGapSize + Math.random() * (maxGapSize - minGapSize);
+    const gapRadius = minGapSize! + Math.random() * (maxGapSize! - minGapSize!);
     // Position within spread radius, centered around origin
     const center = Vector.create(
-      Math.random() * gapSpread - gapCenter,
-      Math.random() * gapSpread - gapCenter
+      Math.random() * gapSpread! - gapCenter,
+      Math.random() * gapSpread! - gapCenter
     );
     // Random delay for staggered appearance
     const delay = Math.random() * maxGapDelay;
@@ -156,7 +162,7 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {})
           [v.x, v.y],
           swirlOrigin,
           currentSwirlIntensity,
-          swirlRadius
+          swirlRadius!,
         );
         return Vector.create(swirledX, swirledY);
       });
