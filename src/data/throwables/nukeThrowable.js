@@ -6,10 +6,11 @@ export default ({x, y, velocity}) => new Throwable({
     name: 'nuke', x, y, radius: 40, velocity, ttl: 3000,
     trigger({position, interactionHandler}) {
         applyExplosion({
-            stage:  interactionHandler.stage, ...position,
-            radius: 300,
-            force:  1.5e-1,
-            rand:  .1,
+            stage:        interactionHandler.stage, ...position,
+            nomRadius:    200,
+            effectRadius: 300,
+            force:        1.5e-1,
+            rand:         .1,
         });
     }
 })

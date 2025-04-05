@@ -18,10 +18,11 @@ export default ({x, y, velocity}: {
   trigger({position, interactionHandler}) {
     applyExplosion({
       ...position,
-      stage:  interactionHandler.stage,
-      radius: 90,
-      force:  5e-2,
-      rand:   .2,
+      stage:        interactionHandler.stage,
+      nomRadius:    90,
+      effectRadius: 120,
+      force:        5e-2,
+      rand:         .2,
     });
   }
 });

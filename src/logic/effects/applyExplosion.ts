@@ -5,11 +5,14 @@ import {nom} from './nom';
 import Stage from "../Stage";
 import {flash} from "./flash";
 
-const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}: {
+/**
+ */
+const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, rand = 0, force}: {
   stage: Stage;
   x: number;
   y: number;
-  radius: number;
+  nomRadius: number;
+  effectRadius?: number;
   resolution?: number;
   rand: number;
   force: number;
@@ -17,16 +20,28 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
 
   const origin = {x, y};
 
-  // TODO this can be optimized, don't need to create a new array every time
+  effectRadius ??= nomRadius;
+
+  const explosionVertices = Vertices.translate(circleVertices(nomRadius, resolution, rand), origin, 1);
+
+  flash(stage, {
+    duration: 400,
+    color:    '#ff4040',
+    polygon:  explosionVertices,
+  });
+
+  nom(stage, explosionVertices);
+
+  // TODO this can be optimized, don't need to create a new array every time (?)
   // TODO also affect player
   // TODO also inflict damage on both the player and NPCs on the stage?
+  // TODO also affect 'planetary' parts under a certain size
   const affectedBodies = [
     ...stage.addedBodies,
     ...stage.strayItems.map(item => item.getCollider()),
     ...stage.npcs.map(npc => npc.body),
+    ...stage.planets.filter(planet => !planet.body.isStatic).map(planet => planet.body),
   ];
-
-  console.log(affectedBodies);
 
   // Apply outward force from the explosion
   // Note that one of these bodies is the thing causing the explosion.. is that a problem (?)
@@ -35,24 +50,12 @@ const applyExplosion = ({stage, x, y, radius, resolution = 32, rand = 0, force}:
     const position = body.position;
     const distance = Vector.magnitude(Vector.sub(position, origin));
 
-    if (distance > radius) return;
+    if (distance > effectRadius!) return;
 
-    const forceVector        = {x: (1 - (distance / radius)) * force, y: 0};
+    const forceVector        = {x: (1 - (distance / effectRadius!)) * force, y: 0};
     const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(origin, position));
     Body.applyForce(body, position, rotatedForceVector);
   });
-
-  // TODO also apply forces to crates, players, etc.
-
-  const explosionVertices = Vertices.translate(circleVertices(radius, resolution, rand), origin, 1);
-
-  flash(stage, {
-    duration: 200,
-    color:    '#ff7758',
-    polygon:  explosionVertices,
-  });
-
-  nom(stage, explosionVertices);
 };
 
 export default applyExplosion;
