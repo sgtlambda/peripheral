@@ -62,7 +62,6 @@ export const Default = () => {
     // Render the explosion
     renderExplosion(ctx, explosionVertices, {
       fillStyle: 'white',
-      centered: true
     });
   }, [explosionVertices]);
 

@@ -3,11 +3,12 @@ import {Body, Vector, Vertices} from 'matter-js';
 import circleVertices from '../../common/circleVertices';
 import {nom} from './nom';
 import Stage from "../Stage";
-import {flash} from "./flash";
+import {explosion} from './explosion';
 
 /**
+ * Applies an explosion effect - visual effect, terrain destruction, and physics force
  */
-const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, rand = 0, force}: {
+const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, rand = 0, force, duration = 800, color = '#ff4040'}: {
   stage: Stage;
   x: number;
   y: number;
@@ -16,21 +17,41 @@ const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, 
   resolution?: number;
   rand: number;
   force: number;
+  duration?: number;
+  color?: string;
 }) => {
-
   const origin = {x, y};
-
   effectRadius ??= nomRadius;
 
-  const explosionVertices = Vertices.translate(circleVertices(nomRadius, resolution, rand, true), origin, 1);
-
-  flash(stage, {
-    duration: 400,
-    color:    '#ff4040',
-    polygon:  explosionVertices,
+  // Create explosion visuals using our new animation system
+  const explosionEffect = explosion({
+    x,
+    y,
+    stage,
+    radius: nomRadius,
+    duration,
+    color,
+    resolution,
+    radiusRand: rand,
+    explosionConfig: {
+      // We can configure additional explosion parameters here
+      gapCount: Math.floor(nomRadius / 10), // Scale gaps with explosion size
+      swirlIntensity: 0.5 * Math.PI * (rand + 0.5), // Add some randomness to swirl
+    }
   });
 
-  nom(stage, explosionVertices);
+  // Use the original shape for terrain destruction
+  const explosionVertices = explosionEffect.originalShape;
+  
+  // Translate the vertices to the explosion origin
+  const translatedVertices = Vertices.translate(
+    [...explosionVertices], // Clone to avoid modifying the original
+    origin,
+    1
+  );
+
+  // Apply terrain destruction
+  nom(stage, translatedVertices);
 
   // TODO this can be optimized, don't need to create a new array every time (?)
   // TODO also affect player
@@ -46,13 +67,12 @@ const applyExplosion = ({stage, x, y, nomRadius, effectRadius, resolution = 32, 
   // Apply outward force from the explosion
   // Note that one of these bodies is the thing causing the explosion.. is that a problem (?)
   affectedBodies.forEach(body => {
-
     const position = body.position;
     const distance = Vector.magnitude(Vector.sub(position, origin));
 
     if (distance > effectRadius!) return;
 
-    const forceVector        = {x: (1 - (distance / effectRadius!)) * force, y: 0};
+    const forceVector = {x: (1 - (distance / effectRadius!)) * force, y: 0};
     const rotatedForceVector = Vector.rotate(forceVector, Vector.angle(origin, position));
     Body.applyForce(body, position, rotatedForceVector);
   });

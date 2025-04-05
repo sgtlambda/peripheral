@@ -6,6 +6,6 @@ export function flash(
   flash: FlashEffectProps,
 ) {
   const effect = new FlashEffect(flash);
-  stage.flashEffects.push(effect);
+  stage.stepEffects.push(effect);
   stage.graphics.addOverLayer(effect);
 }

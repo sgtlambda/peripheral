@@ -2,12 +2,11 @@ import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
 import StageGraphics from './StageGraphics';
-import {WorldPart} from "../types";
+import {HasStep, WorldPart} from "../types";
 import Planet from "./Planet";
 import {NPC} from "../NPC";
 import Throwable from "./Throwable";
 import StrayItem from "./StrayItem";
-import {FlashEffect} from "../FlashEffect";
 import Building from "./Building";
 
 class Stage implements WorldPart {
@@ -21,7 +20,7 @@ class Stage implements WorldPart {
   public npcs: NPC[];
 
   public strayItems: StrayItem[];
-  public flashEffects: FlashEffect[];
+  public stepEffects: HasStep[];
   public throwables: Throwable[];
   public bodyQueue: Body[] = [];
   public addedBodies: Body[];
@@ -33,9 +32,9 @@ class Stage implements WorldPart {
     public readonly initialPlayerPos: Vector,
   ) {
     this.graphics      = new StageGraphics();
-    this.strayItems    = [];
-    this.flashEffects  = [];
-    this.throwables    = [];
+    this.strayItems  = [];
+    this.stepEffects = [];
+    this.throwables  = [];
     this.terrainBodies = [];
     this.buildings     = [];
     this.planets       = [];

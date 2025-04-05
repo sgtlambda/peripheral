@@ -12,7 +12,6 @@ export function renderExplosion(
   explosionPaths: Vector[][],
   options: {
     fillStyle?: string;
-    centered?: boolean;
     centerX?: number;
     centerY?: number;
   } = {},
@@ -24,7 +23,6 @@ export function renderExplosion(
 
   const {
     fillStyle = 'white',
-    centered = false,
     centerX = 0,
     centerY = 0
   } = options;
@@ -44,21 +42,7 @@ export function renderExplosion(
   }
 
   // Copy transform from the original context
-  tempCtx.setTransform(ctx.getTransform());
-
-  // If centered, apply translation to center of canvas or specified center point
-  if (centered) {
-    if (centerX === 0 && centerY === 0) {
-      // Center in the middle of the canvas
-      tempCtx.translate(
-        ctx.canvas.width / 2,
-        ctx.canvas.height / 2
-      );
-    } else {
-      // Center at the specified point
-      tempCtx.translate(centerX, centerY);
-    }
-  }
+  // tempCtx.setTransform(ctx.getTransform());
 
   // Draw the main path (first path in the array)
   const mainPath = explosionPaths[0];
