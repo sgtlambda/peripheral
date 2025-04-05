@@ -15,7 +15,7 @@ export function renderExplosion(
     centered?: boolean;
     centerX?: number;
     centerY?: number;
-  } = {}
+  } = {},
 ): void {
   // If no paths or empty main path, nothing to render
   if (explosionPaths.length === 0 || explosionPaths[0].length === 0) {
