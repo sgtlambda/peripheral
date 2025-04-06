@@ -19,6 +19,7 @@ export default ({x, y, velocity}) => new Throwable({
             rand:         .1,
             gradient:     plasma,
             duration:     2800,
+            shakeDelay:   800,
         });
         interactionHandler.stage.chiefTemporalOfficer.slowMoTemporarily(.01, 800);
     }

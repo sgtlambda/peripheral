@@ -19,6 +19,7 @@ const applyExplosion = (
     rand = 0,
     force,
     duration = 800,
+    shakeDelay = 0,
     gradient,
   }: {
     stage: Stage;
@@ -30,16 +31,19 @@ const applyExplosion = (
     rand: number;
     force: number;
     duration?: number;
+    shakeDelay?: number;
     gradient: ColorStop[];
   }) => {
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
-  stage.cameraShakeStack.add({
-    x: 50,
-    y: 5,
-    duration: 400,
-  });
+  setTimeout(() => {
+    stage.cameraShakeStack.add({
+      x: 50,
+      y: 5,
+      duration: 400,
+    });
+  }, shakeDelay);
 
   // Create explosion visuals using our new animation system
   const explosionEffect = explosion({
