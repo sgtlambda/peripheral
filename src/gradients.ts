@@ -11,7 +11,7 @@ export const plasma: ColorStop[] = [
   {color: [220, 220, 255, 1] as ColorTuple, position: 0},     // Bright blue-white center
   {color: [100, 100, 255, 1] as ColorTuple, position: 0.3},   // Blue
   {color: [180, 0, 255, 0.9] as ColorTuple, position: 0.7},   // Purple
-  {color: [80, 0, 80, 0.5] as ColorTuple, position: 1}        // Dark purple, semi-transparent
+  {color: [120, 255, 120, 0.7] as ColorTuple, position: 1}        // Dark purple, semi-transparent
 ];
 
 export const toxic: ColorStop[] = [
