@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "unsafe-build": "vite build",
     "preview": "vite preview",
     "eslint": "eslint ./*.js",
     "pretest": "npm run eslint"
