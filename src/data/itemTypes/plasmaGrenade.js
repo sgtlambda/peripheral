@@ -2,15 +2,15 @@ import ItemType from '../../logic/ItemType';
 
 import throwIntent from '../intents/throwIntent';
 
-import nukeThrowable from '../throwables/nukeThrowable';
+import plasmaGrenadeThrowable from '../throwables/plasmaGrenadeThrowable';
 
 export default new ItemType({
-    name:             'nuke',
+    name:             'plasma',
     color:            '#7597b8',
     availableIntents: [
         throwIntent({
-            name: 'nuke',
-            make: nukeThrowable,
+            name: 'plasmaGrenade',
+            make: plasmaGrenadeThrowable,
         }),
     ],
 });

@@ -2,13 +2,14 @@ import {Body, Composite, Vector, World} from 'matter-js';
 import {without} from 'lodash';
 
 import StageGraphics from './StageGraphics';
-import {WorldPart} from "../types";
+import {HasStep, WorldPart} from "../types";
 import Planet from "./Planet";
 import {NPC} from "../NPC";
 import Throwable from "./Throwable";
 import StrayItem from "./StrayItem";
-import {FlashEffect} from "../FlashEffect";
 import Building from "./Building";
+import {CameraShakeStack} from "../CameraShakeStack";
+import {ChiefTemporalOfficer} from "../ChiefTemporalOfficer";
 
 class Stage implements WorldPart {
 
@@ -21,10 +22,12 @@ class Stage implements WorldPart {
   public npcs: NPC[];
 
   public strayItems: StrayItem[];
-  public flashEffects: FlashEffect[];
+  public stepEffects: HasStep[];
   public throwables: Throwable[];
   public bodyQueue: Body[] = [];
   public addedBodies: Body[];
+  public cameraShakeStack: CameraShakeStack;
+  public chiefTemporalOfficer: ChiefTemporalOfficer;
 
   private provisioned: boolean = false;
   private _world!: World;
@@ -32,15 +35,17 @@ class Stage implements WorldPart {
   constructor(
     public readonly initialPlayerPos: Vector,
   ) {
-    this.graphics      = new StageGraphics();
-    this.strayItems    = [];
-    this.flashEffects  = [];
-    this.throwables    = [];
-    this.terrainBodies = [];
-    this.buildings     = [];
-    this.planets       = [];
-    this.bodyQueue     = [];
-    this.npcs          = [];
+    this.graphics             = new StageGraphics();
+    this.cameraShakeStack     = new CameraShakeStack();
+    this.chiefTemporalOfficer = new ChiefTemporalOfficer();
+    this.strayItems           = [];
+    this.stepEffects          = [this.cameraShakeStack];
+    this.throwables           = [];
+    this.terrainBodies        = [];
+    this.buildings            = [];
+    this.planets              = [];
+    this.bodyQueue            = [];
+    this.npcs                 = [];
 
     this.addedBodies = [];
   }

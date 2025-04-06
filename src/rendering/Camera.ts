@@ -2,6 +2,8 @@ import {Bounds, Engine, Events, Render} from 'matter-js';
 import {boundsHeight, boundsWidth} from "../common/bounds";
 
 import {EngineComponent} from "../types";
+import {EngineStep} from "../engineStep";
+import {CameraShakeStack} from "../CameraShakeStack";
 
 class Camera implements EngineComponent {
 
@@ -11,17 +13,20 @@ class Camera implements EngineComponent {
   smooth: number;
   player: any;
   trackOffset?: { x: number; y: number };
+  shakeStack: CameraShakeStack;
   _callback: (e: any) => void;
 
-  constructor({render, smooth = 8, trackOffset}: {
+  constructor({render, smooth = 8, trackOffset, shakeStack}: {
     render: Render;
     smooth?: number;
     trackOffset?: { x: number; y: number };
+    shakeStack: CameraShakeStack;
   }) {
 
-    this.smooth = smooth;
-    this.render = render;
+    this.smooth      = smooth;
+    this.render      = render;
     this.trackOffset = trackOffset;
+    this.shakeStack  = shakeStack;
     this.updateBounds();
     Bounds.shift(this.render.bounds, {
       x: -this.width / 2 + (trackOffset?.x || 0),
@@ -72,13 +77,18 @@ class Camera implements EngineComponent {
     context.translate(-center.x, -center.y);
   }
 
-  beforeTick() {
+  beforeTick(event: EngineStep) {
+
     if (!this.trackBody) return;
+
+    // TODO maybe doesn't need a static method on the `CameraShakeStack` class?
+    const shakeOffset = CameraShakeStack.computeCameraShake(event, this.shakeStack.stack);
 
     const {x: targetX, y: targetY} = this.getBoundsTarget();
     const {x: actualX, y: actualY} = this.currentBounds;
-    const shiftToX                 = (targetX + actualX * this.smooth) / (this.smooth + 1);
-    const shiftToY                 = (targetY + actualY * this.smooth) / (this.smooth + 1);
+
+    const shiftToX = (targetX + actualX * this.smooth) / (this.smooth + 1) + shakeOffset.x;
+    const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1) + shakeOffset.y;
 
     Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
   }

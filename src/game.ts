@@ -34,6 +34,7 @@ declare global {
 }
 
 import decomp from 'poly-decomp';
+import {ChiefTemporalOfficer} from "./ChiefTemporalOfficer";
 
 window.decomp = decomp;
 
@@ -49,9 +50,14 @@ if ('lastStop' in window) window.lastStop();
   const world  = engine.world;
   const render = createRenderer({element: document.body, engine});
 
+  const stage = sandboxStage();
+
+  stage.chiefTemporalOfficer.attachToEngine(engine);
+
   const camera = new Camera({
     render,
     trackOffset: {x: 0, y: -120},
+    shakeStack:  stage.cameraShakeStack,
   });
 
   const playerState = new PlayerState();
@@ -65,7 +71,6 @@ if ('lastStop' in window) window.lastStop();
   const {destroy: destroyUiController}               = uiController({playerState});
   const {destroy: destroyBrowserWindowController}    = browserWindowController({render, camera});
 
-  const stage = sandboxStage();
 
   const player = new Player({
     stage, keys: keysOn, mouse: gameMouse,
@@ -122,6 +127,8 @@ if ('lastStop' in window) window.lastStop();
 
     Render.stop(render);
     Runner.stop(runner);
+
+    stage.chiefTemporalOfficer.detachFromEngine();
 
     engineComponents.forEach(e => e.detach(engine));
 

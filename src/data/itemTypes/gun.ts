@@ -116,6 +116,11 @@ export const createGun = (
             color:    '#ff7758',
             polygon:  vertices,
           });
+          stage.cameraShakeStack.add({
+            x:        5,
+            y:        5,
+            duration: 100,
+          });
         }
       },
     }),

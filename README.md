@@ -1,5 +1,9 @@
 ## Development plan
 
+- Explosion: temporarily slomo
+- Explosions: color gradients
+- Explosions: cool sound
+- Explosions: h blur
 - Map textures onto the background (and foreground?)
 - Explosion design / animation
 - Item icons
