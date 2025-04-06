@@ -6,12 +6,12 @@ import Stage from "../../logic/Stage";
 import Building from "../../logic/Building";
 
 const renderBuilding = (context: CanvasRenderingContext2D, building: Building) => {
-  const position       = building.body.position;
-  context.font         = '10px monospace';
-  context.fillStyle    = 'rgba(255,255,255,.4)';
-  context.textAlign    = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(building.buildable.name, position.x, position.y);
+  // const position       = building.body.position;
+  // context.font         = '10px monospace';
+  // context.fillStyle    = 'rgba(255,255,255,.4)';
+  // context.textAlign    = 'center';
+  // context.textBaseline = 'middle';
+  // context.fillText(building.buildable.name, position.x, position.y);
 };
 
 export const createStageLayers = (stage: Stage) => [

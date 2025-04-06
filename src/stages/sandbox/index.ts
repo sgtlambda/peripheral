@@ -2,6 +2,7 @@ import Stage from "../../logic/Stage";
 import Planet from "../../logic/Planet";
 import {NPC, ProcessIncomingMessage} from "../../NPC";
 import {CameraShakeStack} from "../../CameraShakeStack";
+import crate from "../../data/buildables/crate";
 
 const processGuardTags: ProcessIncomingMessage = (message: string) => {
   if (message.includes('[accept]')) {
@@ -73,5 +74,21 @@ export default () => {
     additionalNpcContext:   "This NPC appears very eager to talk but is actually quite reserved, and very tough as far as ",
     processIncomingMessage: processGuardTags,
   }));
+  const crates = `000110
+111110
+111111
+111111`;
+  const crateLines = crates.split('\n');
+  for (let y = 0; y < crateLines.length; y++) {
+    for (let x = 0; x < crateLines[y].length; x++) {
+      if (crateLines[y][x] === '1') {
+        stage.addBuilding(crate.toBuilding({
+          angle: 0,
+          x:     -240 + x * 32,
+          y:     -100 + y * 32,
+        }));
+      }
+    }
+  }
   return stage;
 };

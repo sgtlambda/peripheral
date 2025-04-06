@@ -1,4 +1,4 @@
-import Matter, {Bodies} from 'matter-js';
+import Matter, {Bodies, IBodyRenderOptions} from 'matter-js';
 
 import Building from './Building';
 
@@ -8,13 +8,14 @@ export type BuildOpts = { x: number, y: number, angle: number };
 
 export type MakeCollider = (opts: BuildOpts, buildable: Buildable) => Matter.Body;
 
-export const defaultMakeCollider: MakeCollider = opts => {
+export const defaultMakeCollider = (renderOptions?: IBodyRenderOptions): MakeCollider => opts => {
   return Bodies.rectangle(opts.x, opts.y, DEFAULT_BUILDABLE_SIZE, DEFAULT_BUILDABLE_SIZE, {
     angle:  opts.angle,
     render: {
       fillStyle:   'transparent',
       strokeStyle: '#eee',
       lineWidth:   1,
+      ...renderOptions,
     },
   });
 };
@@ -30,9 +31,10 @@ export default class Buildable {
   constructor(opts: {
     name: string,
     makeCollider?: MakeCollider,
+    renderOptions?: IBodyRenderOptions,
   }) {
     this.name         = opts.name;
-    this.makeCollider = opts.makeCollider ?? defaultMakeCollider;
+    this.makeCollider = opts.makeCollider ?? defaultMakeCollider(opts.renderOptions);
   }
 
   public toBuilding({x, y, angle}: BuildOpts): Building {
