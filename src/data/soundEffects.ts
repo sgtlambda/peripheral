@@ -8,6 +8,7 @@ export enum SoundEffectID {
   EXPLOSION_SMALL = 'explosion-small',
   IMPACT = 'impact',
   THROW = 'throw',
+  BACKGROUND_MUSIC = 'background-music',
 }
 
 // Map of sound effects paths
@@ -17,4 +18,5 @@ export const soundEffectPaths: Record<SoundEffectID, string> = {
   [SoundEffectID.EXPLOSION_SMALL]: '/sounds/explosion-small.mp3',
   [SoundEffectID.IMPACT]: '/sounds/impact.mp3',
   [SoundEffectID.THROW]: '/sounds/throw.mp3',
+  [SoundEffectID.BACKGROUND_MUSIC]: '/sounds/lowkey-tune.mp3',
 };

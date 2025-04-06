@@ -26,7 +26,7 @@ import Layer from "./rendering/Layer";
 import {EngineComponent} from "./types";
 import {defaultInventory} from "./defaultInventory";
 import {AudioManager} from "./common/AudioManager";
-import {soundEffectPaths} from "./data/soundEffects";
+import {soundEffectPaths, SoundEffectID} from "./data/soundEffects";
 
 declare global {
   interface Window {
@@ -51,6 +51,12 @@ if ('lastStop' in window) window.lastStop();
   const audioManager = AudioManager.getInstance();
   audioManager.init(soundEffectPaths);
   window.audioManager = audioManager; // Expose for debugging
+
+  setTimeout(() => {
+    // TODO this should only start upon the very first user interaction
+    // Start background music
+    audioManager.playBackgroundMusic(SoundEffectID.BACKGROUND_MUSIC, .5);
+  }, 1000);
 
   const engine = Engine.create();
   const runner = Runner.create({});
@@ -131,6 +137,8 @@ if ('lastStop' in window) window.lastStop();
   Runner.run(runner, engine);
 
   window.lastStop = () => {
+    // Stop background music when the game stops
+    audioManager.stopBackgroundMusic();
 
     Render.stop(render);
     Runner.stop(runner);

@@ -6,6 +6,7 @@ export class AudioManager {
   private soundsMap: Map<string, HTMLAudioElement> = new Map();
   private initialized: boolean = false;
   private enabled: boolean = true;
+  private backgroundMusic: HTMLAudioElement | null = null;
 
   /**
    * Get the singleton instance
@@ -42,6 +43,9 @@ export class AudioManager {
    */
   public setEnabled(enabled: boolean): void {
     this.enabled = enabled;
+    if (this.backgroundMusic) {
+      this.backgroundMusic.muted = !enabled;
+    }
   }
 
   /**
@@ -91,5 +95,41 @@ export class AudioManager {
   ): Promise<void> {
     const rate = minPitch + Math.random() * (maxPitch - minPitch);
     return this.play(id, volume, rate);
+  }
+
+  /**
+   * Start playing background music
+   * @param id The sound ID of the background music
+   * @param volume Optional volume (0.0 to 1.0)
+   */
+  public playBackgroundMusic(id: string, volume: number = 1.0): void {
+    if (!this.enabled) return;
+    
+    const sound = this.soundsMap.get(id);
+    if (!sound) {
+      console.warn(`Background music "${id}" not found`);
+      return;
+    }
+
+    // Stop any existing background music
+    this.stopBackgroundMusic();
+
+    // Create new background music audio element
+    this.backgroundMusic = new Audio(sound.src);
+    this.backgroundMusic.volume = Math.max(0, Math.min(1, volume));
+    this.backgroundMusic.loop = true;
+    this.backgroundMusic.play().catch(error => {
+      console.error(`Error playing background music "${id}":`, error);
+    });
+  }
+
+  /**
+   * Stop the currently playing background music
+   */
+  public stopBackgroundMusic(): void {
+    if (this.backgroundMusic) {
+      this.backgroundMusic.pause();
+      this.backgroundMusic = null;
+    }
   }
 } 
