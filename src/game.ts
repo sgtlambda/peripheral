@@ -34,6 +34,7 @@ declare global {
 }
 
 import decomp from 'poly-decomp';
+import {ChiefTemporalOfficer} from "./ChiefTemporalOfficer";
 
 window.decomp = decomp;
 
@@ -50,6 +51,8 @@ if ('lastStop' in window) window.lastStop();
   const render = createRenderer({element: document.body, engine});
 
   const stage = sandboxStage();
+
+  stage.chiefTemporalOfficer.attachToEngine(engine);
 
   const camera = new Camera({
     render,
@@ -124,6 +127,8 @@ if ('lastStop' in window) window.lastStop();
 
     Render.stop(render);
     Runner.stop(runner);
+
+    stage.chiefTemporalOfficer.detachFromEngine();
 
     engineComponents.forEach(e => e.detach(engine));
 

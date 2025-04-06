@@ -9,6 +9,7 @@ import Throwable from "./Throwable";
 import StrayItem from "./StrayItem";
 import Building from "./Building";
 import {CameraShakeStack} from "../CameraShakeStack";
+import {ChiefTemporalOfficer} from "../ChiefTemporalOfficer";
 
 class Stage implements WorldPart {
 
@@ -26,6 +27,7 @@ class Stage implements WorldPart {
   public bodyQueue: Body[] = [];
   public addedBodies: Body[];
   public cameraShakeStack: CameraShakeStack;
+  public chiefTemporalOfficer: ChiefTemporalOfficer;
 
   private provisioned: boolean = false;
   private _world!: World;
@@ -33,16 +35,17 @@ class Stage implements WorldPart {
   constructor(
     public readonly initialPlayerPos: Vector,
   ) {
-    this.graphics         = new StageGraphics();
-    this.cameraShakeStack = new CameraShakeStack();
-    this.strayItems       = [];
-    this.stepEffects      = [this.cameraShakeStack];
-    this.throwables       = [];
-    this.terrainBodies    = [];
-    this.buildings        = [];
-    this.planets          = [];
-    this.bodyQueue        = [];
-    this.npcs             = [];
+    this.graphics             = new StageGraphics();
+    this.cameraShakeStack     = new CameraShakeStack();
+    this.chiefTemporalOfficer = new ChiefTemporalOfficer();
+    this.strayItems           = [];
+    this.stepEffects          = [this.cameraShakeStack];
+    this.throwables           = [];
+    this.terrainBodies        = [];
+    this.buildings            = [];
+    this.planets              = [];
+    this.bodyQueue            = [];
+    this.npcs                 = [];
 
     this.addedBodies = [];
   }
