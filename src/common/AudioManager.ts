@@ -86,7 +86,7 @@ export class AudioManager {
   public playWithRandomPitch(
     id: string, 
     volume: number = 1.0, 
-    minPitch: number = 0.8,
+    minPitch: number = 0.9,
     maxPitch: number = 1.1,
   ): Promise<void> {
     const rate = minPitch + Math.random() * (maxPitch - minPitch);
