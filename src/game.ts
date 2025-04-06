@@ -25,11 +25,14 @@ import Layer from "./rendering/Layer";
 
 import {EngineComponent} from "./types";
 import {defaultInventory} from "./defaultInventory";
+import {AudioManager} from "./common/AudioManager";
+import {soundEffectPaths} from "./data/soundEffects";
 
 declare global {
   interface Window {
     lastStop: any;
     decomp: any;
+    audioManager: AudioManager; // Expose for debugging
   }
 }
 
@@ -44,6 +47,10 @@ if (canvas) canvas.remove();
 if ('lastStop' in window) window.lastStop();
 
 (() => {
+  // Initialize the audio manager
+  const audioManager = AudioManager.getInstance();
+  audioManager.init(soundEffectPaths);
+  window.audioManager = audioManager; // Expose for debugging
 
   const engine = Engine.create();
   const runner = Runner.create({});

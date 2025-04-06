@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "build": "bun run typecheck && vite build",
     "dev": "vite",
-    "build": "tsc && vite build",
-    "unsafe-build": "vite build",
-    "preview": "vite preview",
     "eslint": "eslint ./*.js",
-    "pretest": "npm run eslint"
+    "pretest": "bun run eslint",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "unsafe-build": "vite build"
   },
   "dependencies": {
     "@ladle/react": "^5.0.2",

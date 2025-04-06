@@ -1,6 +1,5 @@
 import {Body, Vector, Vertices} from 'matter-js';
 
-import circleVertices from '../../common/circleVertices';
 import {nom} from './nom';
 import Stage from "../Stage";
 import {explosion} from './explosion';
