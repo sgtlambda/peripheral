@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retro Fire Fluid Sim</title>
+    <style>
+        html, body { margin: 0; padding: 0; overflow: hidden; background: black; }
+        canvas { display: block; image-rendering: pixelated; }
+    </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const numParticles = 2000;
+    const particles = [];
+
+    // Initialize particles spread more widely across the bottom
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: Math.random() * width * 0.4,
+            y: height - Math.random() * 100,
+            vx: 0,
+            vy: 0,
+        });
+    }
+
+    const densityRes = 4;
+    const cols = Math.floor(width / densityRes);
+    const rows = Math.floor(height / densityRes);
+    const density = new Float32Array(cols * rows);
+
+    function updateParticles() {
+        density.fill(0);
+
+        for (const p of particles) {
+            // Apply upward + right force + a bit of noise
+            p.vx += 0.01 + (Math.random() - 0.5) * 0.1;
+            p.vy -= 0.03 + (Math.random() - 0.5) * 0.1;
+
+            p.vx *= 0.95;
+            p.vy *= 0.95;
+
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Reset if out of bounds
+            if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height) {
+                p.x = Math.random() * width * 0.4;
+                p.y = height - Math.random() * 50;
+                p.vx = 0;
+                p.vy = 0;
+            }
+
+            const cx = Math.floor(p.x / densityRes);
+            const cy = Math.floor(p.y / densityRes);
+            if (cx >= 0 && cx < cols && cy >= 0 && cy < rows) {
+                density[cx + cy * cols] += 1;
+            }
+        }
+    }
+
+    function getRetroColor(densityValue) {
+        if (densityValue > 10) return [255, 255, 255]; // white hot
+        if (densityValue > 6) return [255, 255, 0];     // yellow
+        if (densityValue > 4) return [255, 128, 0];     // orange
+        if (densityValue > 2) return [255, 0, 0];       // red
+        if (densityValue > 0.5) return [128, 0, 0];     // dark red
+        return [0, 0, 0];
+    }
+
+    function renderDensityField() {
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const data = imageData.data;
+
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < cols; x++) {
+                const d = density[x + y * cols];
+                const [r, g, b] = getRetroColor(d);
+
+                for (let dy = 0; dy < densityRes; dy++) {
+                    for (let dx = 0; dx < densityRes; dx++) {
+                        const px = x * densityRes + dx;
+                        const py = y * densityRes + dy;
+                        if (px >= width || py >= height) continue;
+
+                        const index = (px + py * width) * 4;
+                        data[index] = r;
+                        data[index + 1] = g;
+                        data[index + 2] = b;
+                        data[index + 3] = 255;
+                    }
+                }
+            }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    function loop() {
+        updateParticles();
+        renderDensityField();
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+</script>
+</body>
+</html>
