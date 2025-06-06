@@ -6,7 +6,10 @@
   margin-bottom: 4px;
   display: inline-block;
   opacity: 1;
-  animation: fadeInOut 2000ms ease-out forwards;
+
+  &.committed {
+    animation: fadeInOut 2000ms ease-out forwards;
+  }
 }
 
 .line {

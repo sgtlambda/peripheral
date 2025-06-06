@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { SpeechInputMonitor } from "./SpeechInputMonitor";
 
 /**
@@ -7,29 +7,6 @@ import { SpeechInputMonitor } from "./SpeechInputMonitor";
  */
 export const Default: React.FC = () => {
   const receiverRef = useRef<((word: string) => void) | null>(null);
-  
-  // Sample words to simulate speech input
-  const sampleWords = [
-    "Hello", "world", "this", "is", "a", "test", "of", "the", "speech", "input", 
-    "monitor", "component", "that", "shows", "words", "appearing", "and", "fading",
-    "as", "they", "come", "in", "from", "speech", "recognition", "system", "with",
-    "automatic", "line", "wrapping", "when", "text", "becomes", "too", "long", "for",
-    "the", "current", "line", "and", "smooth", "animations", "throughout", "the",
-    "entire", "process", "of", "displaying", "and", "removing", "content"
-  ];
-  
-  useEffect(() => {
-    let wordIndex = 0;
-    
-    const interval = setInterval(() => {
-      if (receiverRef.current && wordIndex < sampleWords.length) {
-        receiverRef.current(sampleWords[wordIndex]);
-        wordIndex = (wordIndex + 1) % sampleWords.length;
-      }
-    }, 200); // Add a new word every 200ms
-    
-    return () => clearInterval(interval);
-  }, []);
   
   return (
     <div style={{ 
@@ -43,7 +20,7 @@ export const Default: React.FC = () => {
       </h3>
       
       <div style={{ maxWidth: "600px" }}>
-        <SpeechInputMonitor receiverRef={receiverRef} />
+        <SpeechInputMonitor receiverRef={receiverRef} showTextInput={true} />
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ type WordItem = {
   id: string;
   text: string;
   timestamp: number;
+  isCommitted: boolean;
 };
 
 /**
@@ -30,11 +31,15 @@ type WordItem = {
 export const SpeechInputLine: React.FC<{
   /** Ref that will be set to the addWord function. Returns true if word fits, false if rejected. */
   addWordRef: React.MutableRefObject<((word: string) => boolean) | null>;
+  /** Ref that will be set to the replaceLatestWord function. Updates the last word if it's temporary. */
+  replaceLatestWordRef?: React.MutableRefObject<((word: string) => boolean) | null>;
+  /** Ref that will be set to the commitLatestWord function. Commits the latest temporary word. */
+  commitLatestWordRef?: React.MutableRefObject<(() => void) | null>;
   /** Called when all words in the line have faded out (after 2 seconds each) */
   onAllWordsFaded?: () => void;
   /** Maximum width constraint for overflow detection. If not provided, uses container width. */
   maxWidth?: number;
-}> = ({ addWordRef, onAllWordsFaded, maxWidth }) => {
+}> = ({ addWordRef, replaceLatestWordRef, commitLatestWordRef, onAllWordsFaded, maxWidth }) => {
   const [words, setWords] = useState<WordItem[]>([]);
   const lineRef = useRef<HTMLDivElement>(null);
   const testRef = useRef<HTMLDivElement>(null);
@@ -48,6 +53,7 @@ export const SpeechInputLine: React.FC<{
         id: `${Date.now()}-${Math.random()}`,
         text: word,
         timestamp: Date.now(),
+        isCommitted: true,
       };
       setWords([wordItem]);
       return true;
@@ -111,16 +117,83 @@ export const SpeechInputLine: React.FC<{
       id: `${Date.now()}-${Math.random()}`,
       text: word,
       timestamp: Date.now(),
+      isCommitted: true,
     };
     
     setWords(prevWords => [...prevWords, wordItem]);
     return true;
   }, [words]);
+
+  const replaceLatestWord = useCallback((word: string): boolean => {
+    if (!lineRef.current || !testRef.current) return false;
+    
+    setWords(prevWords => {
+      if (prevWords.length === 0) {
+        // No words to replace, add as temporary word
+        const wordItem: WordItem = {
+          id: `temp-${Date.now()}-${Math.random()}`,
+          text: word,
+          timestamp: Date.now(),
+          isCommitted: false,
+        };
+        return [wordItem];
+      }
+      
+      const lastWord = prevWords[prevWords.length - 1];
+      
+      if (!lastWord.isCommitted) {
+        // Simply replace the temporary word - don't do complex overflow testing for live updates
+        const updatedWord: WordItem = {
+          ...lastWord,
+          text: word,
+          // Keep same timestamp so it doesn't restart fade animation
+        };
+        
+        return [...prevWords.slice(0, -1), updatedWord];
+      } else {
+        // Last word is committed, add new temporary word
+        const tempWord: WordItem = {
+          id: `temp-${Date.now()}-${Math.random()}`,
+          text: word,
+          timestamp: Date.now(),
+          isCommitted: false,
+        };
+        
+        return [...prevWords, tempWord];
+      }
+    });
+    
+    return true;
+  }, []);
+
+  const commitLatestWord = useCallback(() => {
+    setWords(prevWords => 
+      prevWords.map(word => 
+        !word.isCommitted 
+          ? { ...word, isCommitted: true, timestamp: Date.now() }
+          : word
+      )
+    );
+  }, []);
   
   // Set the addWord function on the ref
   useEffect(() => {
     addWordRef.current = addWord;
   }, [addWord, addWordRef]);
+
+  // Set the replaceLatestWord function on the ref
+  useEffect(() => {
+    if (replaceLatestWordRef) {
+      replaceLatestWordRef.current = replaceLatestWord;
+    }
+  }, [replaceLatestWord, replaceLatestWordRef]);
+
+  // Set the commitLatestWord function on the ref
+  useEffect(() => {
+    if (commitLatestWordRef) {
+      commitLatestWordRef.current = commitLatestWord;
+    }
+  }, [commitLatestWord, commitLatestWordRef]);
   
   // No need for manual fade timers - CSS keyframes handle this automatically
   
@@ -151,7 +224,7 @@ export const SpeechInputLine: React.FC<{
           <span
             key={word.id}
             id={word.id}
-            className={styles.speechWord}
+            className={`${styles.speechWord} ${word.isCommitted ? styles.committed : ''}`}
           >
             {word.text}
           </span>

@@ -29,6 +29,7 @@
     "poly-decomp": "^0.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hotkeys-hook": "^5.1.0",
     "sass": "^1.89.1",
     "ts-easing": "^0.2.0",
     "typescript": "^4.1.3",

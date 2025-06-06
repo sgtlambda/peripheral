@@ -4,7 +4,10 @@ import { SpeechInputLine } from './SpeechInputLine';
 type LineData = {
   id: string;
   ref: React.MutableRefObject<((word: string) => boolean) | null>;
+  replaceRef: React.MutableRefObject<((word: string) => boolean) | null>;
+  commitRef?: React.MutableRefObject<(() => void) | null>;
   isRemoving: boolean;
+  hasTemporaryWord: boolean;
 };
 
 /**
@@ -28,8 +31,11 @@ type LineData = {
 export const SpeechInputMonitor: React.FC<{
   /** Ref that will be set to the word receiver function for adding new words */
   receiverRef: React.MutableRefObject<((word: string) => void) | null>;
-}> = ({ receiverRef }) => {
+  /** Show text input for testing live typing */
+  showTextInput?: boolean;
+}> = ({ receiverRef, showTextInput = false }) => {
   const [lines, setLines] = useState<LineData[]>([]);
+  const [currentInput, setCurrentInput] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   
   const addWord = useCallback((word: string) => {
@@ -37,10 +43,15 @@ export const SpeechInputMonitor: React.FC<{
       if (prevLines.length === 0) {
         // First word, create first line
         const lineRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+        const replaceRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+        const commitRef = { current: null } as React.MutableRefObject<(() => void) | null>;
         const newLine: LineData = {
           id: `line-${Date.now()}`,
           ref: lineRef,
+          replaceRef: replaceRef,
+          commitRef: commitRef,
           isRemoving: false,
+          hasTemporaryWord: false,
         };
         
         // Add word after line is created
@@ -66,10 +77,15 @@ export const SpeechInputMonitor: React.FC<{
       
       // Word was rejected or no line available, create new line
       const lineRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+      const replaceRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+      const commitRef = { current: null } as React.MutableRefObject<(() => void) | null>;
       const newLine: LineData = {
         id: `line-${Date.now()}`,
         ref: lineRef,
+        replaceRef: replaceRef,
+        commitRef: commitRef,
         isRemoving: false,
+        hasTemporaryWord: false,
       };
       
       // Add word after line is created
@@ -108,6 +124,124 @@ export const SpeechInputMonitor: React.FC<{
     
     return () => clearTimeout(timeout);
   }, [lines]);
+
+  const updateCurrentWord = useCallback((word: string) => {
+    if (!word.trim()) return;
+    
+    setLines(prevLines => {
+      // Find the line with a temporary word
+      let targetLineIndex = prevLines.findIndex(line => line.hasTemporaryWord);
+      
+      if (targetLineIndex !== -1) {
+        // Update existing temporary word
+        const targetLine = prevLines[targetLineIndex];
+        if (targetLine.replaceRef.current) {
+          targetLine.replaceRef.current(word);
+        }
+        return prevLines;
+      }
+      
+      // No temporary word exists, try to add to the last line
+      if (prevLines.length === 0) {
+        // No lines exist, create one
+        const lineRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+        const replaceRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+        const commitRef = { current: null } as React.MutableRefObject<(() => void) | null>;
+        const newLine: LineData = {
+          id: `line-${Date.now()}`,
+          ref: lineRef,
+          replaceRef: replaceRef,
+          commitRef: commitRef,
+          isRemoving: false,
+          hasTemporaryWord: true,
+        };
+        
+        setTimeout(() => {
+          if (replaceRef.current) {
+            replaceRef.current(word);
+          }
+        }, 0);
+        
+        return [newLine];
+      }
+      
+      // Try to add to the last line
+      const lastLineIndex = prevLines.length - 1;
+      const lastLine = prevLines[lastLineIndex];
+      
+      if (lastLine.replaceRef.current) {
+        const accepted = lastLine.replaceRef.current(word);
+        
+        if (accepted) {
+          // Word was accepted, mark line as having temporary word
+          const updatedLines = [...prevLines];
+          updatedLines[lastLineIndex] = { ...lastLine, hasTemporaryWord: true };
+          return updatedLines;
+        } else {
+          // Word was rejected, create new line
+          const lineRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+          const replaceRef = { current: null } as React.MutableRefObject<((word: string) => boolean) | null>;
+          const commitRef = { current: null } as React.MutableRefObject<(() => void) | null>;
+          const newLine: LineData = {
+            id: `line-${Date.now()}`,
+            ref: lineRef,
+            replaceRef: replaceRef,
+            commitRef: commitRef,
+            isRemoving: false,
+            hasTemporaryWord: true,
+          };
+          
+          setTimeout(() => {
+            if (replaceRef.current) {
+              replaceRef.current(word);
+            }
+          }, 0);
+          
+          return [...prevLines, newLine];
+        }
+      }
+      
+      return prevLines;
+    });
+  }, []);
+
+  const commitCurrentWord = useCallback(() => {
+    // Just commit temporary words, don't add duplicates
+    setLines(prevLines => 
+      prevLines.map(line => {
+        if (line.hasTemporaryWord && line.commitRef?.current) {
+          line.commitRef.current();
+        }
+        return { ...line, hasTemporaryWord: false };
+      })
+    );
+    
+    setCurrentInput('');
+  }, [currentInput]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCurrentInput(value);
+    
+    if (value.endsWith(' ')) {
+      // Space pressed, commit the words
+      commitCurrentWord();
+    } else {
+      // Update current word being typed
+      const words = value.trim().split(' ');
+      const currentWord = words[words.length - 1];
+      
+      if (currentWord) {
+        updateCurrentWord(currentWord);
+      }
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      commitCurrentWord();
+    }
+  };
   
   return (
     <div 
@@ -140,11 +274,45 @@ export const SpeechInputMonitor: React.FC<{
         >
           <SpeechInputLine
             addWordRef={line.ref}
+            replaceLatestWordRef={line.replaceRef}
+            commitLatestWordRef={line.commitRef}
             onAllWordsFaded={() => handleLineFaded(line.id)}
             maxWidth={containerRef.current ? containerRef.current.offsetWidth - 40 : undefined}
           />
         </div>
       ))}
+      
+      {lines.length === 0 && (
+        <div style={{ 
+          color: 'rgba(255, 255, 255, 0.7)', 
+          fontStyle: 'italic',
+          textAlign: 'center',
+        }}>
+          {showTextInput ? 'Type in the input below...' : 'Listening for speech...'}
+        </div>
+      )}
+      
+      {showTextInput && (
+        <div style={{ marginTop: '10px' }}>
+          <input
+            type="text"
+            value={currentInput}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Type here... Press space to commit words"
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'white',
+              fontSize: '16px',
+              outline: 'none',
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }; 
