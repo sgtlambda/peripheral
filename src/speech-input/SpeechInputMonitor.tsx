@@ -7,7 +7,26 @@ type LineData = {
   isRemoving: boolean;
 };
 
+/**
+ * A multi-line speech input monitor that displays incoming words with automatic line wrapping.
+ * 
+ * Words are added to the current line until it's full, then new lines are created automatically.
+ * Each line uses SpeechInputLine components for word management and fade animations.
+ * Lines collapse and are removed when all their words have faded out.
+ * 
+ * @example
+ * ```tsx
+ * const receiverRef = useRef<((word: string) => void) | null>(null);
+ * 
+ * <SpeechInputMonitor receiverRef={receiverRef} />
+ * 
+ * // Later, from speech recognition
+ * receiverRef.current?.('hello');
+ * receiverRef.current?.('world');
+ * ```
+ */
 export const SpeechInputMonitor: React.FC<{
+  /** Ref that will be set to the word receiver function for adding new words */
   receiverRef: React.MutableRefObject<((word: string) => void) | null>;
 }> = ({ receiverRef }) => {
   const [lines, setLines] = useState<LineData[]>([]);

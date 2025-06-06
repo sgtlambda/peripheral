@@ -1,6 +1,10 @@
 import React, { useRef, useEffect } from "react";
 import { SpeechInputMonitor } from "./SpeechInputMonitor";
 
+/**
+ * Demonstrates the SpeechInputMonitor with automatic word generation.
+ * Words are added every 200ms to show line wrapping and fade animations.
+ */
 export const Default: React.FC = () => {
   const receiverRef = useRef<((word: string) => void) | null>(null);
   
@@ -38,37 +42,8 @@ export const Default: React.FC = () => {
         Speech Input Monitor Demo
       </h3>
       
-      <p style={{ 
-        marginBottom: "20px", 
-        color: "#666",
-        maxWidth: "600px",
-        lineHeight: "1.5"
-      }}>
-        This component automatically adds a new word every 200ms. Watch how words appear, 
-        fade out after 2 seconds, and lines collapse when empty. The component handles 
-        line wrapping automatically based on container width.
-      </p>
-      
       <div style={{ maxWidth: "600px" }}>
         <SpeechInputMonitor receiverRef={receiverRef} />
-      </div>
-      
-      <div style={{ 
-        marginTop: "30px", 
-        padding: "15px", 
-        background: "white", 
-        borderRadius: "8px",
-        maxWidth: "600px"
-      }}>
-        <h4 style={{ marginTop: "0", color: "#333" }}>Features:</h4>
-        <ul style={{ color: "#666", lineHeight: "1.6" }}>
-          <li>Words appear with smooth opacity transitions</li>
-          <li>Automatic line wrapping when text becomes too wide</li>
-          <li>Words fade out after 2 seconds</li>
-          <li>Empty lines collapse with height animation</li>
-          <li>Beautiful gradient background with modern styling</li>
-          <li>Responsive design that adapts to container width</li>
-        </ul>
       </div>
     </div>
   );

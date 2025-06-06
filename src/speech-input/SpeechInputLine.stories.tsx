@@ -2,6 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import { Story } from "@ladle/react";
 import { SpeechInputLine } from "./SpeechInputLine";
 
+/**
+ * Interactive test for the SpeechInputLine component.
+ * 
+ * Tests overflow detection by automatically adding words until the line rejects one.
+ * Includes controls for manual testing and width adjustment.
+ */
 export const Default: Story<{
   width: number;
 }> = ({ width }) => {
@@ -78,16 +84,7 @@ export const Default: Story<{
         Speech Input Line Component Test
       </h3>
       
-      <p style={{ 
-        marginBottom: "20px", 
-        color: "#666",
-        maxWidth: "600px",
-        lineHeight: "1.5"
-      }}>
-        This tests the individual line component. It will automatically add words until 
-        the line rejects a word (returns false), indicating it's full. Watch the log 
-        to see when words are accepted or rejected.
-      </p>
+
       
       <div style={{ 
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -201,22 +198,7 @@ export const Default: Story<{
         </div>
       </div>
       
-      <div style={{ 
-        marginTop: "20px", 
-        padding: "15px", 
-        background: "white", 
-        borderRadius: "8px",
-        maxWidth: "600px"
-      }}>
-        <h4 style={{ marginTop: "0", color: "#333" }}>Test Features:</h4>
-        <ul style={{ color: "#666", lineHeight: "1.6" }}>
-          <li><strong>Overflow Detection:</strong> Words are rejected when line is full</li>
-          <li><strong>Word Fading:</strong> Words fade out after 1.5-2 seconds</li>
-          <li><strong>Line Callback:</strong> Notifies when all words are faded</li>
-          <li><strong>Manual Control:</strong> Add words individually or automatically</li>
-          <li><strong>Visual Feedback:</strong> See accepted/rejected status in real-time</li>
-        </ul>
-      </div>
+
     </div>
   );
 };

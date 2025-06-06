@@ -7,9 +7,32 @@ type WordItem = {
   timestamp: number;
 };
 
+/**
+ * A single line component for displaying speech input words with automatic overflow detection.
+ * 
+ * Words are displayed as styled pills that automatically fade out after 2 seconds using CSS keyframes.
+ * The component intelligently rejects new words that would cause the line to wrap to multiple lines.
+ * 
+ * @example
+ * ```tsx
+ * const addWordRef = useRef<((word: string) => boolean) | null>(null);
+ * 
+ * <SpeechInputLine 
+ *   addWordRef={addWordRef}
+ *   onAllWordsFaded={() => console.log('Line is ready for removal')}
+ *   maxWidth={400}
+ * />
+ * 
+ * // Later, add a word
+ * const accepted = addWordRef.current?.('hello');
+ * ```
+ */
 export const SpeechInputLine: React.FC<{
+  /** Ref that will be set to the addWord function. Returns true if word fits, false if rejected. */
   addWordRef: React.MutableRefObject<((word: string) => boolean) | null>;
+  /** Called when all words in the line have faded out (after 2 seconds each) */
   onAllWordsFaded?: () => void;
+  /** Maximum width constraint for overflow detection. If not provided, uses container width. */
   maxWidth?: number;
 }> = ({ addWordRef, onAllWordsFaded, maxWidth }) => {
   const [words, setWords] = useState<WordItem[]>([]);
