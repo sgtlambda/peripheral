@@ -1,0 +1,42 @@
+.speechWord {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  display: inline-block;
+  opacity: 1;
+  animation: fadeInOut 2000ms ease-out forwards;
+}
+
+.line {
+  margin-bottom: 8px;
+  min-height: 1.4em;
+  line-height: 1.4;
+}
+
+.testElement {
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+  font-size: 18px;
+  font-family: sans-serif;
+  padding: 2px 6px;
+}
+
+.emptyLine {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+} 
