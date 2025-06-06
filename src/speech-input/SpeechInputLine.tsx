@@ -12,7 +12,7 @@ type WordItem = {
  * A single line component for displaying speech input words with automatic overflow detection.
  * 
  * Words are displayed as styled pills that automatically fade out after 2 seconds using CSS keyframes.
- * The component intelligently rejects new words that would cause the line to wrap to multiple lines.
+ * When the line becomes full (rejects its first word), it starts fading out and notifies the parent for removal.
  * 
  * @example
  * ```tsx
@@ -20,7 +20,7 @@ type WordItem = {
  * 
  * <SpeechInputLine 
  *   addWordRef={addWordRef}
- *   onAllWordsFaded={() => console.log('Line is ready for removal')}
+ *   onRemovalComplete={() => console.log('Line ready for removal')}
  *   maxWidth={400}
  * />
  * 
@@ -35,16 +35,29 @@ export const SpeechInputLine: React.FC<{
   replaceLatestWordRef?: React.MutableRefObject<((word: string) => boolean) | null>;
   /** Ref that will be set to the commitLatestWord function. Commits the latest temporary word. */
   commitLatestWordRef?: React.MutableRefObject<(() => void) | null>;
-  /** Called when all words in the line have faded out (after 2 seconds each) */
-  onAllWordsFaded?: () => void;
+  /** Called when the line has completed its removal animation and should be removed from parent state */
+  onRemovalComplete?: () => void;
   /** Maximum width constraint for overflow detection. If not provided, uses container width. */
   maxWidth?: number;
-}> = ({ addWordRef, replaceLatestWordRef, commitLatestWordRef, onAllWordsFaded, maxWidth }) => {
+}> = ({ addWordRef, replaceLatestWordRef, commitLatestWordRef, onRemovalComplete, maxWidth }) => {
   const [words, setWords] = useState<WordItem[]>([]);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const lineRef = useRef<HTMLDivElement>(null);
   const testRef = useRef<HTMLDivElement>(null);
   
+  const startFadeOut = useCallback(() => {
+    console.log('🎬 SpeechInputLine: Starting fade out animation for line with words:', words.map(w => w.text));
+    setIsFadingOut(true);
+    
+    // After fade animation completes, notify parent
+    setTimeout(() => {
+      console.log('✅ SpeechInputLine: Fade out animation COMPLETE, notifying parent for removal');
+      onRemovalComplete?.();
+    }, 800); // 0.8 seconds fade out time
+  }, [onRemovalComplete, words]);
+  
   const addWord = useCallback((word: string): boolean => {
+    if (isFadingOut) return false; // Don't accept words if fading out
     if (!lineRef.current || !testRef.current) return false;
     
     // If this is the first word, always accept it
@@ -66,6 +79,8 @@ export const SpeechInputLine: React.FC<{
     testContainer.style.position = 'absolute';
     testContainer.style.visibility = 'hidden';
     testContainer.style.width = lineRef.current.offsetWidth + 'px';
+    testContainer.style.height = 'auto'; // Override fixed height for testing
+    testContainer.style.minHeight = '1.4em'; // Use min-height for natural sizing
     
     // Clone existing words
     words.forEach(w => {
@@ -109,7 +124,10 @@ export const SpeechInputLine: React.FC<{
     
     // Check if height increased (indicating line wrap)
     if (heightWithNewWord > heightWithExistingWords) {
-      return false; // Word doesn't fit
+      console.log(`🚫 SpeechInputLine: Word "${word}" rejected! Line is FULL with words:`, words.map(w => w.text));
+      console.log('🎯 SpeechInputLine: Triggering fade out sequence...');
+      startFadeOut();
+      return false; // Word doesn't fit, line is full
     }
     
     // Word fits, add it for real
@@ -122,9 +140,10 @@ export const SpeechInputLine: React.FC<{
     
     setWords(prevWords => [...prevWords, wordItem]);
     return true;
-  }, [words]);
+  }, [words, isFadingOut, startFadeOut]);
 
   const replaceLatestWord = useCallback((word: string): boolean => {
+    if (isFadingOut) return false; // Don't accept words if fading out
     if (!lineRef.current || !testRef.current) return false;
     
     setWords(prevWords => {
@@ -164,9 +183,11 @@ export const SpeechInputLine: React.FC<{
     });
     
     return true;
-  }, []);
+  }, [isFadingOut]);
 
   const commitLatestWord = useCallback(() => {
+    if (isFadingOut) return; // Don't commit if fading out
+    
     setWords(prevWords => 
       prevWords.map(word => 
         !word.isCommitted 
@@ -174,7 +195,7 @@ export const SpeechInputLine: React.FC<{
           : word
       )
     );
-  }, []);
+  }, [isFadingOut]);
   
   // Set the addWord function on the ref
   useEffect(() => {
@@ -194,32 +215,32 @@ export const SpeechInputLine: React.FC<{
       commitLatestWordRef.current = commitLatestWord;
     }
   }, [commitLatestWord, commitLatestWordRef]);
-  
-  // No need for manual fade timers - CSS keyframes handle this automatically
-  
-  // Check if all words are faded and notify parent
+
+  // Log when fade state changes
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
-      const allWordsFaded = words.length > 0 && words.every(word => {
-        const age = now - word.timestamp;
-        return age >= 2000;
-      });
-      
-      if (allWordsFaded && onAllWordsFaded) {
-        onAllWordsFaded();
-      }
-    }, 100);
-    
-    return () => clearInterval(interval);
-  }, [words, onAllWordsFaded]);
+    if (isFadingOut) {
+      console.log('🔄 SpeechInputLine: isFadingOut state changed to TRUE - line should now be visually fading');
+    }
+  }, [isFadingOut]);
   
   return (
     <>
       {/* Hidden test element for measuring text width */}
       <div ref={testRef} className={styles.testElement} />
       
-      <div ref={lineRef} className={styles.line}>
+      <div 
+        ref={lineRef} 
+        style={{
+          height: isFadingOut ? 0 : 32, // Fixed height instead of auto
+          lineHeight: 32,
+          minHeight: isFadingOut ? undefined : 32, // Remove min-height during animation
+          overflowY: 'hidden',
+          overflowX: 'visible',
+          transition: isFadingOut ? 'height 0.3s ease-out, margin 0.8s ease-out, opacity 0.8s ease-out' : 'none',
+          opacity: isFadingOut ? 0 : 1,
+          background: isFadingOut ? 'rgba(255, 0, 0, 0.3)' : 'transparent', // Visual indicator
+        }}
+      >
         {words.map((word) => (
           <span
             key={word.id}
