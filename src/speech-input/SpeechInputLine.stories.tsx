@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
+import { Story } from "@ladle/react";
 import { SpeechInputLine } from "./SpeechInputLine";
 
-export const Default: React.FC = () => {
+export const Default: Story<{
+  width: number;
+}> = ({ width }) => {
   const addWordRef = useRef<((word: string) => boolean) | null>(null);
   const [log, setLog] = useState<string[]>([]);
   const [wordIndex, setWordIndex] = useState(0);
@@ -92,7 +95,7 @@ export const Default: React.FC = () => {
         color: 'white',
         padding: '20px',
         marginBottom: '20px',
-        maxWidth: '500px',
+        width: `${width}px`,
         fontSize: '18px',
         fontFamily: 'sans-serif',
         position: 'relative'
@@ -100,7 +103,7 @@ export const Default: React.FC = () => {
         <SpeechInputLine 
           addWordRef={addWordRef} 
           onAllWordsFaded={handleLineFaded}
-          maxWidth={460} // Container width minus padding
+          maxWidth={width - 40} // Container width minus padding
         />
       </div>
       
@@ -216,4 +219,8 @@ export const Default: React.FC = () => {
       </div>
     </div>
   );
+};
+
+Default.args = {
+  width: 500,
 }; 
