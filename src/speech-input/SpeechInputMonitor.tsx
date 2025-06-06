@@ -104,6 +104,7 @@ export const SpeechInputMonitor: React.FC<{
           const accepted = line.replaceRef.current(word);
           if (accepted) {
             // Word was accepted, mark line as having temporary word
+            console.log('🔤 SpeechInputMonitor: Marking line as having temporary word:', line.id);
             const updatedLines = [...prevLines];
             updatedLines[i] = { ...line, hasTemporaryWord: true };
             return updatedLines;
@@ -134,10 +135,12 @@ export const SpeechInputMonitor: React.FC<{
   }, []);
 
   const commitCurrentWord = useCallback(() => {
+    console.log('💾 SpeechInputMonitor: Committing current words...');
     // Commit temporary words
     setLines(prevLines => 
       prevLines.map(line => {
         if (line.hasTemporaryWord && line.commitRef?.current) {
+          console.log('✍️ SpeechInputMonitor: Committing temporary word on line:', line.id);
           line.commitRef.current();
         }
         return { ...line, hasTemporaryWord: false };

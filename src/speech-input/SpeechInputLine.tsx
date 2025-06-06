@@ -37,12 +37,13 @@ export const SpeechInputLine: React.FC<{
   commitLatestWordRef?: React.MutableRefObject<(() => void) | null>;
   /** Called when the line has completed its removal animation and should be removed from parent state */
   onRemovalComplete?: () => void;
+  /** Called when all words in the line have faded out */
+  onAllWordsFaded?: () => void;
   /** Maximum width constraint for overflow detection. If not provided, uses container width. */
   maxWidth?: number;
-}> = ({ addWordRef, replaceLatestWordRef, commitLatestWordRef, onRemovalComplete, maxWidth }) => {
+}> = ({ addWordRef, replaceLatestWordRef, commitLatestWordRef, onRemovalComplete, onAllWordsFaded, maxWidth }) => {
   const [words, setWords] = useState<WordItem[]>([]);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [isFull, setIsFull] = useState(false); // Track when line becomes full
   const lineRef = useRef<HTMLDivElement>(null);
   const testRef = useRef<HTMLDivElement>(null);
   
@@ -54,8 +55,9 @@ export const SpeechInputLine: React.FC<{
     setTimeout(() => {
       console.log('✅ SpeechInputLine: Fade out animation COMPLETE, notifying parent for removal');
       onRemovalComplete?.();
+      onAllWordsFaded?.(); // Backwards compatibility
     }, 800); // 0.8 seconds fade out time
-  }, [onRemovalComplete, words]);
+  }, [onRemovalComplete, onAllWordsFaded, words]);
   
   const addWord = useCallback((word: string): boolean => {
     if (isFadingOut) return false; // Don't accept words if fading out
@@ -126,19 +128,6 @@ export const SpeechInputLine: React.FC<{
     // Check if height increased (indicating line wrap)
     if (heightWithNewWord > heightWithExistingWords) {
       console.log(`🚫 SpeechInputLine: Word "${word}" rejected! Line is FULL with words:`, words.map(w => w.text));
-      
-      // Mark line as full
-      setIsFull(true);
-      
-      // Only start fade out if there are no uncommitted words
-      const hasUncommittedWords = words.some(word => !word.isCommitted);
-      if (!hasUncommittedWords) {
-        console.log('🎯 SpeechInputLine: No uncommitted words, triggering fade out sequence...');
-        startFadeOut();
-      } else {
-        console.log('⏸️ SpeechInputLine: Has uncommitted words, delaying fade out until commit...');
-      }
-      
       return false; // Word doesn't fit, line is full
     }
     
@@ -200,23 +189,14 @@ export const SpeechInputLine: React.FC<{
   const commitLatestWord = useCallback(() => {
     if (isFadingOut) return; // Don't commit if fading out
     
-    setWords(prevWords => {
-      const updatedWords = prevWords.map(word => 
+    setWords(prevWords => 
+      prevWords.map(word => 
         !word.isCommitted 
           ? { ...word, isCommitted: true, timestamp: Date.now() }
           : word
-      );
-      
-      // After committing, check if line is full and should now fade out
-      const hasUncommittedWords = updatedWords.some(word => !word.isCommitted);
-      if (isFull && !hasUncommittedWords) {
-        console.log('✨ SpeechInputLine: All words committed on full line, starting fade out...');
-        setTimeout(() => startFadeOut(), 0); // Defer to next tick
-      }
-      
-      return updatedWords;
-    });
-  }, [isFadingOut, isFull, startFadeOut]);
+      )
+    );
+  }, [isFadingOut]);
   
   // Set the addWord function on the ref
   useEffect(() => {
@@ -243,6 +223,30 @@ export const SpeechInputLine: React.FC<{
       console.log('🔄 SpeechInputLine: isFadingOut state changed to TRUE - line should now be visually fading');
     }
   }, [isFadingOut]);
+
+  // Check if all committed words have faded and start line removal
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isFadingOut) return; // Don't check if already fading out
+      
+      const now = Date.now();
+      const committedWords = words.filter(word => word.isCommitted);
+      
+      // Only consider line faded if there are committed words and they're all faded
+      const allCommittedWordsFaded = committedWords.length > 0 && committedWords.every(word => {
+        const age = now - word.timestamp;
+        return age >= 2000; // 2 seconds fade time for individual words
+      });
+      
+      if (allCommittedWordsFaded) {
+        console.log('⏰ SpeechInputLine: All committed words have faded, starting line removal');
+        startFadeOut();
+        clearInterval(interval);
+      }
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [words, isFadingOut, startFadeOut]);
   
   return (
     <>
@@ -251,6 +255,7 @@ export const SpeechInputLine: React.FC<{
       
       <div 
         ref={lineRef} 
+        className={styles.line}
         style={{
           height: isFadingOut ? 0 : 32, // Fixed height instead of auto
           lineHeight: '32px',
@@ -271,6 +276,7 @@ export const SpeechInputLine: React.FC<{
           <span
             key={word.id}
             id={word.id}
+            className={`${styles.speechWord} ${word.isCommitted ? styles.committed : ''}`}
             style={{
               background: 'rgba(255, 255, 255, 0.1)',
               padding: '2px 6px',
@@ -281,7 +287,7 @@ export const SpeechInputLine: React.FC<{
               color: 'white',
               fontSize: '18px',
               fontFamily: 'sans-serif',
-              opacity: word.isCommitted ? 1 : 0.7, // Temporary words are dimmer
+              opacity: word.isCommitted ? undefined : 0.7, // Let CSS handle committed word opacity
             }}
           >
             {word.text}
