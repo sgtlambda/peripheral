@@ -126,16 +126,6 @@ export const SpeechInputMonitor: React.FC<{
           />
         </div>
       ))}
-      
-      {lines.length === 0 && (
-        <div style={{ 
-          color: 'rgba(255, 255, 255, 0.7)', 
-          fontStyle: 'italic',
-          textAlign: 'center',
-        }}>
-          Listening for speech...
-        </div>
-      )}
     </div>
   );
 }; 
