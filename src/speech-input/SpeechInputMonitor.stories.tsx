@@ -1,11 +1,14 @@
 import React, { useRef } from "react";
+import { Story } from "@ladle/react";
 import { SpeechInputMonitor } from "./SpeechInputMonitor";
 
 /**
  * Demonstrates the SpeechInputMonitor with automatic word generation.
  * Words are added every 200ms to show line wrapping and fade animations.
  */
-export const Default: React.FC = () => {
+export const Default: Story<{
+  width: number;
+}> = ({ width }) => {
   const receiverRef = useRef<((word: string) => void) | null>(null);
   
   return (
@@ -19,9 +22,13 @@ export const Default: React.FC = () => {
         Speech Input Monitor Demo
       </h3>
       
-      <div style={{ maxWidth: "600px" }}>
+      <div style={{ width: `${width}px` }}>
         <SpeechInputMonitor receiverRef={receiverRef} showTextInput={true} />
       </div>
     </div>
   );
+};
+
+Default.args = {
+  width: 600,
 }; 
