@@ -1,5 +1,6 @@
-import {browserWindowController} from "./browserWindowController";
 import {Engine, Render, Runner} from 'matter-js';
+
+import {browserWindowController} from "./browserWindowController";
 import createRenderer from './createRenderer';
 import playerController from './playerController';
 import mouseController from './mouseController';
