@@ -100,8 +100,11 @@ export default () => new Layer({
       }
       
       // Update and draw shooting stars
+      // Use engine's timeScale for slow-motion effects (e.g., plasma explosions)
+      const timeScale = renderer.engine?.timing?.timeScale ?? 1;
+      
       shootingStars = shootingStars.filter(star => {
-        star.progress += star.speed * deltaTime;
+        star.progress += star.speed * deltaTime * timeScale;
         if (star.progress > 1) return false;
         
         const currentX = star.startX + (star.endX - star.startX) * star.progress;
