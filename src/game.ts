@@ -12,7 +12,7 @@ import sandboxStage from './stages/sandbox';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
-import backgroundLayer from './rendering/layers/backgroundLayer';
+import backgroundLayer, { vignetteLayer } from './rendering/layers/backgroundLayer';
 import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
@@ -116,11 +116,12 @@ if ('lastStop' in window) window.lastStop();
   const layers: Layer[] = [
     unrotate, // Note this layer MUST be first
 
-    backgroundLayer(),
     playerInteractionLayer({player, playerState, stage}),
     ...createStageLayers(stage),
+    backgroundLayer(), // MUST come after stage layers - uses destination-over to draw behind crates
     ...uiLayers({gameMouse, player, playerState}),
     markupGuiRenderer.layer,
+    vignetteLayer(), // Vignette renders on top of everything
 
     rotate, // Note this layer MUST be last
   ];

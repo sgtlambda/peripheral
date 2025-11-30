@@ -46,12 +46,12 @@ let lastFrameTime = 0;
 
 export default () => new Layer({
   hud: true,
-  over: true, // Render AFTER Matter.js, but use destination-over to draw behind
+  over: true, // Render AFTER Matter.js + stage layers, use destination-over to draw behind
   render(context: CanvasRenderingContext2D, renderer: Render, _camera: Camera) {
     const canvas = renderer.canvas;
     const now = performance.now();
     
-    // Use destination-over to draw BEHIND existing content
+    // Use destination-over to draw BEHIND existing content (crates, player, etc.)
     const previousCompositeOp = context.globalCompositeOperation;
     context.globalCompositeOperation = 'destination-over';
     
@@ -66,15 +66,15 @@ export default () => new Layer({
     const width = canvas.width;
     const height = canvas.height;
     
-    // With destination-over, first drawn = closest to game content
-    // Order: World grid -> Parallax grid -> Shooting stars -> Stars -> Nebula (back)
+    // With destination-over, first drawn = closest to game content, last drawn = furthest back
+    // Order: Grids (closest) -> Shooting stars -> Stars -> Nebula (furthest back)
     
-    // Draw world-fixed grid first (sticks to world 0,0 - moves 1:1 with camera)
+    // Draw world-fixed grid first (closest to game content)
     if (backgroundSettings.showWorldGrid) {
       drawWorldGrid(context, width, height, cameraX, cameraY);
     }
     
-    // Draw parallax grid (moves slower than camera for depth effect)
+    // Draw parallax grid
     if (backgroundSettings.showParallaxGrid) {
       drawGrid(context, width, height, time, cameraX, cameraY);
     }
@@ -140,62 +140,175 @@ export default () => new Layer({
     
     // Draw nebula background (furthest back)
     if (backgroundSettings.showNebula) {
-      drawNebulaBackground(context, width, height, time);
+      drawNebulaBackground(context, width, height, time, cameraX, cameraY);
     }
     
-    // Restore composite operation for vignette (drawn on top)
+    // Restore composite operation
     context.globalCompositeOperation = previousCompositeOp;
-    
-    // Vignette effect - drawn with normal composite (on top of everything)
+  }
+});
+
+// Separate layer for vignette that renders AFTER everything (on top)
+export const vignetteLayer = () => new Layer({
+  hud: true,
+  over: true, // Render after Matter.js and all game content
+  render(context: CanvasRenderingContext2D, renderer: Render, _camera: Camera) {
+    const canvas = renderer.canvas;
     if (backgroundSettings.showVignette) {
-      drawVignette(context, width, height);
+      drawVignette(context, canvas.width, canvas.height);
     }
   }
 });
+
+// Simple pseudo-random function for procedural generation (deterministic based on input)
+function hash(x: number, y: number): number {
+  const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+  return n - Math.floor(n);
+}
+
+// Smooth noise interpolation
+function smoothNoise(x: number, y: number): number {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const fx = x - ix;
+  const fy = y - iy;
+  
+  // Smoothstep interpolation
+  const sx = fx * fx * (3 - 2 * fx);
+  const sy = fy * fy * (3 - 2 * fy);
+  
+  const n00 = hash(ix, iy);
+  const n10 = hash(ix + 1, iy);
+  const n01 = hash(ix, iy + 1);
+  const n11 = hash(ix + 1, iy + 1);
+  
+  const nx0 = n00 * (1 - sx) + n10 * sx;
+  const nx1 = n01 * (1 - sx) + n11 * sx;
+  
+  return nx0 * (1 - sy) + nx1 * sy;
+}
 
 function drawNebulaBackground(
   ctx: CanvasRenderingContext2D,
   width: number,
   height: number,
-  time: number
+  time: number,
+  cameraX: number,
+  cameraY: number
 ) {
-  // Base gradient
-  const baseGradient = ctx.createLinearGradient(0, 0, width, height);
-  baseGradient.addColorStop(0, '#0e0a1a');
-  baseGradient.addColorStop(0.3, '#150d2a');
-  baseGradient.addColorStop(0.6, '#0d0820');
-  baseGradient.addColorStop(1, '#080515');
-  ctx.fillStyle = baseGradient;
-  ctx.fillRect(0, 0, width, height);
+  // Parallax factor for nebula movement (slower than camera)
+  const nebulaParallax = 0.15;
+  const offsetX = cameraX * nebulaParallax;
+  const offsetY = cameraY * nebulaParallax;
+  
+  // Scale for the procedural noise (controls how often colors change)
+  const noiseScale = 0.001;
+  
+  // Sample noise at camera position for color variation
+  const colorShift = smoothNoise(offsetX * noiseScale * 2, offsetY * noiseScale * 2);
 
   // Pulsing brightness factor
   const pulse = 1 + Math.sin(time * 0.0008) * 0.1;
 
-  // Nebula blobs
-  const nebulaColors = [
-    { x: 0.25, y: 0.15, r: 0.45, color: [160, 80, 220, 0.55 * pulse] },
-    { x: 0.75, y: 0.65, r: 0.5, color: [80, 120, 200, 0.45 * pulse] },
-    { x: 0.5, y: 0.9, r: 0.45, color: [140, 60, 160, 0.4 * pulse] },
-    { x: 0.9, y: 0.2, r: 0.4, color: [180, 100, 240, 0.35 * pulse] },
-    { x: 0.1, y: 0.75, r: 0.35, color: [100, 80, 180, 0.3 * pulse] },
-    { x: 0.6, y: 0.4, r: 0.5, color: [60, 80, 140, 0.2 * pulse] },
-  ];
-
-  for (const nebula of nebulaColors) {
-    const gradient = ctx.createRadialGradient(
-      nebula.x * width,
-      nebula.y * height,
-      0,
-      nebula.x * width,
-      nebula.y * height,
-      nebula.r * Math.max(width, height)
+  // With destination-over, first drawn = in front, last drawn = behind
+  // So we draw nebula blobs FIRST (in front), then base gradient (behind)
+  
+  // Generate procedural nebula blobs based on camera position
+  const nebulaCount = 6;
+  const nebulaSeed = 42; // Base seed for consistency
+  
+  for (let i = 0; i < nebulaCount; i++) {
+    // Procedural base position
+    const baseX = hash(i * 7 + nebulaSeed, i * 13);
+    const baseY = hash(i * 11 + nebulaSeed, i * 17);
+    
+    // Add camera-based offset with different parallax per layer (depth effect)
+    // Slower parallax = appears further away
+    const layerParallax = 0.05 + (i / nebulaCount) * 0.1; // 0.05 to 0.15
+    const nebulaOffsetX = (offsetX * layerParallax) / (width * 2);
+    const nebulaOffsetY = (offsetY * layerParallax) / (height * 2);
+    
+    // Wrap positions to create seamless scrolling (-0.3 to 1.3 range for overflow)
+    let x = ((baseX + nebulaOffsetX) % 1.6) - 0.3;
+    let y = ((baseY + nebulaOffsetY) % 1.6) - 0.3;
+    
+    // Procedural radius - larger for more coverage
+    const r = 0.4 + hash(i * 19, nebulaSeed) * 0.35;
+    
+    // Procedural color - vibrant purple/blue/pink spectrum
+    const localNoise = smoothNoise(
+      (x * width + offsetX) * noiseScale,
+      (y * height + offsetY) * noiseScale
     );
-    const [r, g, b, a] = nebula.color;
-    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${a})`);
+    
+    const hue = 260 + localNoise * 50 + i * 20; // Purples to magentas
+    const saturation = 0.6 + hash(i * 23, nebulaSeed) * 0.25; // More saturated
+    const lightness = 0.45 + hash(i * 29, nebulaSeed) * 0.15; // Brighter
+    const alpha = (0.35 + hash(i * 31, nebulaSeed) * 0.3) * pulse; // More opaque
+    
+    const gradient = ctx.createRadialGradient(
+      x * width,
+      y * height,
+      0,
+      x * width,
+      y * height,
+      r * Math.max(width, height)
+    );
+    
+    const [cr, cg, cb] = hslToRgbValues(hue, saturation, lightness);
+    gradient.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, ${alpha})`);
+    gradient.addColorStop(0.5, `rgba(${cr}, ${cg}, ${cb}, ${alpha * 0.4})`);
     gradient.addColorStop(1, 'transparent');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   }
+  
+  // Base gradient - drawn LAST so it appears BEHIND nebula blobs
+  // Shifts angle based on camera position
+  const gradientAngle = (offsetX * 0.001 + offsetY * 0.0005) % (Math.PI * 2);
+  const gx1 = width / 2 + Math.cos(gradientAngle) * width;
+  const gy1 = height / 2 + Math.sin(gradientAngle) * height;
+  const gx2 = width / 2 - Math.cos(gradientAngle) * width;
+  const gy2 = height / 2 - Math.sin(gradientAngle) * height;
+  
+  const baseGradient = ctx.createLinearGradient(gx1, gy1, gx2, gy2);
+  
+  // Shift base colors slightly based on position
+  const hueShift = colorShift * 20 - 10; // -10 to +10 degree shift
+  baseGradient.addColorStop(0, hslToRgb(270 + hueShift, 0.3, 0.07));
+  baseGradient.addColorStop(0.3, hslToRgb(265 + hueShift, 0.35, 0.1));
+  baseGradient.addColorStop(0.6, hslToRgb(275 + hueShift, 0.3, 0.05));
+  baseGradient.addColorStop(1, hslToRgb(280 + hueShift, 0.25, 0.04));
+  ctx.fillStyle = baseGradient;
+  ctx.fillRect(0, 0, width, height);
+}
+
+// Convert HSL to RGB string
+function hslToRgb(h: number, s: number, l: number): string {
+  const [r, g, b] = hslToRgbValues(h, s, l);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+// Convert HSL to RGB values
+function hslToRgbValues(h: number, s: number, l: number): [number, number, number] {
+  h = ((h % 360) + 360) % 360;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = l - c / 2;
+  
+  let r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; b = 0; }
+  else if (h < 120) { r = x; g = c; b = 0; }
+  else if (h < 180) { r = 0; g = c; b = x; }
+  else if (h < 240) { r = 0; g = x; b = c; }
+  else if (h < 300) { r = x; g = 0; b = c; }
+  else { r = c; g = 0; b = x; }
+  
+  return [
+    Math.round((r + m) * 255),
+    Math.round((g + m) * 255),
+    Math.round((b + m) * 255)
+  ];
 }
 
 function drawStars(
