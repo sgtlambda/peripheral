@@ -319,40 +319,36 @@ function drawStars(
   cameraX: number,
   cameraY: number
 ) {
-  // Seed-based star generation for consistency
-  const starLayers = [
-    { count: 50, sizeMin: 0.5, sizeMax: 1.5, parallax: 0.02, alpha: 0.6 },
-    { count: 30, sizeMin: 1, sizeMax: 2.5, parallax: 0.05, alpha: 0.8 },
-    { count: 15, sizeMin: 2, sizeMax: 3.5, parallax: 0.1, alpha: 1 },
-  ];
+  // Single star layer that moves with camera
+  const starCount = 80;
+  const sizeMin = 0.5;
+  const sizeMax = 3;
+  const parallax = 0.1;
 
   const twinkle = 0.7 + Math.sin(time * 0.003) * 0.3;
+  const seed = 15000;
 
-  for (const layer of starLayers) {
-    // Use deterministic positions based on layer
-    const seed = layer.count * 1000;
-    for (let i = 0; i < layer.count; i++) {
-      const pseudoRandX = ((seed + i * 7919) % 1000) / 1000;
-      const pseudoRandY = ((seed + i * 104729) % 1000) / 1000;
-      const pseudoRandSize = ((seed + i * 15485863) % 1000) / 1000;
-      const pseudoRandBlink = ((seed + i * 32452843) % 1000) / 1000;
+  for (let i = 0; i < starCount; i++) {
+    const pseudoRandX = ((seed + i * 7919) % 1000) / 1000;
+    const pseudoRandY = ((seed + i * 104729) % 1000) / 1000;
+    const pseudoRandSize = ((seed + i * 15485863) % 1000) / 1000;
+    const pseudoRandBlink = ((seed + i * 32452843) % 1000) / 1000;
 
-      let x = pseudoRandX * width + cameraX * layer.parallax;
-      let y = pseudoRandY * height + cameraY * layer.parallax;
+    let x = pseudoRandX * width + cameraX * parallax;
+    let y = pseudoRandY * height + cameraY * parallax;
 
-      // Wrap stars around the screen
-      x = ((x % width) + width) % width;
-      y = ((y % height) + height) % height;
+    // Wrap stars around the screen
+    x = ((x % width) + width) % width;
+    y = ((y % height) + height) % height;
 
-      const size = layer.sizeMin + pseudoRandSize * (layer.sizeMax - layer.sizeMin);
-      const blinkOffset = pseudoRandBlink * Math.PI * 2;
-      const alpha = layer.alpha * (0.5 + 0.5 * Math.sin(time * 0.002 + blinkOffset)) * twinkle;
+    const size = sizeMin + pseudoRandSize * (sizeMax - sizeMin);
+    const blinkOffset = pseudoRandBlink * Math.PI * 2;
+    const alpha = (0.5 + 0.5 * Math.sin(time * 0.002 + blinkOffset)) * twinkle;
 
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
-      ctx.fill();
-    }
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+    ctx.fill();
   }
 }
 
