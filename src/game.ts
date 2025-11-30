@@ -12,7 +12,7 @@ import sandboxStage from './stages/sandbox';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
-import backgroundLayer from './rendering/layers/backgroundLayer.js';
+import backgroundLayer from './rendering/layers/backgroundLayer';
 import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
