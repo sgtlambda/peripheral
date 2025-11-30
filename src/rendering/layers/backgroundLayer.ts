@@ -14,8 +14,8 @@ import { Render } from 'matter-js';
 
 // Debug settings for background layer - toggle via console: backgroundSettings.showWorldGrid = true
 export const backgroundSettings = {
-  showWorldGrid: false,    // Orange grid fixed to world 0,0
-  showParallaxGrid: false, // Blue grid with parallax effect
+  showWorldGrid: true,     // Orange grid fixed to world 0,0
+  showParallaxGrid: true,  // Blue grid with parallax effect
   showStars: true,
   showNebula: true,
   showShootingStars: true,
@@ -359,7 +359,7 @@ function drawWorldGrid(
   cameraX: number,
   cameraY: number
 ) {
-  const gridSize = 100;
+  const gridSize = 80;
   // World-fixed grid: moves 1:1 with camera (stays fixed to world 0,0)
   const gridOffsetX = (-cameraX) % gridSize;
   const gridOffsetY = (-cameraY) % gridSize;
@@ -383,16 +383,6 @@ function drawWorldGrid(
     ctx.lineTo(width, y);
     ctx.stroke();
   }
-
-  // Grid intersection dots
-  ctx.fillStyle = `rgba(255, 180, 80, ${gridAlpha * 2})`;
-  for (let x = -gridSize + gridOffsetX; x < width + gridSize; x += gridSize) {
-    for (let y = -gridSize + gridOffsetY; y < height + gridSize; y += gridSize) {
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
 }
 
 function drawGrid(
@@ -409,7 +399,6 @@ function drawGrid(
   const gridOffsetX = (-cameraX * parallaxFactor) % gridSize;
   const gridOffsetY = (-cameraY * parallaxFactor) % gridSize;
   
-  // More visible grid for testing parallax
   const gridAlpha = 0.15;
 
   ctx.strokeStyle = `rgba(140, 180, 255, ${gridAlpha})`;
@@ -427,16 +416,6 @@ function drawGrid(
     ctx.moveTo(0, y);
     ctx.lineTo(width, y);
     ctx.stroke();
-  }
-
-  // Grid intersection dots - more visible
-  ctx.fillStyle = `rgba(140, 180, 255, ${gridAlpha * 2})`;
-  for (let x = -gridSize + gridOffsetX; x < width + gridSize; x += gridSize) {
-    for (let y = -gridSize + gridOffsetY; y < height + gridSize; y += gridSize) {
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
   }
 }
 

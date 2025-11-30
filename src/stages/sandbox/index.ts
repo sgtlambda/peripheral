@@ -64,16 +64,16 @@ export default () => {
     name:     'sandbox-planet',
     color:    '#ffffff',
   }));
-  stage.addNPC(new NPC({
-    id:                     1, name: 'The Crow', stage, x: 300, y: 0,
-    additionalNpcContext:   hostageTakerPrompt,
-    processIncomingMessage: processGuardTags,
-  }));
-  stage.addNPC(new NPC({
-    id:                     2, name: 'Jack', stage, x: 600, y: 0,
-    additionalNpcContext:   "This NPC appears very eager to talk but is actually quite reserved, and very tough as far as ",
-    processIncomingMessage: processGuardTags,
-  }));
+  // stage.addNPC(new NPC({
+  //   id:                     1, name: 'The Crow', stage, x: 300, y: 0,
+  //   additionalNpcContext:   hostageTakerPrompt,
+  //   processIncomingMessage: processGuardTags,
+  // }));
+  // stage.addNPC(new NPC({
+  //   id:                     2, name: 'Jack', stage, x: 600, y: 0,
+  //   additionalNpcContext:   "This NPC appears very eager to talk but is actually quite reserved, and very tough as far as ",
+  //   processIncomingMessage: processGuardTags,
+  // }));
   const crates = `000110
 111110
 111111
