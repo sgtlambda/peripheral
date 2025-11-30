@@ -209,18 +209,21 @@ export class BipedWalker {
     }
     
     // Normal walking
+    // During stance (half cycle), terrain moves strideLength/2, so foot should too
+    // Using 0.25 multiplier means foot moves from +strideLength/4 to -strideLength/4
+    // = strideLength/2 total, matching terrain movement
     let xOffset: number;
     let yLift: number;
     
     if (phase < 0.5) {
-      // Stance phase - foot on ground
+      // Stance phase - foot on ground, moves with terrain
       const stanceProgress = phase / 0.5;
-      xOffset = strideLength * 0.5 * (1 - 2 * stanceProgress) * this.walkDirection;
+      xOffset = strideLength * 0.25 * (1 - 2 * stanceProgress) * this.walkDirection;
       yLift = 0;
     } else {
-      // Swing phase - foot lifted
+      // Swing phase - foot lifted, swings forward
       const swingProgress = (phase - 0.5) / 0.5;
-      xOffset = strideLength * 0.5 * (-1 + 2 * swingProgress) * this.walkDirection;
+      xOffset = strideLength * 0.25 * (-1 + 2 * swingProgress) * this.walkDirection;
       yLift = -stepHeight * Math.sin(swingProgress * Math.PI);
     }
     
