@@ -31,6 +31,7 @@ export type BipedWalkerConfig = {
  */
 export type FootState = {
   position: Vec2;
+  targetPosition: Vec2; // Where the foot is trying to reach
   grounded: boolean;
   terrainAngle: number; // Angle of terrain at foot position (radians)
 };
@@ -76,6 +77,10 @@ export class BipedWalker {
   private leftFootPos: Vec2;
   private rightFootPos: Vec2;
   
+  // Foot target positions (where feet are trying to reach)
+  private leftFootTarget: Vec2;
+  private rightFootTarget: Vec2;
+  
   // Terrain angles at foot positions
   private leftFootAngle: number = 0;
   private rightFootAngle: number = 0;
@@ -114,6 +119,8 @@ export class BipedWalker {
       x: this.position.x + this.config.footSpacing / 2,
       y: this.position.y + this.config.bodyHeight,
     };
+    this.leftFootTarget = { ...this.leftFootPos };
+    this.rightFootTarget = { ...this.rightFootPos };
   }
 
   /**
@@ -169,12 +176,12 @@ export class BipedWalker {
     const rightPhase = (this.walkPhase + 0.5) % 1;
     
     // Calculate foot targets
-    const leftTarget = this.calculateFootTarget(leftPhase, -footSpacing / 2, getGroundHeight);
-    const rightTarget = this.calculateFootTarget(rightPhase, footSpacing / 2, getGroundHeight);
+    this.leftFootTarget = this.calculateFootTarget(leftPhase, -footSpacing / 2, getGroundHeight);
+    this.rightFootTarget = this.calculateFootTarget(rightPhase, footSpacing / 2, getGroundHeight);
     
     // Smoothly move feet towards targets
-    this.leftFootPos = this.smoothFootMove(this.leftFootPos, leftTarget, leftPhase, getGroundHeight);
-    this.rightFootPos = this.smoothFootMove(this.rightFootPos, rightTarget, rightPhase, getGroundHeight);
+    this.leftFootPos = this.smoothFootMove(this.leftFootPos, this.leftFootTarget, leftPhase, getGroundHeight);
+    this.rightFootPos = this.smoothFootMove(this.rightFootPos, this.rightFootTarget, rightPhase, getGroundHeight);
     
     // Update terrain angles at foot positions
     this.leftFootAngle = getTerrainAngle(this.leftFootPos.x + this.worldOffset);
@@ -303,11 +310,13 @@ export class BipedWalker {
       headCenter,
       leftFoot: {
         position: { ...this.leftFootPos },
+        targetPosition: { ...this.leftFootTarget },
         grounded: !this.isInAir && leftPhase < 0.5,
         terrainAngle: this.leftFootAngle,
       },
       rightFoot: {
         position: { ...this.rightFootPos },
+        targetPosition: { ...this.rightFootTarget },
         grounded: !this.isInAir && rightPhase < 0.5,
         terrainAngle: this.rightFootAngle,
       },
@@ -357,6 +366,8 @@ export class BipedWalker {
       x: position.x + this.config.footSpacing / 2,
       y: position.y + this.config.bodyHeight,
     };
+    this.leftFootTarget = { ...this.leftFootPos };
+    this.rightFootTarget = { ...this.rightFootPos };
     this.leftFootAngle = 0;
     this.rightFootAngle = 0;
   }

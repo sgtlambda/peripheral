@@ -98,6 +98,68 @@ function drawHalfCircle(
 }
 
 /**
+ * Draw a crosshair/axis marker at a position
+ */
+function drawCrosshair(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+  label?: string
+): void {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  
+  // Horizontal line
+  ctx.beginPath();
+  ctx.moveTo(x - size, y);
+  ctx.lineTo(x + size, y);
+  ctx.stroke();
+  
+  // Vertical line
+  ctx.beginPath();
+  ctx.moveTo(x, y - size);
+  ctx.lineTo(x, y + size);
+  ctx.stroke();
+  
+  // Center dot
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, 3, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Label
+  if (label) {
+    ctx.font = "10px monospace";
+    ctx.fillStyle = color;
+    ctx.fillText(label, x + size + 4, y + 3);
+  }
+}
+
+/**
+ * Draw a target marker (diamond shape)
+ */
+function drawTargetMarker(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: string
+): void {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  
+  ctx.beginPath();
+  ctx.moveTo(x, y - size);
+  ctx.lineTo(x + size, y);
+  ctx.lineTo(x, y + size);
+  ctx.lineTo(x - size, y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+/**
  * Render the simplified bipedal character
  */
 function renderBiped(
@@ -175,6 +237,41 @@ function renderBiped(
   ctx.arc(headCenter.x - 4, headCenter.y + offsetY - 2, 2, 0, Math.PI * 2);
   ctx.arc(headCenter.x + 4, headCenter.y + offsetY - 2, 2, 0, Math.PI * 2);
   ctx.fill();
+  
+  // Debug: Draw foot position crosshairs and target markers
+  // Left foot - current position (cyan) and target (yellow diamond)
+  drawCrosshair(
+    ctx,
+    state.leftFoot.position.x,
+    state.leftFoot.position.y + offsetY,
+    12,
+    "#4ecdc4",
+    "L"
+  );
+  drawTargetMarker(
+    ctx,
+    state.leftFoot.targetPosition.x,
+    state.leftFoot.targetPosition.y + offsetY,
+    8,
+    "#f1c40f"
+  );
+  
+  // Right foot - current position (magenta) and target (orange diamond)
+  drawCrosshair(
+    ctx,
+    state.rightFoot.position.x,
+    state.rightFoot.position.y + offsetY,
+    12,
+    "#e056fd",
+    "R"
+  );
+  drawTargetMarker(
+    ctx,
+    state.rightFoot.targetPosition.x,
+    state.rightFoot.targetPosition.y + offsetY,
+    8,
+    "#e67e22"
+  );
 }
 
 /**
@@ -410,7 +507,9 @@ export const Default: React.FC = () => {
         </button>
         
         <div style={{ color: "#ccc", display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          <label>Speed: {scrollSpeed} px/s</label>
+          <label style={{ fontFamily: "monospace", minWidth: "130px", display: "inline-block" }}>
+            Speed: {scrollSpeed.toString().padStart(4, '\u00A0')} px/s
+          </label>
           <input
             type="range"
             min={-200}
