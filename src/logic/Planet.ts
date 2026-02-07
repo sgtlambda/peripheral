@@ -5,6 +5,21 @@ import Color from "color";
 import circleVertices from '../common/circleVertices';
 import {cTerrain} from '../data/collisionGroups';
 
+export const gravityConstant = 8e-1;
+
+export const getPlanetaryGravity = (
+  bodyA: { position: Vector; mass: number },
+  bodyB: { position: Vector; mass: number },
+  epicenter: number
+): Vector => {
+  const angle = Vector.angle(bodyA.position, bodyB.position);
+  let distance = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
+  if (distance < epicenter) distance = epicenter + (epicenter - distance);
+  const massProduct = bodyA.mass * bodyB.mass;
+  const force = gravityConstant * massProduct / Math.pow(distance, 2);
+  return Vector.rotate({x: -force, y: 0}, angle);
+};
+
 export default class Planet {
 
   name: string;
@@ -14,6 +29,8 @@ export default class Planet {
   density: number;
   color: string;
   integrity: number;
+  radius: number;
+  sourceMass: number;
 
   sourcePosition!: Vector;
 
@@ -25,7 +42,7 @@ export default class Planet {
       name,
       color,
       density = .001,
-      isStatic = true,
+      isStatic = false,
       integrity = 1,
       angularVelocity,
       velocity,
@@ -97,6 +114,10 @@ export default class Planet {
     this.color     = color;
     this.integrity = integrity;
 
+    // Calculate radius and mass for gravity
+    this.radius = this.calculateRadius();
+    this.sourceMass = this.calculateSourceMass();
+
     this.lockSourcePosition();
   }
 
@@ -118,7 +139,33 @@ export default class Planet {
     return Vector.sub(this.body.position, this.sourcePosition);
   }
 
-  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color}: {
+  get centerOfMass() {
+    return this.body.position;
+  }
+
+  calculateRadius(): number {
+    // Calculate the approximate radius from the vertices
+    const centroid = Vertices.centre(this.sourceVertices);
+    let maxDist = 0;
+    for (const vertex of this.sourceVertices) {
+      const dist = Vector.magnitude(Vector.sub(vertex, centroid));
+      if (dist > maxDist) maxDist = dist;
+    }
+    return maxDist;
+  }
+
+  calculateSourceMass(): number {
+    return Vertices.area(this.sourceVertices, true) * this.density;
+  }
+
+  getGravityForce(body: Body): Vector {
+    return getPlanetaryGravity({
+      position: this.centerOfMass,
+      mass: this.sourceMass,
+    }, body, this.radius);
+  }
+
+  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color, isStatic}: {
     name: string,
     radius: number,
     density: number,
@@ -127,8 +174,9 @@ export default class Planet {
     x?: number,
     y?: number,
     color: string,
+    isStatic?: boolean,
   }) {
     const vertices = circleVertices(radius, resolution, rand);
-    return new Planet({x, y, name, vertices, density, color});
+    return new Planet({x, y, name, vertices, density, color, isStatic});
   }
 }

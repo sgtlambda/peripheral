@@ -7,7 +7,7 @@ import mouseController from './mouseController';
 import uiController from './uiController';
 import interactionController from './interactionController';
 
-import sandboxStage from './stages/sandbox';
+import planetaryStage from './stages/planetary';
 
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
@@ -64,7 +64,10 @@ if ('lastStop' in window) window.lastStop();
   const world  = engine.world;
   const render = createRenderer({element: document.body, engine});
 
-  const stage = sandboxStage();
+  // Disable global gravity - we use planetary gravity instead
+  world.gravity.scale = 0;
+
+  const stage = planetaryStage();
 
   stage.chiefTemporalOfficer.attachToEngine(engine);
 

@@ -3,7 +3,8 @@ import Planet from '../../logic/Planet';
 
 export default () => {
 
-  const radius = 10000;
+  // const radius = 1_000;
+  const radius = 500;
 
   const stage = new Stage({x: 0, y: -radius - 50});
 

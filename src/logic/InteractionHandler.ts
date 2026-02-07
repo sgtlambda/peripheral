@@ -1,4 +1,4 @@
-import {Engine, Events, Vector} from 'matter-js';
+import {Body, Composite, Engine, Events, Vector} from 'matter-js';
 import StrayItem from './StrayItem';
 
 import {BuildIntentOptions, INTENT_BUILD} from '../data/intents/buildIntent';
@@ -15,6 +15,7 @@ import {EngineComponent} from "../types";
 import {ItemIntent} from "./ItemIntent";
 import ItemType from "./ItemType";
 import {PLAYER_AIM_OFFSET} from "../data/constants";
+import Planet from "./Planet";
 
 export const ITEM_DROP_COOLDOWN_MS = 1000;
 
@@ -92,7 +93,24 @@ class InteractionHandler implements EngineComponent {
     this.playerState.potentialInteractiveNpc = this.getNearbyNpc();
   }
 
+  doPlanetGravity(planet: Planet, otherBodies: Body[]) {
+    otherBodies.forEach(body => {
+      const force = planet.getGravityForce(body);
+      Body.applyForce(body, body.position, force);
+    });
+  }
+
   beforeUpdate(event: EngineStep) {
+    // Apply planetary gravity: each planet attracts all bodies except itself
+    const engine = event.source as Engine;
+    const allBodies = Composite.allBodies(engine.world);
+    
+    this.stage.planets.forEach(planet => {
+      // Apply this planet's gravity to all bodies EXCEPT itself
+      const otherBodies = allBodies.filter(body => body !== planet.body);
+      this.doPlanetGravity(planet, otherBodies);
+    });
+
     this.stage.throwables.forEach(throwable => throwable.step(event, this));
     this.stage.strayItems.forEach(strayItem => strayItem.step(event, this));
     this.stage.stepEffects.forEach(stepEffect => stepEffect.step(event, this));

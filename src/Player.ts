@@ -1,12 +1,16 @@
 import {Body, Vector} from 'matter-js';
 import {KeysOn} from "./types";
 import Character, {CharacterConstructorProps} from "./Character";
+import getTotalPlanetaryForce from './common/getTotalPlanetaryForce';
 
 class Player extends Character {
 
   public aimAngle: number;
   public keys: KeysOn;
   public mouse: Vector;
+
+  private gravityForce: Vector;
+  private lastSurfaceAngle: number;
 
   public readonly moveForce: number;
   public readonly jetpackForce: number;
@@ -39,6 +43,23 @@ class Player extends Character {
     this.moveForce           = moveForce;
     this.jetpackForce        = jetpackForce;
     this.frictionWhileMoving = frictionWhileMoving;
+
+    // Initialize gravity tracking
+    this.gravityForce = {x: 0, y: 0};
+    this.lastSurfaceAngle = -Math.PI / 2; // Default to "down"
+  }
+
+  get surfaceAngle() {
+    // Calculate surface angle based on gravity direction
+    if (this.gravityForce && Vector.magnitude(this.gravityForce) > 5e-4) {
+      this.lastSurfaceAngle = Vector.angle(this.gravityForce, {x: 0, y: 0});
+    }
+    return this.lastSurfaceAngle;
+  }
+
+  rotateVectorToSurface(point: Vector): Vector {
+    const angle = this.surfaceAngle + Math.PI / 2;
+    return Vector.rotate(point, angle);
   }
 
   beforeStep() {
@@ -50,11 +71,14 @@ class Player extends Character {
 
     this.collider.friction = this.keys.left || this.keys.right ? this.frictionWhileMoving : this.friction;
 
-    Body.applyForce(this.collider, this.collider.position, {x: xForce, y: yForce});
+    // Apply force relative to surface orientation
+    const force = this.rotateVectorToSurface({x: xForce, y: yForce});
+    Body.applyForce(this.collider, this.collider.position, force);
   }
 
   afterStep() {
     this.aimAngle = Vector.angle(this.position, this.mouse);
+    this.gravityForce = getTotalPlanetaryForce(this.stage.planets, this.collider);
   }
 
   getAimVector(size: number) {
