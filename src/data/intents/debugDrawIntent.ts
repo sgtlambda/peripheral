@@ -24,8 +24,8 @@ export default (
   type:        INTENT_DEBUG_DRAW,
   description: 'draw [lmb]',
   options:     {},
-  trigger(interactionHandler) {
-    const gameMouse = interactionHandler.player.mouse;
+  trigger({player}) {
+    const gameMouse = player.mouse;
     debugDrawGlobal.path.push({
       x: Math.round(gameMouse.x * 10) / 10,
       y: Math.round(gameMouse.y * 10) / 10,

@@ -1,5 +1,4 @@
-import {EngineStep} from "../engineStep";
-import {HasStep} from "../types";
+import {HasStep, StepContext} from "../types";
 
 /**
  * Timeline to schedule against:
@@ -63,7 +62,7 @@ export class SimClock implements HasStep {
     return timeline === 'sim' ? this.simTime : this.unscaledTime;
   }
 
-  step(event: EngineStep) {
+  step({event}: StepContext) {
     const timeScale = event.source.timing.timeScale;
 
     this.simTime = event.timestamp;

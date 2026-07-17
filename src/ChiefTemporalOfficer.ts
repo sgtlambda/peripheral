@@ -1,5 +1,4 @@
-import {EngineStep} from "./engineStep";
-import {HasStep} from "./types";
+import {HasStep, StepContext} from "./types";
 
 // Matches the default fixed timestep of Matter's Runner; only used as a
 // fallback when timeScale is 0 and the unscaled delta cannot be recovered.
@@ -30,7 +29,7 @@ export class ChiefTemporalOfficer implements HasStep {
     this.request = {multiplier, duration};
   }
 
-  step(event: EngineStep) {
+  step({event}: StepContext) {
     const timing = event.source.timing;
 
     if (this.request) {

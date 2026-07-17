@@ -1,12 +1,11 @@
-import {Body, Bounds, Engine, Events, Render} from 'matter-js';
+import {Body, Bounds, Render} from 'matter-js';
 import {boundsHeight, boundsWidth} from "../common/bounds";
 
-import {EngineComponent} from "../types";
-import {asEngineCallback, EngineStep} from "../engineStep";
+import {StepContext, System} from "../types";
 import {CameraShakeStack} from "../CameraShakeStack";
 import Player from "../Player";
 
-class Camera implements EngineComponent {
+class Camera implements System {
 
   width!: number;
   height!: number;
@@ -15,7 +14,6 @@ class Camera implements EngineComponent {
   player: Player | null = null;
   trackOffset?: { x: number; y: number };
   shakeStack: CameraShakeStack;
-  _callback: ((e: EngineStep) => void) | null = null;
 
   constructor({render, smooth = 8, trackOffset, shakeStack}: {
     render: Render;
@@ -80,7 +78,7 @@ class Camera implements EngineComponent {
     context.translate(-center.x, -center.y);
   }
 
-  beforeTick(event: EngineStep) {
+  step({event}: StepContext) {
 
     if (!this.trackBody) return;
 
@@ -93,17 +91,6 @@ class Camera implements EngineComponent {
     const shiftToY = (targetY + actualY * this.smooth) / (this.smooth + 1) + shakeOffset.y;
 
     Bounds.shift(this.render.bounds, {x: shiftToX, y: shiftToY});
-  }
-
-  attach(engine: Engine) {
-    this._callback = this.beforeTick.bind(this);
-    Events.on(engine, 'beforeUpdate', asEngineCallback(this._callback));
-    return this;
-  }
-
-  detach(engine: Engine) {
-    if (this._callback) Events.off(engine, 'beforeUpdate', asEngineCallback(this._callback));
-    this._callback = null;
   }
 }
 

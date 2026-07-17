@@ -3,7 +3,6 @@ import {Vector} from "matter-js";
 import Throwable from '../../logic/Throwable';
 import applyExplosion from '../../logic/effects/applyExplosion';
 import {fire} from "../../gradients";
-import {AudioManager} from "../../common/AudioManager";
 import {SoundEffectID} from "../soundEffects";
 
 export default ({x, y, velocity}: {
@@ -18,19 +17,17 @@ export default ({x, y, velocity}: {
   radius:  8,
   density: .004,
   ttl:     1500,
-  trigger({position, interactionHandler}) {
-    AudioManager.getInstance().playWithRandomPitch(
-      SoundEffectID.EXPLOSION_SMALL,
-    );
+  trigger({position, ctx}) {
     applyExplosion({
       ...position,
-      stage:        interactionHandler.stage,
+      stage:        ctx.stage,
       nomRadius:    90,
       effectRadius: 120,
       duration:     1500,
       force:        5e-2,
       rand:         .2,
       gradient:     fire,
+      sound:        SoundEffectID.EXPLOSION_SMALL,
     });
   }
 });

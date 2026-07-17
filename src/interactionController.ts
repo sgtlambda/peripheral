@@ -1,18 +1,18 @@
-import InteractionHandler, {InteractionCommand} from "./logic/InteractionHandler";
+import PlayerInputSystem from "./logic/PlayerInputSystem";
+import {InteractionCommand} from "./logic/PlayerActions";
 
 /**
- * Translates DOM input events into commands on the `InteractionHandler`.
+ * Translates DOM input events into commands on the `PlayerInputSystem`.
  *
  * This controller never mutates the simulation directly: discrete actions are
  * queued and executed at the next engine step, and the held state of the
- * primary trigger is sampled by the handler's step logic (which also paces
- * continuous fire on the simulation clock — no `setInterval`).
+ * primary trigger is sampled by the input system's step logic.
  */
 export default (
   {
     mouseEmitter = window,
     keyEmitter = document,
-    interactionHandler,
+    input,
     keyMap = {
       q:   'dropItem',
       b:   'buildItem',
@@ -24,18 +24,18 @@ export default (
   }: {
     mouseEmitter?: EventTarget;
     keyEmitter?: EventTarget;
-    interactionHandler: InteractionHandler;
+    input: PlayerInputSystem;
     keyMap?: Record<string, InteractionCommand>;
   }) => {
 
   const press = (e: KeyboardEvent) => {
     const command = keyMap[e.key];
-    if (command) interactionHandler.enqueueCommand(command);
+    if (command) input.enqueueCommand(command);
   };
 
-  const mouseDown = () => interactionHandler.pressPrimary();
+  const mouseDown = () => input.pressPrimary();
 
-  const mouseUp = () => interactionHandler.releasePrimary();
+  const mouseUp = () => input.releasePrimary();
 
   keyEmitter.addEventListener('keydown', press as EventListener);
 

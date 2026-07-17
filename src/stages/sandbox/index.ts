@@ -4,23 +4,25 @@ import {NPC, ProcessIncomingMessage} from "../../NPC";
 import {CameraShakeStack} from "../../CameraShakeStack";
 import crate from "../../data/buildables/crate";
 
-const processGuardTags: ProcessIncomingMessage = (message: string) => {
-  if (message.includes('[accept]')) {
+// These tags must match the ones the scene context instructs the NPC to emit
+// (see `getSceneContext`): [release], [negotiate], [terminate].
+const processNegotiationTags: ProcessIncomingMessage = (message: string) => {
+  if (message.includes('[release]')) {
     return {
-      message:     message.replace('[accept]', ''),
-      systemEvent: 'The guard allows you to proceed.'
+      message:     message.replace('[release]', ''),
+      systemEvent: 'The hostage is released.'
     }
   }
-  if (message.includes('[hold]')) {
+  if (message.includes('[negotiate]')) {
     return {
-      message:     message.replace('[hold]', ''),
-      systemEvent: 'The guard is suspicious of your intentions.'
+      message:     message.replace('[negotiate]', ''),
+      systemEvent: 'The captor wavers — keep talking.'
     }
   }
-  if (message.includes('[deny]')) {
+  if (message.includes('[terminate]')) {
     return {
-      message:     message.replace('[deny]', ''),
-      systemEvent: 'The guard denies you entrance.'
+      message:     message.replace('[terminate]', ''),
+      systemEvent: 'The negotiation has failed.'
     }
   }
 };
@@ -67,12 +69,12 @@ export default () => {
   stage.addNPC(new NPC({
     id:                     1, name: 'The Crow', stage, x: 300, y: 0,
     additionalNpcContext:   hostageTakerPrompt,
-    processIncomingMessage: processGuardTags,
+    processIncomingMessage: processNegotiationTags,
   }));
   stage.addNPC(new NPC({
     id:                     2, name: 'Jack', stage, x: 600, y: 0,
     additionalNpcContext:   "This NPC appears very eager to talk but is actually quite reserved, and very tough as far as ",
-    processIncomingMessage: processGuardTags,
+    processIncomingMessage: processNegotiationTags,
   }));
   const crates = `000110
 111110

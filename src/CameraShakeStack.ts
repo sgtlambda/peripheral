@@ -1,6 +1,5 @@
 import {EngineStep} from "./engineStep";
-import InteractionHandler from "./logic/InteractionHandler";
-import {HasStep} from "./types";
+import {HasStep, StepContext} from "./types";
 import {RandomFn} from "./common/Rng";
 
 export type CameraShake = {
@@ -29,7 +28,7 @@ export class CameraShakeStack implements HasStep {
     this.pending.push(shake);
   }
 
-  step(event: EngineStep, interactionHandler: InteractionHandler) {
+  step({event}: StepContext) {
     this.stack   = [
       ...this.stack,
       ...this.pending.map((shake) => ({

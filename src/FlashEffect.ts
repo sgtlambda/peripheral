@@ -1,9 +1,7 @@
 import {Vector} from "matter-js";
 
 import {StageGraphicsLayer} from "./logic/StageGraphics";
-import {HasStep} from "./types";
-import {EngineStep} from "./engineStep";
-import InteractionHandler from "./logic/InteractionHandler";
+import {HasStep, StepContext} from "./types";
 
 export type FlashEffectProps = {
   duration: number;
@@ -56,7 +54,7 @@ export class FlashEffect implements StageGraphicsLayer, HasStep {
     context.restore();
   }
 
-  step(event: EngineStep, handler: InteractionHandler): void {
+  step({event}: StepContext): void {
     this.timeLeft -= event.delta;
   }
 

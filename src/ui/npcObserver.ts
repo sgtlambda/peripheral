@@ -1,11 +1,11 @@
-import {Events, Vector} from "matter-js";
+import {Vector} from "matter-js";
 
-import Stage from "../logic/Stage";
 import {_setNpcs} from "./sceneHooks";
 import Player from "../Player";
-import {EngineComponent} from "../types";
+import {NPC} from "../NPC";
+import {System} from "../types";
 
-export function getProximity(npc: any, player: Player) {
+export function getProximity(npc: NPC, player: Player) {
   const distance = Math.round(Vector.magnitude(Vector.sub(npc.body.position, player.body.position)));
   return Math.min(
     Math.max(0, 1.5 - distance / 300),
@@ -18,9 +18,8 @@ export function getProximity(npc: any, player: Player) {
  * the "singleton" react state setter function called `_setNpcs`,
  * but only when the rounded position of an NPC changes.
  */
-export const npcObserver = (stage: Stage, player: Player): EngineComponent => {
-
-  const update = () => {
+export const npcObserver = (): System => ({
+  step({stage, player}) {
     _setNpcs(existingNpcs => {
       let doUpdate  = false;
       const newNpcs = stage.npcs;
@@ -53,14 +52,5 @@ export const npcObserver = (stage: Stage, player: Player): EngineComponent => {
         return existingNpcs;
       }
     });
-  }
-
-  return {
-    attach(engine) {
-      Events.on(engine, 'beforeUpdate', update);
-    },
-    detach(engine) {
-      Events.off(engine, 'beforeUpdate', update);
-    },
-  };
-};
+  },
+});

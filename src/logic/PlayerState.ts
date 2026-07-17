@@ -67,7 +67,7 @@ class PlayerState {
    */
   removeFromInventory(amount = 1): ItemType | undefined {
     const targetSlot = this.getActiveSlot();
-    if (targetSlot.itemType === null || (targetSlot.amount ?? 0) < amount) return undefined;
+    if (!targetSlot.itemType || (targetSlot.amount ?? 0) < amount) return undefined;
     else {
       const removedItemType = targetSlot.itemType;
       targetSlot.amount! -= amount;
@@ -84,7 +84,7 @@ class PlayerState {
     const slot = find(this.inventory, {itemType});
     if (slot) slot.amount! += amount;
     else {
-      const emptySlot = overrideSlot ? this.inventory[overrideSlot] : this.firstEmptySlot();
+      const emptySlot = overrideSlot != null ? this.inventory[overrideSlot] : this.firstEmptySlot();
       if (!emptySlot) return false;
       else {
         emptySlot.itemType = itemType;

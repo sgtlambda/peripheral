@@ -1,9 +1,7 @@
 import {Vector} from "matter-js";
 
 import {StageGraphicsLayer} from "./logic/StageGraphics";
-import {HasStep} from "./types";
-import {EngineStep} from "./engineStep";
-import InteractionHandler from "./logic/InteractionHandler";
+import {HasStep, StepContext} from "./types";
 import {ExplosionGenerator, ExplosionGeneratorConfig, generateAnimatedExplosion} from "./common/explosion";
 import {renderExplosion} from "./common/renderExplosion";
 import {ColorStop, colorTupleToRgba, getGradientColor} from "./common/colorGradient";
@@ -116,7 +114,7 @@ export class ExplosionEffect implements StageGraphicsLayer, HasStep {
   /**
    * Update the animation state
    */
-  step(event: EngineStep, handler: InteractionHandler): void {
+  step({event}: StepContext): void {
     // Update the elapsed time
     this.timeElapsed += event.delta;
 

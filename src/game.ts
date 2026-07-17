@@ -9,8 +9,11 @@ import interactionController from './interactionController';
 
 import sandboxStage from './stages/sandbox';
 
-import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
+import PlayerActions from './logic/PlayerActions';
+import PlayerInputSystem from './logic/PlayerInputSystem';
+import {InteractionPotentialsSystem} from './logic/proximity';
+import {wireStageEffects} from './logic/effects/wireStageEffects';
 
 import backgroundLayer from './rendering/layers/backgroundLayer';
 import {createStageLayers} from './rendering/layers/stageLayers';
@@ -20,11 +23,12 @@ import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
 import Camera from './rendering/Camera';
+import GameLoop from './GameLoop';
 import {createMarkupGuiRenderer} from "./rendering/markupGuiLayer";
 import {npcObserver} from "./ui/npcObserver";
 import Layer from "./rendering/Layer";
 
-import {EngineComponent} from "./types";
+import {System} from "./types";
 import {defaultInventory} from "./defaultInventory";
 import {AudioManager} from "./common/AudioManager";
 import {soundEffectPaths, SoundEffectID} from "./data/soundEffects";
@@ -38,7 +42,6 @@ declare global {
 }
 
 import decomp from 'poly-decomp';
-import {ChiefTemporalOfficer} from "./ChiefTemporalOfficer";
 
 window.decomp = decomp;
 
@@ -67,6 +70,8 @@ if ('lastStop' in window) window.lastStop();
 
   const stage = sandboxStage();
 
+  const unwireStageEffects = wireStageEffects(stage, audioManager);
+
   const camera = new Camera({
     render,
     trackOffset: {x: 0, y: -120},
@@ -79,34 +84,42 @@ if ('lastStop' in window) window.lastStop();
     playerState.addToInventory(slot);
   }
 
-  const {keysOn, destroy: destroyPlayerController}   = playerController();
-  const {gameMouse, destroy: destroyMouseController} = mouseController({engine, camera});
-  const {destroy: destroyUiController}               = uiController({playerState});
-  const {destroy: destroyBrowserWindowController}    = browserWindowController({render, camera});
+  const {keysOn, destroy: destroyPlayerController} = playerController();
 
+  const mouse = mouseController({camera});
+
+  const {destroy: destroyUiController}            = uiController({playerState});
+  const {destroy: destroyBrowserWindowController} = browserWindowController({render, camera});
 
   const player = new Player({
-    stage, keys: keysOn, mouse: gameMouse,
+    stage, keys: keysOn, mouse: mouse.gameMouse,
     ...stage.initialPlayerPos,
   });
 
   camera.trackPlayer(player);
 
-  const interactionHandler = new InteractionHandler({stage, player, playerState});
+  const playerActions = new PlayerActions({stage, player, playerState});
+  const playerInput   = new PlayerInputSystem(playerActions);
 
   const {destroy: destroyInteractionController} = interactionController({
     mouseEmitter: render.canvas,
-    interactionHandler
+    input:        playerInput,
   });
 
-  const worldParts = [stage, player];
-
-  const engineComponents: EngineComponent[] = [
-    player,
-    interactionHandler,
-    camera,
-    npcObserver(stage, player),
+  // The game loop steps these in order, once per engine step.
+  const systems: System[] = [
+    mouse.system,                       // world-space mouse position
+    player,                             // movement forces (aim in afterStep)
+    playerInput,                        // queued commands & trigger pacing
+    stage,                              // entities, effects, sim clock
+    new InteractionPotentialsSystem(),  // pickup / NPC proximity hints
+    camera,                             // follow & shake
+    npcObserver(),                      // sync NPC state to the React UI
   ];
+
+  const gameLoop = new GameLoop(systems, {stage, player, playerState});
+
+  const worldParts = [stage, player];
 
   const {before: rotate, after: unrotate} = rotateContext();
 
@@ -118,7 +131,7 @@ if ('lastStop' in window) window.lastStop();
     backgroundLayer(),
     playerInteractionLayer({player, playerState, stage}),
     ...createStageLayers(stage),
-    ...uiLayers({gameMouse, player, playerState}),
+    ...uiLayers({gameMouse: mouse.gameMouse, player, playerState}),
     markupGuiRenderer.layer,
 
     rotate, // Note this layer MUST be last
@@ -129,7 +142,7 @@ if ('lastStop' in window) window.lastStop();
 
   worldParts.forEach(p => p.provision(world));
 
-  engineComponents.forEach(e => e.attach(engine));
+  gameLoop.attach(engine);
 
   layers.forEach(r => r.attach(render, camera));
 
@@ -144,13 +157,15 @@ if ('lastStop' in window) window.lastStop();
     Render.stop(render);
     Runner.stop(runner);
 
-    engineComponents.forEach(e => e.detach(engine));
+    gameLoop.detach(engine);
+
+    unwireStageEffects();
 
     layers.forEach(r => r.detach(render));
 
     destroyPlayerController();
     destroyUiController();
-    destroyMouseController();
+    mouse.destroy();
     destroyInteractionController();
     destroyBrowserWindowController();
   };

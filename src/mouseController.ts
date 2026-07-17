@@ -1,16 +1,20 @@
-import {Engine, Events, Vector} from 'matter-js';
+import {Vector} from 'matter-js';
 
 import Camera from './rendering/Camera';
+import {System} from './types';
 
+/**
+ * Captures the on-screen mouse position from the DOM and exposes a `system`
+ * that converts it to world space each step (the conversion depends on the
+ * camera bounds, so it belongs in the game loop, not in the event handler).
+ */
 export default (
   {
     emitter = window,
     camera,
-    engine,
   }: {
     emitter?: EventTarget;
     camera: Camera;
-    engine: Engine;
   }) => {
 
   const screenMouse: Vector = {x: 0, y: 0};
@@ -21,27 +25,27 @@ export default (
     screenMouse.y = e.pageY;
   };
 
-  const updateGameMouse = () => {
-    const bounds = camera.bounds;
+  const system: System = {
+    step() {
+      const bounds = camera.bounds;
 
-    const _gameMouseRotate = Vector.rotateAbout(screenMouse, 0, camera.onscreenCenter);
+      const _gameMouseRotate = Vector.rotateAbout(screenMouse, 0, camera.onscreenCenter);
 
-    const _gameMouse = Vector.add(_gameMouseRotate, bounds.min);
+      const _gameMouse = Vector.add(_gameMouseRotate, bounds.min);
 
-    gameMouse.x = _gameMouse.x;
-    gameMouse.y = _gameMouse.y;
+      gameMouse.x = _gameMouse.x;
+      gameMouse.y = _gameMouse.y;
+    },
   };
-
-  Events.on(engine, 'beforeUpdate', updateGameMouse);
 
   emitter.addEventListener('mousemove', mousemove as EventListener);
 
   return {
     screenMouse,
     gameMouse,
+    system,
     destroy() {
       emitter.removeEventListener('mousemove', mousemove as EventListener);
-      Events.off(engine, 'beforeUpdate', updateGameMouse);
     },
   };
 };

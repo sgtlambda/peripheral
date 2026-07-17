@@ -1,4 +1,4 @@
-import {Bodies, Body, Engine, Events, World} from 'matter-js';
+import {Bodies, Body, World} from 'matter-js';
 
 import {cPlayer, cTerrain} from './data/collisionGroups';
 
@@ -6,7 +6,7 @@ import debugRender from './data/debugRender';
 
 import Stage from "./logic/Stage";
 
-import {EngineComponent} from "./types";
+import {WorldPart} from "./types";
 
 export type CharacterConstructorProps = {
   x: number,
@@ -16,16 +16,13 @@ export type CharacterConstructorProps = {
   friction?: number,
 };
 
-class Character implements EngineComponent {
+class Character implements WorldPart {
 
   public readonly stage: Stage;
 
   public collider!: Body;
 
   public readonly friction: number;
-
-  private _eBeforeStep!: (() => void) | null;
-  private _eAfterStep!: (() => void) | null;
 
   constructor(
     {
@@ -56,12 +53,6 @@ class Character implements EngineComponent {
     });
   }
 
-  beforeStep() {
-  }
-
-  afterStep() {
-  }
-
   get position() {
     return this.collider.position;
   }
@@ -69,21 +60,6 @@ class Character implements EngineComponent {
   provision(world: World) {
     World.add(world, [this.collider]);
     return this;
-  }
-
-  attach(engine: Engine) {
-    this._eBeforeStep = this.beforeStep.bind(this);
-    this._eAfterStep  = this.afterStep.bind(this);
-    Events.on(engine, 'beforeUpdate', this._eBeforeStep);
-    Events.on(engine, 'afterUpdate', this._eAfterStep);
-    return this;
-  }
-
-  detach(engine: Engine) {
-    if (this._eBeforeStep) Events.off(engine, 'beforeUpdate', this._eBeforeStep);
-    if (this._eAfterStep) Events.off(engine, 'afterUpdate', this._eAfterStep);
-    this._eBeforeStep = null;
-    this._eAfterStep  = null;
   }
 }
 

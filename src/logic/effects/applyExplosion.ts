@@ -4,9 +4,13 @@ import {nom} from './nom';
 import Stage from "../Stage";
 import {explosion} from './explosion';
 import {ColorStop} from '../../common/colorGradient';
+import {SoundEffectID} from '../../data/soundEffects';
 
 /**
- * Applies an explosion effect - visual effect, terrain destruction, and physics force
+ * Applies an explosion: terrain destruction, physics force, and the animated
+ * visual effect. Presentation side effects (camera shake, audio, slow motion)
+ * are not triggered here — an `explosion` event is emitted on the stage bus
+ * and handled by subscribers (see `wireStageEffects`).
  */
 const applyExplosion = (
   {
@@ -21,6 +25,8 @@ const applyExplosion = (
     duration = 800,
     shakeDelay = 0,
     gradient,
+    sound,
+    slowMo,
   }: {
     stage: Stage;
     x: number;
@@ -33,19 +39,20 @@ const applyExplosion = (
     duration?: number;
     shakeDelay?: number;
     gradient: ColorStop[];
+    sound?: SoundEffectID;
+    slowMo?: { multiplier: number; duration: number };
   }) => {
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
-  // Scheduled on the unscaled timeline so the delay reflects perceived time
-  // even when the explosion also triggers slow motion.
-  stage.simClock.after(shakeDelay, () => {
-    stage.cameraShakeStack.add({
-      x: 50,
-      y: 5,
-      duration: 400,
-    });
-  }, 'unscaled');
+  stage.bus.emit('explosion', {
+    x, y,
+    radius: effectRadius,
+    force,
+    shakeDelay,
+    sound,
+    slowMo,
+  });
 
   // Create explosion visuals using our new animation system
   const explosionEffect = explosion({
@@ -80,16 +87,8 @@ const applyExplosion = (
   // Apply terrain destruction
   nom(stage, translatedVertices);
 
-  // TODO this can be optimized, don't need to create a new array every time (?)
-  // TODO also affect player
-  // TODO also inflict damage on both the player and NPCs on the stage?
-  // TODO also affect 'planetary' parts under a certain size
-  const affectedBodies = [
-    ...stage.addedBodies,
-    ...stage.strayItems.map(item => item.getCollider()),
-    ...stage.npcs.map(npc => npc.body),
-    ...stage.planets.filter(planet => !planet.body.isStatic).map(planet => planet.body),
-  ];
+  // TODO also affect the player, and inflict damage on both the player and NPCs
+  const affectedBodies = stage.getDynamicBodies();
 
   // Apply outward force from the explosion
   // Note that one of these bodies is the thing causing the explosion.. is that a problem (?)

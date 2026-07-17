@@ -1,8 +1,8 @@
 import {Body, Vector} from 'matter-js';
-import {KeysOn} from "./types";
+import {KeysOn, System} from "./types";
 import Character, {CharacterConstructorProps} from "./Character";
 
-class Player extends Character {
+class Player extends Character implements System {
 
   public aimAngle: number;
   public keys: KeysOn;
@@ -41,7 +41,7 @@ class Player extends Character {
     this.frictionWhileMoving = frictionWhileMoving;
   }
 
-  beforeStep() {
+  step() {
 
     // TODO should applied force be based on engine step delta?
 

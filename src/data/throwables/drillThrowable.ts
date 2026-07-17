@@ -11,9 +11,9 @@ export default ({x, y, velocity}: {
   velocity?: Vector;
 }) => new Throwable({
   name: 'drill', x, y, radius: 20, velocity, ttl: 0,
-  trigger({position, interactionHandler}) {
+  trigger({position, ctx}) {
     applyExplosion({
-      stage:     interactionHandler.stage,
+      stage:     ctx.stage,
       nomRadius: 30,
       force:     0,
       gradient:  toxic,
