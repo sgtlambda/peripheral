@@ -16,7 +16,7 @@ const processNegotiationTags: ProcessIncomingMessage = (message: string) => {
   if (message.includes('[negotiate]')) {
     return {
       message:     message.replace('[negotiate]', ''),
-      systemEvent: 'The captor wavers — keep talking.'
+      systemEvent: 'The captor wavers; keep talking.'
     }
   }
   if (message.includes('[terminate]')) {

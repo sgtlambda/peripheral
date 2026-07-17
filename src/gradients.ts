@@ -15,6 +15,14 @@ export const plasma: ColorStop[] = [
   {color: [120, 255, 120, 0.7] as ColorTuple, position: 1}        // Dark purple, semi-transparent
 ];
 
+export const butane: ColorStop[] = [
+  {color: [220, 240, 255, 1] as ColorTuple, position: 0},      // Pale blue-white core at the nozzle
+  {color: [130, 190, 255, 0.95] as ColorTuple, position: 0.25}, // Bright blue
+  {color: [60, 110, 245, 0.8] as ColorTuple, position: 0.55},   // Vivid blue body
+  {color: [255, 190, 110, 0.35] as ColorTuple, position: 0.82}, // Flickering orange tip
+  {color: [255, 150, 70, 0] as ColorTuple, position: 1}         // Fades to transparent
+];
+
 export const toxic: ColorStop[] = [
   {color: [200, 255, 200, 1] as ColorTuple, position: 0},     // Bright green-white center
   {color: [0, 255, 0, 1] as ColorTuple, position: 0.3},       // Green

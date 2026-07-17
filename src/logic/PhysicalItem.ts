@@ -12,7 +12,7 @@ export type PhysicalItemProps = {
 };
 
 /**
- * A loose physics-backed object in the world — the shared base for
+ * A loose physics-backed object in the world; the shared base for
  * stray (droppable/pickable) items and armed throwables.
  */
 export default class PhysicalItem {

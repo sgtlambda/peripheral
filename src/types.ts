@@ -46,7 +46,7 @@ export type StepEffect = HasStep & {
 
 /**
  * A unit of game logic driven by the `GameLoop`.
- * `step` runs before the physics update, `afterStep` after it —
+ * `step` runs before the physics update, `afterStep` after it,
  * both in the order the systems are declared in.
  */
 export interface System {

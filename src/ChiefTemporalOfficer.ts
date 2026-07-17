@@ -22,7 +22,7 @@ export class ChiefTemporalOfficer implements HasStep {
   /**
    * Temporarily change the simulation speed.
    * @param multiplier The time scale to apply (e.g. .01 for slow motion)
-   * @param duration How long to keep it, in unscaled (step) milliseconds —
+   * @param duration How long to keep it, in unscaled (step) milliseconds;
    *   i.e. roughly perceived real time, independent of the multiplier.
    */
   public slowMoTemporarily(multiplier: number, duration: number) {

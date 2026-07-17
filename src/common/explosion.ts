@@ -33,7 +33,7 @@ export type ExplosionGeneratorConfig = {
   swirlRadius?: number;
   /** Speed multiplier for gap growth (default: 4) */
   gapGrowthSpeed?: number;
-  /** Source of randomness — pass the stage rng when the shape affects the simulation (default: Math.random) */
+  /** Source of randomness; pass the stage rng when the shape affects the simulation (default: Math.random) */
   random?: RandomFn;
 }
 

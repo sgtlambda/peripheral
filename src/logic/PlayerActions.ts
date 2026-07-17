@@ -31,7 +31,7 @@ export type InteractionCommand =
 
 /**
  * The things the player can do to the world: pick up, drop, build, throw,
- * fire, talk. Pure action logic — input handling and pacing live in
+ * fire, talk. Pure action logic; input handling and pacing live in
  * `PlayerInputSystem`.
  * TODO item-specific interactions should be implemented at the corresponding item type
  */

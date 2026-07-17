@@ -30,13 +30,13 @@ class Stage implements WorldPart, System {
   public cameraShakeStack: CameraShakeStack;
   public chiefTemporalOfficer: ChiefTemporalOfficer;
 
-  /** The single source of time for gameplay code — see `SimClock`. */
+  /** The single source of time for gameplay code; see `SimClock`. */
   public readonly simClock: SimClock;
 
   /** The single source of randomness for anything that affects the simulation. */
   public readonly rng: Rng;
 
-  /** Semantic game events — gameplay emits, presentation subscribes. */
+  /** Semantic game events: gameplay emits, presentation subscribes. */
   public readonly bus: GameEventBus;
 
   private provisioned: boolean = false;

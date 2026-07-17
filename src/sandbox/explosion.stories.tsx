@@ -59,12 +59,20 @@ export const Default = () => {
     ctx.fillStyle = 'rgb(20,20,20)';
     ctx.fillRect(0, 0, 500, 500);
 
-    // Render the explosion
+    // Render the explosion centered on the canvas.
+    //
+    // renderExplosion only lines the holes up with the main shape when centerX/
+    // centerY are 0 (in-game the shape is placed via the camera transform on the
+    // context instead). This canvas has no such transform, so we pass 0,0 and
+    // translate the context ourselves to centre it.
+    ctx.save();
+    ctx.translate(250, 250);
     renderExplosion(ctx, explosionVertices, {
       fillStyle: 'white',
-      centerX:   250,
-      centerY:   250,
+      centerX:   0,
+      centerY:   0,
     });
+    ctx.restore();
   }, [explosionVertices]);
 
   return <div>

@@ -9,7 +9,7 @@ import {ActionContext, EngineComponent, StepContext, System} from './types';
  * All game logic runs through here: each engine step, every system's `step`
  * is called before the physics update and `afterStep` after it, in the order
  * the systems are declared in `game.ts`. Nothing else should register engine
- * event listeners — declared order is the only ordering mechanism.
+ * event listeners; declared order is the only ordering mechanism.
  */
 export default class GameLoop implements EngineComponent {
 

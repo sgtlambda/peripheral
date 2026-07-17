@@ -10,5 +10,6 @@
     "skipLibCheck": true,
     "noEmit": true,
     "types": ["vite/client"]
-  }
+  },
+  "exclude": ["scripts"]
 }

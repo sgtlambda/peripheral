@@ -17,7 +17,7 @@ export type ExplosionEvent = {
 /**
  * All semantic game events. Gameplay code emits these; presentation concerns
  * (camera shake, audio, time manipulation, particles, ...) subscribe instead
- * of being called directly — see `wireStageEffects`.
+ * of being called directly; see `wireStageEffects`.
  */
 export type GameEvents = {
   explosion: ExplosionEvent;

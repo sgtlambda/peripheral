@@ -9,7 +9,7 @@ import {SoundEffectID} from '../../data/soundEffects';
 /**
  * Applies an explosion: terrain destruction, physics force, and the animated
  * visual effect. Presentation side effects (camera shake, audio, slow motion)
- * are not triggered here — an `explosion` event is emitted on the stage bus
+ * are not triggered here; an `explosion` event is emitted on the stage bus
  * and handled by subscribers (see `wireStageEffects`).
  */
 const applyExplosion = (

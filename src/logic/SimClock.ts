@@ -3,7 +3,7 @@ import {HasStep, StepContext} from "../types";
 /**
  * Timeline to schedule against:
  * - 'sim': scaled simulation time (affected by slow motion / fast forward)
- * - 'unscaled': engine step time with `timeScale` factored out — advances at a
+ * - 'unscaled': engine step time with `timeScale` factored out; advances at a
  *   constant rate per tick regardless of slow motion, but is still driven
  *   exclusively by engine steps (never by the wall clock), so it remains
  *   deterministic and replayable.
