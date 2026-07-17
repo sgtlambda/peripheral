@@ -98,6 +98,21 @@ export const Default = () => {
     setParams(prev => ({...prev, [key]: value}));
   };
 
+  const randomize = () => {
+    const next = {...params} as Record<string, number | EasingName>;
+    NUM_SPECS.forEach(s => {
+      const steps = Math.max(1, Math.round((s.max - s.min) / s.step));
+      const v     = s.min + Math.round(Math.random() * steps) * s.step;
+      next[s.key] = s.step >= 1 ? Math.round(v) : parseFloat(v.toFixed(4));
+    });
+    EASING_KEYS.forEach(k => {
+      next[k] = easingNames[Math.floor(Math.random() * easingNames.length)];
+    });
+    setParams(next as FlameParams);
+    const ch = () => Math.floor(120 + Math.random() * 135);
+    setColor(`rgb(${ch()},${ch()},${ch()})`);
+  };
+
   const flameGenerator = useMemo(() => {
     return generateAnimatedFlame({...params, reach, direction: directionRad});
   }, [params, reach, directionRad]);
@@ -158,6 +173,7 @@ export const Default = () => {
           <select value={templateIndex} onChange={(e) => applyTemplate(parseInt(e.target.value))}>
             {flameTemplates.map((tpl, i) => <option key={tpl.name} value={i}>{tpl.name}</option>)}
           </select>
+          <button onClick={randomize}>Randomize</button>
           <label style={{fontSize: 11, display: 'flex', gap: 4, alignItems: 'center'}}>
             <input type={"checkbox"} checked={outline} onChange={(e) => setOutline(e.target.checked)}/>outline
           </label>
