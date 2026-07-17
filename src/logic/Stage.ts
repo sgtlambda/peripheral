@@ -10,6 +10,8 @@ import StrayItem from "./StrayItem";
 import Building from "./Building";
 import {CameraShakeStack} from "../CameraShakeStack";
 import {ChiefTemporalOfficer} from "../ChiefTemporalOfficer";
+import {SimClock} from "./SimClock";
+import {Rng} from "../common/Rng";
 
 class Stage implements WorldPart {
 
@@ -29,17 +31,26 @@ class Stage implements WorldPart {
   public cameraShakeStack: CameraShakeStack;
   public chiefTemporalOfficer: ChiefTemporalOfficer;
 
+  /** The single source of time for gameplay code — see `SimClock`. */
+  public readonly simClock: SimClock;
+
+  /** The single source of randomness for anything that affects the simulation. */
+  public readonly rng: Rng;
+
   private provisioned: boolean = false;
   private _world!: World;
 
   constructor(
     public readonly initialPlayerPos: Vector,
+    seed: number = 1,
   ) {
     this.graphics             = new StageGraphics();
-    this.cameraShakeStack     = new CameraShakeStack();
+    this.rng                  = new Rng(seed);
+    this.simClock             = new SimClock();
+    this.cameraShakeStack     = new CameraShakeStack(this.rng.next);
     this.chiefTemporalOfficer = new ChiefTemporalOfficer();
     this.strayItems           = [];
-    this.stepEffects          = [this.cameraShakeStack];
+    this.stepEffects          = [this.simClock, this.chiefTemporalOfficer, this.cameraShakeStack];
     this.throwables           = [];
     this.terrainBodies        = [];
     this.buildings            = [];

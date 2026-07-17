@@ -12,7 +12,7 @@ import sandboxStage from './stages/sandbox';
 import InteractionHandler from './logic/InteractionHandler';
 import PlayerState from './logic/PlayerState';
 
-import backgroundLayer from './rendering/layers/backgroundLayer.js';
+import backgroundLayer from './rendering/layers/backgroundLayer';
 import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
@@ -53,7 +53,8 @@ if ('lastStop' in window) window.lastStop();
   audioManager.init(soundEffectPaths);
   window.audioManager = audioManager; // Expose for debugging
 
-  setTimeout(() => {
+  // Wall-clock timing is acceptable here: audio is not part of the simulation
+  const musicTimeout = setTimeout(() => {
     // TODO this should only start upon the very first user interaction
     // Start background music
     audioManager.playBackgroundMusic(SoundEffectID.BACKGROUND_MUSIC, .5);
@@ -65,8 +66,6 @@ if ('lastStop' in window) window.lastStop();
   const render = createRenderer({element: document.body, engine});
 
   const stage = sandboxStage();
-
-  stage.chiefTemporalOfficer.attachToEngine(engine);
 
   const camera = new Camera({
     render,
@@ -126,7 +125,7 @@ if ('lastStop' in window) window.lastStop();
   ];
 
   const c: HTMLCanvasElement = render.canvas;
-  c.parentNode.appendChild(markupGuiRenderer.element);
+  c.parentNode!.appendChild(markupGuiRenderer.element);
 
   worldParts.forEach(p => p.provision(world));
 
@@ -139,12 +138,11 @@ if ('lastStop' in window) window.lastStop();
 
   window.lastStop = () => {
     // Stop background music when the game stops
+    clearTimeout(musicTimeout);
     audioManager.stopBackgroundMusic();
 
     Render.stop(render);
     Runner.stop(runner);
-
-    stage.chiefTemporalOfficer.detachFromEngine();
 
     engineComponents.forEach(e => e.detach(engine));
 

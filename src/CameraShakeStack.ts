@@ -1,6 +1,7 @@
 import {EngineStep} from "./engineStep";
 import InteractionHandler from "./logic/InteractionHandler";
 import {HasStep} from "./types";
+import {RandomFn} from "./common/Rng";
 
 export type CameraShake = {
   duration: number;
@@ -17,6 +18,12 @@ export class CameraShakeStack implements HasStep {
   public stack: TimestampedCameraShake[] = [];
 
   private pending: CameraShake[] = [];
+
+  // The shake offset feeds back into the simulation (shifted camera bounds
+  // affect the in-game mouse position and therefore the aim angle), so the
+  // randomness must come from the stage's seeded rng to stay replayable.
+  constructor(private readonly random: RandomFn = Math.random) {
+  }
 
   add(shake: CameraShake) {
     this.pending.push(shake);
@@ -40,12 +47,12 @@ export class CameraShakeStack implements HasStep {
     });
   }
 
-  static computeCameraShake(event: EngineStep, stack: TimestampedCameraShake[]) {
-    return stack.reduce((vector, shake) => {
+  compute(event: EngineStep) {
+    return this.stack.reduce((vector, shake) => {
       // First we'll calculate a value between 0 and 1 based on the duration and `firstAdded` and event timestamp
       const timeElapsed    = event.timestamp - shake.firstAdded;
       const normalizedTime = Math.max(timeElapsed / shake.duration, 0);
-      const randomFac      = Math.random() - .5;
+      const randomFac      = this.random() - .5;
       const shakeX         = randomFac * shake.x * (1 - normalizedTime);
       const shakeY         = randomFac * shake.y * (1 - normalizedTime);
       return {

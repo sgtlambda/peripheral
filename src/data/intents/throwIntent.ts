@@ -7,7 +7,7 @@ export const INTENT_THROW = Symbol('INTENT_THROW');
 export type ThrowIntentOptions = {
   name: string;
   make: ({x, y, velocity}: { x: number; y: number; velocity: Vector }) => Throwable;
-  throwableSpawnOffset: number;
+  throwableSpawnOffset?: number;
 };
 
 export default (

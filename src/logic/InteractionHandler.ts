@@ -9,7 +9,7 @@ import Stage from "./Stage";
 import PlayerState from "./PlayerState";
 import {NPC} from "../NPC";
 import {processPrompt} from "./language";
-import {EngineStep} from "../engineStep";
+import {asEngineCallback, EngineStep} from "../engineStep";
 
 import {EngineComponent} from "../types";
 import {ItemIntent} from "./ItemIntent";
@@ -18,6 +18,9 @@ import {PLAYER_AIM_OFFSET} from "../data/constants";
 
 export const ITEM_DROP_COOLDOWN_MS = 1000;
 
+/** Minimum simulation time between continuous (held-trigger) activations */
+export const CONTINUOUS_INTERVAL_MS = 80;
+
 export const ITEM_PICKUP_DISTANCE = 30;
 
 export const ITEM_DROP_FORCE = 5;
@@ -25,6 +28,19 @@ export const ITEM_DROP_FORCE = 5;
 export const ITEM_THROW_FORCE = 12;
 
 export const NPC_INTERACTION_DISTANCE = 80;
+
+/**
+ * A discrete player action that can be queued from input handlers and is
+ * executed at the next engine step, so that the simulation is only ever
+ * mutated at step boundaries (deterministic / replayable).
+ */
+export type InteractionCommand =
+  | 'dropItem'
+  | 'buildItem'
+  | 'takeItem'
+  | 'throwItem'
+  | 'applyItem'
+  | 'interactWithNpc';
 
 /**
  * Takes care of interactions between the player and the world
@@ -36,7 +52,12 @@ class InteractionHandler implements EngineComponent {
   readonly player: Player;
   readonly playerState: PlayerState;
 
-  _beforeUpdate: any; // TODO
+  private commandQueue: InteractionCommand[] = [];
+  private primaryPressed: boolean           = false;
+  private primaryHeld: boolean              = false;
+  private continuousCooldown: number        = 0;
+
+  private _beforeUpdate: ((event: EngineStep) => void) | null = null;
 
   constructor(
     {
@@ -92,7 +113,42 @@ class InteractionHandler implements EngineComponent {
     this.playerState.potentialInteractiveNpc = this.getNearbyNpc();
   }
 
+  /**
+   * Queue a discrete command from an input handler; it runs at the next step.
+   */
+  enqueueCommand(command: InteractionCommand) {
+    this.commandQueue.push(command);
+  }
+
+  pressPrimary() {
+    this.primaryPressed = true;
+    this.primaryHeld    = true;
+  }
+
+  releasePrimary() {
+    this.primaryHeld = false;
+  }
+
+  private processInput(event: EngineStep) {
+    const commands    = this.commandQueue;
+    this.commandQueue = [];
+    for (const command of commands) this[command]();
+
+    if (this.primaryPressed) {
+      this.primaryPressed     = false;
+      this.continuousCooldown = CONTINUOUS_INTERVAL_MS;
+      this.triggerPrimary();
+    } else if (this.primaryHeld) {
+      this.continuousCooldown -= event.delta;
+      if (this.continuousCooldown <= 0) {
+        this.continuousCooldown += CONTINUOUS_INTERVAL_MS;
+        this.triggerContinuous();
+      }
+    }
+  }
+
   beforeUpdate(event: EngineStep) {
+    this.processInput(event);
     this.stage.throwables.forEach(throwable => throwable.step(event, this));
     this.stage.strayItems.forEach(strayItem => strayItem.step(event, this));
     this.stage.stepEffects.forEach(stepEffect => stepEffect.step(event, this));
@@ -111,7 +167,7 @@ class InteractionHandler implements EngineComponent {
     if (!npc) return;
     const input = window.prompt(`Say something to ${npc.name}...`);
     if (input) {
-      const result = processPrompt(npc, input);
+      processPrompt(npc, input).catch(error => console.error('NPC interaction failed:', error));
     }
   }
 
@@ -201,12 +257,12 @@ class InteractionHandler implements EngineComponent {
 
   attach(engine: Engine) {
     this._beforeUpdate = (event: EngineStep) => this.beforeUpdate(event);
-    Events.on(engine, 'beforeUpdate', this._beforeUpdate);
+    Events.on(engine, 'beforeUpdate', asEngineCallback(this._beforeUpdate));
     return this;
   }
 
   detach(engine: Engine) {
-    if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', this._beforeUpdate);
+    if (this._beforeUpdate) Events.off(engine, 'beforeUpdate', asEngineCallback(this._beforeUpdate));
     this._beforeUpdate = null;
   }
 }

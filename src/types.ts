@@ -4,7 +4,7 @@ import InteractionHandler from "./logic/InteractionHandler";
 
 // TODO apply this type to all controllers
 export type Controller<Objects extends object = {}> = {
-  destroy?: () => void;
+  destroy: () => void;
 } & Objects;
 
 export interface WorldPart {

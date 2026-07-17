@@ -3,6 +3,7 @@ import {Vector, Vertices} from "matter-js";
 import {times} from "lodash";
 import {easing} from "ts-easing";
 import {applySwirl} from "./swirl";
+import {RandomFn} from "./Rng";
 
 /**
  * Configuration for generating an animated explosion
@@ -32,6 +33,8 @@ export type ExplosionGeneratorConfig = {
   swirlRadius?: number;
   /** Speed multiplier for gap growth (default: 4) */
   gapGrowthSpeed?: number;
+  /** Source of randomness — pass the stage rng when the shape affects the simulation (default: Math.random) */
+  random?: RandomFn;
 }
 
 /**
@@ -69,7 +72,8 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {ra
     maxGapDelay = 0.7,
     swirlIntensity = 0.5 * Math.PI,
     swirlRadius,
-    gapGrowthSpeed = 4
+    gapGrowthSpeed = 4,
+    random = Math.random,
   } = config;
 
   minGapSize ??= radius / 2;
@@ -80,13 +84,13 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {ra
 
   // Generate swirl origin within the explosion area
   const swirlOrigin: [number, number] = [
-    Math.random() * radius - radius/2,
-    Math.random() * radius - radius/2,
+    random() * radius - radius/2,
+    random() * radius - radius/2,
   ];
 
   // Create main explosion shape
   const mainExplosionShape = Vertices.translate(
-    circleVertices(radius, resolution, radiusRand, rotateRand),
+    circleVertices(radius, resolution, radiusRand, rotateRand, random),
     {x: 0, y: 0},
     1,
   );
@@ -101,17 +105,17 @@ export function generateAnimatedExplosion(config: ExplosionGeneratorConfig = {ra
     delay: number;
   }[] = times(gapCount, () => {
     // Random size between min and max
-    const gapRadius = minGapSize! + Math.random() * (maxGapSize! - minGapSize!);
+    const gapRadius = minGapSize! + random() * (maxGapSize! - minGapSize!);
     // Position within spread radius, centered around origin
     const center = Vector.create(
-      Math.random() * gapSpread! - gapCenter,
-      Math.random() * gapSpread! - gapCenter
+      random() * gapSpread! - gapCenter,
+      random() * gapSpread! - gapCenter
     );
     // Random delay for staggered appearance
-    const delay = Math.random() * maxGapDelay;
-    
+    const delay = random() * maxGapDelay;
+
     return {
-      vectors: circleVertices(gapRadius, resolution, radiusRand, rotateRand),
+      vectors: circleVertices(gapRadius, resolution, radiusRand, rotateRand, random),
       center,
       delay,
     };

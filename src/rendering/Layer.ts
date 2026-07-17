@@ -12,7 +12,7 @@ export type RenderEvent = 'afterRender' | 'beforeRender';
 export default class Layer {
 
   _render: LayerRendererFn;
-  _callback: (e: any) => void;
+  _callback: ((e: unknown) => void) | null = null;
   hud: boolean;
   over: boolean;
   persistMatrix: boolean;
@@ -64,6 +64,7 @@ export default class Layer {
   }
 
   detach(renderer: Render) {
-    Events.off(renderer, this.event, this._callback);
+    if (this._callback) Events.off(renderer, this.event, this._callback);
+    this._callback = null;
   }
 }

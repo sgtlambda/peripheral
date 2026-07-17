@@ -1,20 +1,21 @@
-import {Bounds, Engine, Events, Render} from 'matter-js';
+import {Body, Bounds, Engine, Events, Render} from 'matter-js';
 import {boundsHeight, boundsWidth} from "../common/bounds";
 
 import {EngineComponent} from "../types";
-import {EngineStep} from "../engineStep";
+import {asEngineCallback, EngineStep} from "../engineStep";
 import {CameraShakeStack} from "../CameraShakeStack";
+import Player from "../Player";
 
 class Camera implements EngineComponent {
 
-  width: number;
-  height: number;
+  width!: number;
+  height!: number;
   render: Render;
   smooth: number;
-  player: any;
+  player: Player | null = null;
   trackOffset?: { x: number; y: number };
   shakeStack: CameraShakeStack;
-  _callback: (e: any) => void;
+  _callback: ((e: EngineStep) => void) | null = null;
 
   constructor({render, smooth = 8, trackOffset, shakeStack}: {
     render: Render;
@@ -39,7 +40,7 @@ class Camera implements EngineComponent {
     this.height = boundsHeight(this.render.bounds);
   }
 
-  get trackBody() {
+  get trackBody(): Body | null {
     return this.player ? this.player.body : null;
   }
 
@@ -47,16 +48,18 @@ class Camera implements EngineComponent {
     return this.render.bounds;
   }
 
-  trackPlayer(player) {
+  trackPlayer(player: Player) {
     this.player        = player;
     const boundsTarget = this.getBoundsTarget();
     Bounds.shift(this.render.bounds, boundsTarget);
   }
 
   getBoundsTarget() {
+    // Only called when a player is being tracked
+    const trackBody = this.trackBody!;
     return {
-      x: this.trackBody.position.x - this.width / 2 + (this.trackOffset?.x || 0),
-      y: this.trackBody.position.y - this.height / 2 + (this.trackOffset?.y || 0),
+      x: trackBody.position.x - this.width / 2 + (this.trackOffset?.x || 0),
+      y: trackBody.position.y - this.height / 2 + (this.trackOffset?.y || 0),
     };
   }
 
@@ -66,12 +69,12 @@ class Camera implements EngineComponent {
 
   get onscreenCenter() {
     return {
-      x: this.render.options.width / 2,
-      y: this.render.options.height / 2,
+      x: (this.render.options.width ?? 0) / 2,
+      y: (this.render.options.height ?? 0) / 2,
     };
   }
 
-  rotate(context) {
+  rotate(context: CanvasRenderingContext2D) {
     const center = this.onscreenCenter;
     context.translate(center.x, center.y);
     context.translate(-center.x, -center.y);
@@ -81,8 +84,7 @@ class Camera implements EngineComponent {
 
     if (!this.trackBody) return;
 
-    // TODO maybe doesn't need a static method on the `CameraShakeStack` class?
-    const shakeOffset = CameraShakeStack.computeCameraShake(event, this.shakeStack.stack);
+    const shakeOffset = this.shakeStack.compute(event);
 
     const {x: targetX, y: targetY} = this.getBoundsTarget();
     const {x: actualX, y: actualY} = this.currentBounds;
@@ -95,12 +97,12 @@ class Camera implements EngineComponent {
 
   attach(engine: Engine) {
     this._callback = this.beforeTick.bind(this);
-    Events.on(engine, 'beforeUpdate', this._callback);
+    Events.on(engine, 'beforeUpdate', asEngineCallback(this._callback));
     return this;
   }
 
   detach(engine: Engine) {
-    if (this._callback) Events.off(engine, 'beforeUpdate', this._callback);
+    if (this._callback) Events.off(engine, 'beforeUpdate', asEngineCallback(this._callback));
     this._callback = null;
   }
 }

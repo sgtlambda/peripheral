@@ -16,6 +16,7 @@ export default () => {
     rand:       .01,
     density:    .001,
     color:      '#ffffff',
+    random:     stage.rng.next,
   }));
 
   return stage;

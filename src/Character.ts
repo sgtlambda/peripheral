@@ -24,8 +24,8 @@ class Character implements EngineComponent {
 
   public readonly friction: number;
 
-  private _eBeforeStep: any; // TODO
-  private _eAfterStep: any; // TODO
+  private _eBeforeStep!: (() => void) | null;
+  private _eAfterStep!: (() => void) | null;
 
   constructor(
     {
@@ -75,13 +75,13 @@ class Character implements EngineComponent {
     this._eBeforeStep = this.beforeStep.bind(this);
     this._eAfterStep  = this.afterStep.bind(this);
     Events.on(engine, 'beforeUpdate', this._eBeforeStep);
-    Events.on(engine, 'beforeUpdate', this._eAfterStep);
+    Events.on(engine, 'afterUpdate', this._eAfterStep);
     return this;
   }
 
   detach(engine: Engine) {
-    Events.off(engine, 'beforeUpdate', this._eBeforeStep);
-    Events.off(engine, 'beforeUpdate', this._eAfterStep);
+    if (this._eBeforeStep) Events.off(engine, 'beforeUpdate', this._eBeforeStep);
+    if (this._eAfterStep) Events.off(engine, 'afterUpdate', this._eAfterStep);
     this._eBeforeStep = null;
     this._eAfterStep  = null;
   }

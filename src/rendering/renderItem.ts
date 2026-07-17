@@ -1,8 +1,12 @@
-import circle from '../common/circle';
-import StrayItem from "../logic/StrayItem";
+import {Vector} from 'matter-js';
 
-export const renderItem = (context: CanvasRenderingContext2D, item: StrayItem & {
-  amount?: number; // To account for improvised structure at `src/rendering/layers/uiLayers.js:27`
+import circle from '../common/circle';
+import ItemType from "../logic/ItemType";
+
+export const renderItem = (context: CanvasRenderingContext2D, item: {
+  position: Vector;
+  itemType: ItemType;
+  amount?: number;
 }, size: number = 10): void => {
   context.strokeStyle = item.itemType.color;
   circle(context, item.position.x, item.position.y, size, false, true);

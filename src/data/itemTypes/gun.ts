@@ -79,7 +79,7 @@ export const createGun = (
       applyActionLabel: 'fire gun',
       apply(player, stage) {
 
-        const angle = player.aimAngle + (Math.random() - 0.5) * (spread / 360 * Math.PI);
+        const angle = player.aimAngle + (stage.rng.next() - 0.5) * (spread / 360 * Math.PI);
 
         const startPos = Vector.clone(player.position);
 
@@ -109,7 +109,7 @@ export const createGun = (
 
         if (collision) {
           const collisionPoint = collision.point;
-          const vertices       = Vertices.translate(circleVertices(10, 4, .5, true), collisionPoint, 1);
+          const vertices       = Vertices.translate(circleVertices(10, 4, .5, true, stage.rng.next), collisionPoint, 1);
           nom(stage, vertices);
           flash(stage, {
             duration: 200,

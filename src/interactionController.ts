@@ -1,46 +1,41 @@
-import {KeyMap, KeysOn} from "./types";
+import InteractionHandler, {InteractionCommand} from "./logic/InteractionHandler";
 
-const CONTINUOUS_INTERVAL = 80;
-
+/**
+ * Translates DOM input events into commands on the `InteractionHandler`.
+ *
+ * This controller never mutates the simulation directly: discrete actions are
+ * queued and executed at the next engine step, and the held state of the
+ * primary trigger is sampled by the handler's step logic (which also paces
+ * continuous fire on the simulation clock — no `setInterval`).
+ */
 export default (
   {
     mouseEmitter = window,
     keyEmitter = document,
     interactionHandler,
     keyMap = {
-      // The values here map to methods in the InteractionHandler class
-      q: 'dropItem',
-      b: 'buildItem',
-      e: 'takeItem',
-      t: 'throwItem',
-      c: 'applyItem',
+      q:   'dropItem',
+      b:   'buildItem',
+      e:   'takeItem',
+      t:   'throwItem',
+      c:   'applyItem',
       '/': 'interactWithNpc',
     },
   }: {
     mouseEmitter?: EventTarget;
     keyEmitter?: EventTarget;
-    interactionHandler: any; // TODO ts-ify `InteractionHandler`
-    keyMap?: KeyMap;
+    interactionHandler: InteractionHandler;
+    keyMap?: Record<string, InteractionCommand>;
   }) => {
 
-  const keysOn: KeysOn = {};
-
   const press = (e: KeyboardEvent) => {
-    const method = keyMap[e.key];
-    if (method && interactionHandler[method])
-      interactionHandler[method].call(interactionHandler);
+    const command = keyMap[e.key];
+    if (command) interactionHandler.enqueueCommand(command);
   };
 
-  let _triggerContinuous: any;
+  const mouseDown = () => interactionHandler.pressPrimary();
 
-  const mouseDown = () => {
-    interactionHandler.triggerPrimary();
-    _triggerContinuous = setInterval(() => interactionHandler.triggerContinuous(), CONTINUOUS_INTERVAL);
-  };
-
-  const mouseUp = () => {
-    clearInterval(_triggerContinuous);
-  };
+  const mouseUp = () => interactionHandler.releasePrimary();
 
   keyEmitter.addEventListener('keydown', press as EventListener);
 
@@ -48,7 +43,6 @@ export default (
   mouseEmitter.addEventListener('mouseup', mouseUp);
 
   return {
-    keysOn,
     destroy() {
       keyEmitter.removeEventListener('keydown', press as EventListener);
       mouseEmitter.removeEventListener('mousedown', mouseDown);

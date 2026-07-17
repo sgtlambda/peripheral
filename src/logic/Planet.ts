@@ -4,6 +4,7 @@ import Color from "color";
 
 import circleVertices from '../common/circleVertices';
 import {cTerrain} from '../data/collisionGroups';
+import {RandomFn} from '../common/Rng';
 
 export default class Planet {
 
@@ -118,7 +119,7 @@ export default class Planet {
     return Vector.sub(this.body.position, this.sourcePosition);
   }
 
-  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color}: {
+  static createCircular({name, radius, density, resolution = 124, rand = 0, x = 0, y = 0, color, random}: {
     name: string,
     radius: number,
     density: number,
@@ -127,8 +128,9 @@ export default class Planet {
     x?: number,
     y?: number,
     color: string,
+    random?: RandomFn,
   }) {
-    const vertices = circleVertices(radius, resolution, rand);
+    const vertices = circleVertices(radius, resolution, rand, false, random);
     return new Planet({x, y, name, vertices, density, color});
   }
 }

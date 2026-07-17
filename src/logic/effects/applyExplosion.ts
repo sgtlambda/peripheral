@@ -28,7 +28,7 @@ const applyExplosion = (
     nomRadius: number;
     effectRadius?: number;
     resolution?: number;
-    rand: number;
+    rand?: number;
     force: number;
     duration?: number;
     shakeDelay?: number;
@@ -37,13 +37,15 @@ const applyExplosion = (
   const origin = {x, y};
   effectRadius ??= nomRadius;
 
-  setTimeout(() => {
+  // Scheduled on the unscaled timeline so the delay reflects perceived time
+  // even when the explosion also triggers slow motion.
+  stage.simClock.after(shakeDelay, () => {
     stage.cameraShakeStack.add({
       x: 50,
       y: 5,
       duration: 400,
     });
-  }, shakeDelay);
+  }, 'unscaled');
 
   // Create explosion visuals using our new animation system
   const explosionEffect = explosion({
@@ -59,6 +61,9 @@ const applyExplosion = (
       // We can configure additional explosion parameters here
       gapCount: Math.floor(nomRadius / 10), // Scale gaps with explosion size
       swirlIntensity: 0.5 * Math.PI * (rand + 0.5), // Add some randomness to swirl
+      // The explosion shape determines terrain destruction, so its randomness
+      // must be seeded to keep the simulation replayable
+      random: stage.rng.next,
     }
   });
 
