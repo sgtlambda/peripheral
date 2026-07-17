@@ -11,6 +11,7 @@ type NumSpec = {key: keyof typeof flameDefaults; label: string; min: number; max
 
 // Numeric parameters (everything a template can set except the easings).
 const NUM_SPECS: NumSpec[] = [
+  {key: "speed",            label: "speed",            min: 0,   max: 3,    step: 0.05},
   {key: "bodyCount",        label: "bodyCount",        min: 1,   max: 80,   step: 1},
   {key: "bodyLengthRatio",  label: "bodyLengthRatio",  min: 0,   max: 0.5,  step: 0.005},
   {key: "lensAspect",       label: "lensAspect",       min: 0.2, max: 1.2,  step: 0.01},

@@ -15,6 +15,8 @@ export type FlameGeneratorConfig = {
   reach: number;
   /** Emission direction in radians (0 = +x, -π/2 = up on screen) (default: -π/2) */
   direction?: number;
+  /** Global speed multiplier — scales the body, holes and flicker together (default: 1) */
+  speed?: number;
 
   // --- Body (positive lenses) ---
   /** Number of body lenses (default: 42) */
@@ -119,6 +121,7 @@ function lensVertices(halfWidth: number, resolution: number): Vector[] {
  * its sliders and the generator stay in sync.
  */
 export const flameDefaults = {
+  speed:            1,
   bodyCount:        42,
   bodyLengthRatio:  0.19,
   lensAspect:       0.6,
@@ -189,6 +192,7 @@ export function generateAnimatedFlame(config: FlameGeneratorConfig = {reach: 0})
     reach,
     direction = -Math.PI / 2,
     random    = Math.random,
+    speed,
 
     bodyCount, bodyLengthRatio, lensAspect, bodySizeVar, spread, nozzleWidthRatio,
     bodyTaperStart, cutoffDist, bodyDistEasing, bodySpeed, flickerRatio, flickerFreq,
@@ -235,7 +239,10 @@ export function generateAnimatedFlame(config: FlameGeneratorConfig = {reach: 0})
     ));
   };
 
-  const generate: FlamePathGenerator = (t: number) => {
+  const generate: FlamePathGenerator = (rawT: number) => {
+
+    // Global speed multiplier scales the whole animation clock.
+    const t = rawT * speed;
 
     // Body lenses: emitted across the nozzle, swimming outward and decelerating,
     // tapering after `bodyTaperStart` so the flame narrows to its tip.
