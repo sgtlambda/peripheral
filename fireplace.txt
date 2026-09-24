@@ -1,0 +1,92 @@
+{
+  "name": "Drifting Ember",
+  "color": "rgb(255,124,66)",
+  "config": {
+    "bodyCount": 24,
+    "bodyLengthRatio": 0.17,
+    "spread": 0.4,
+    "bodyTaperStart": 0.5,
+    "bodySpeed": 0.7,
+    "flickerRatio": 0.05,
+    "holeCount": 14,
+    "holeSpanRatio": 0.39,
+    "holeThickness": 0.9,
+    "holeSizeVar": 0.44,
+    "holeSizeEasing": "outCubic",
+    "holeSpawnDist": 0.1,
+    "holeSpawnDistVar": 0,
+    "holeRiseDist": 0.28,
+    "holeDriftDist": 0.6,
+    "holeSpreadScale": 1.25,
+    "holeSpeed": 0.75,
+    "holeRotStart": 0.92,
+    "islandSlopeStart": 0.44,
+    "islandSlopeEnd": 0,
+    "islandCullArea": 0.1
+  }
+}
+
+
+{
+  "name": "Drifting Ember",
+  "color": "rgb(255,124,66)",
+  "config": {
+    "bodyCount": 24,
+    "bodyLengthRatio": 0.17,
+    "spread": 0.4,
+    "bodyTaperStart": 0.5,
+    "bodySpeed": 0.7,
+    "flickerRatio": 0.05,
+    "holeCount": 17,
+    "holeSpanRatio": 0.39,
+    "holeThickness": 0.9,
+    "holeSizeVar": 0.44,
+    "holeSizeEasing": "outCubic",
+    "holeSpawnDist": 0.1,
+    "holeSpawnDistVar": 0,
+    "holeRiseDist": 0.43,
+    "holeDriftDist": 0.54,
+    "holeSpreadScale": 1.4,
+    "holeSpeed": 0.75,
+    "holeRotStart": 0.92,
+    "holeRotEnd": 4.2,
+    "islandSlopeStart": 1.5,
+    "islandSlopeEnd": 1.5,
+    "islandCullArea": 0.1
+  }
+}
+
+{
+  "name": "oil fire",
+  "color": "rgb(255,124,66)",
+  "config": {
+    "speed": 0.55,
+    "bodyCount": 61,
+    "bodyLengthRatio": 0.17,
+    "spread": 0.4,
+    "bodyTaperStart": 0.5,
+    "cutoffDist": 0.88,
+    "cutoffWobbleAmp": 0.135,
+    "cutoffWobbleFreq": 5.8,
+    "cutoffWobbleSpeed": 2.8,
+    "bodySpeed": 1.15,
+    "flickerRatio": 0.05,
+    "holeCount": 24,
+    "holeSpanRatio": 0.24,
+    "holeThickness": 1.09,
+    "holeSizeVar": 0.26,
+    "holeSizeEasing": "outCubic",
+    "holeSpawnDist": 0.51,
+    "holeSpawnDistVar": 0.34,
+    "holeRiseDist": 0.3,
+    "holeRiseDelay": 0,
+    "holeDriftDist": 0.49,
+    "holeSpreadScale": 1.5,
+    "holeSpeed": 1,
+    "holeRotStart": 1.05,
+    "holeRotEnd": 4.29,
+    "islandSlopeStart": 0.29,
+    "islandSlopeEnd": 0,
+    "islandCullArea": 0.1
+  }
+}
