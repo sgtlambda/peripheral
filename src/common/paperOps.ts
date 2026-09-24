@@ -45,6 +45,41 @@ export const subtract = (from: Vector[], remove: Vector[]): Vector[][] => {
  * single path). All intermediate paper.js objects are removed from the active
  * project so this is safe to call every frame.
  */
+/**
+ * Boolean-combine polygons: unite all `add` shapes, then subtract each `sub`
+ * shape. Returns every resulting contour — outer boundaries and hole contours
+ * alike (callers can classify them by containment). All intermediate paper.js
+ * objects are removed so this is safe to call every frame.
+ */
+export const combine = (add: Vector[][], sub: Vector[][]): Vector[][] => {
+  if (add.length === 0) return [];
+
+  let result: PaperPath = null;
+  for (const shape of add) {
+    const p = toPaperPath(shape);
+    if (!result) {
+      result = p;
+      continue;
+    }
+    const next = result.unite(p);
+    result.remove();
+    p.remove();
+    result = next;
+  }
+
+  for (const shape of sub) {
+    const p    = toPaperPath(shape);
+    const next = result.subtract(p);
+    result.remove();
+    p.remove();
+    result = next;
+  }
+
+  const contours = normalizePaths(result).map(fromPaperPath);
+  result.remove();
+  return contours;
+};
+
 export const unite = (shapes: Vector[][]): Vector[][] => {
   if (shapes.length === 0) return [];
 
