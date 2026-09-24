@@ -3,9 +3,10 @@ import Stage from "../Stage";
 import {FlameGeneratorConfig} from "../../common/flame";
 
 /**
- * Parameters for creating a flame effect
+ * Parameters for adding a flame effect to the stage (as opposed to
+ * `FlameParams` in common/flame, the generator's tunables)
  */
-export interface FlameParams {
+export interface StageFlameParams {
   /** X-coordinate of the nozzle */
   x: number;
   /** Y-coordinate of the nozzle */
@@ -40,7 +41,7 @@ export function flame(
     color,
     duration,
     flameConfig = {},
-  }: FlameParams): FlameEffect {
+  }: StageFlameParams): FlameEffect {
 
   const effect = new FlameEffect({
     position: {x, y},
