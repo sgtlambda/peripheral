@@ -8,6 +8,7 @@
     "eslint": "eslint ./*.js",
     "pretest": "bun run eslint",
     "preview": "vite preview",
+    "sandbox": "ladle serve",
     "typecheck": "tsc --noEmit",
     "unsafe-build": "vite build"
   },
