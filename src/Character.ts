@@ -51,6 +51,8 @@ class Character implements WorldPart {
         mask:     cTerrain,
       },
     });
+    // Characters are drawn on the halftone surface (see `halftoneLayer`).
+    this.collider.render.visible = false;
   }
 
   get position() {

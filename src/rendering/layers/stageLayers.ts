@@ -24,9 +24,9 @@ export const createStageLayers = (stage: Stage) => [
   }),
   new Layer({
     render(context) {
-      // Render stray items
+      // Stray item labels (their bodies are on the halftone surface)
       stage.strayItems.forEach(item => {
-        renderItem(context, item);
+        renderItem(context, item, 10, {icon: false});
       });
       // Render buildings
       stage.buildings.forEach(building => {

@@ -30,6 +30,8 @@ export default class PhysicalItem {
         mask:     cTerrain | cItems,
       },
     });
+    // Items are drawn on the halftone surface (see `halftoneLayer`).
+    this.collider.render.visible = false;
     if (velocity) {
       Body.setVelocity(this.collider, velocity);
     }

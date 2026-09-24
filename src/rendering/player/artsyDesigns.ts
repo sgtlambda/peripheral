@@ -1,6 +1,7 @@
 import {Rng} from "../../common/Rng";
 import {PlayerDesign, PlayerRenderState} from "./types";
-import {fbm3} from "../../common/noise";
+import {DotField, orbField} from "../halftone/field";
+import {HalftoneSurface, HalftoneSurfaceOptions} from "../halftone/HalftoneSurface";
 import {createThruster} from "./thruster";
 import {Pt, clamp, createLayer, cut, disc, lens, ngon, poly, segment, template, tiltFor} from "./draw";
 
@@ -343,47 +344,15 @@ export const bauhausDesign = (): PlayerDesign => {
 };
 
 
-/** Returned by `halftoneBodyField` inside the eye: a gap nothing may fill, not just "no dot". */
-const FORCED_GAP = -1;
-
-/**
- * The halftone character as a density field over world space: returns the dot
- * radius for any world point — the aim-lit sphere with its eye, plus the
- * thrust plume — or `FORCED_GAP` inside the eye. Shared by the world-grid
- * variants, which differ only in what they leave behind.
- */
-function halftoneBodyField(state: PlayerRenderState, maxDot: number): (wx: number, wy: number) => number {
-  const {x, y, radius: r, aimAngle, thrust, time} = state;
-  const tilt  = tiltFor(state, 0.05, 0.3);
-  const local = aimAngle - tilt;
-  const lx = Math.cos(local), ly = Math.sin(local);
-  const R  = r * 0.85;
-  const bob = Math.sin(time * 2.2) * (1 - thrust);
-  const cosT = Math.cos(-tilt), sinT = Math.sin(-tilt);
-  const eyeX = lx * R * 0.45, eyeY = ly * R * 0.3;
-  const pupilX = eyeX + lx * 1.5, pupilY = eyeY + ly;
-
-  return (wx, wy) => {
-    const ox = wx - x, oy = wy - y - bob;
-    const px = ox * cosT - oy * sinT, py = ox * sinT + oy * cosT;
-    const d  = Math.hypot(px, py);
-    if (d < R) {
-      if (Math.hypot(px - pupilX, py - pupilY) < 2.2) return maxDot;
-      const u = (px - eyeX) / (R * 0.38), v = (py - eyeY) / (R * 0.2);
-      if (u * u + v * v < 1) return FORCED_GAP;
-      const z     = Math.sqrt(1 - (d / R) ** 2);
-      const light = clamp((px * lx + py * ly) / R * 0.7 + z * 0.55, 0, 1);
-      return (0.18 + light * 0.82) * maxDot * 0.85;
-    }
-    if (thrust > 0.02 && py > R * 0.5) {
-      const depth = py - R * 0.5, spread = 2 + depth * 0.35, len = r * 2.2 * thrust;
-      if (Math.abs(px) < spread && depth < len) {
-        const flicker = 0.6 + 0.4 * Math.sin(depth * 0.9 - time * 18 + wx * 0.7);
-        return (1 - depth / len) * (1 - Math.abs(px) / spread) * maxDot * flicker;
-      }
-    }
-    return 0;
-  };
+/** The halftone character's dot field, from a design's render state; see `orbField`. */
+function halftoneBodyField(state: PlayerRenderState, maxDot: number): DotField {
+  const {x, y, radius, aimAngle, thrust, time} = state;
+  return orbField({
+    x, y, radius, maxDot, time, thrust,
+    look: aimAngle,
+    tilt: tiltFor(state, 0.05, 0.3),
+    bob:  Math.sin(time * 2.2) * (1 - thrust),
+  });
 }
 
 /** Fill every dot in one path — thousands of arcs, one fill call. */
@@ -456,122 +425,32 @@ export const halftoneGridDesign = (
 };
 
 /**
- * Halftone, noise trail (one colour). The world-grid character, but instead of
- * a per-dot afterglow it leaves a cooling "heat" trail: a gaussian blob along
- * its recent path. An fBm noise field — fixed to the world like the grid —
- * sets how much heat each dot needs to light, so the trail is revealed as
- * organic, terrain-locked patches of dimmed dots. As it cools, dots drop out
- * in noise order and the trail dissolves rather than fading uniformly.
- *
- * The noise is a moving slice through 3D noise (time as the third axis), so
- * the pattern slowly morphs in place: nothing drifts across the grid, but the
- * patches the trail dissolves through keep reshaping.
+ * Halftone, noise trail (one colour). The world-grid character on a
+ * `HalftoneSurface`: instead of a per-dot afterglow it leaves a cooling heat
+ * trail, revealed through an evolving world noise field as organic patches of
+ * dimmed dots that dissolve as they cool. This is the look the game uses for
+ * every entity; see `halftoneLayer`.
  */
 export const halftoneNoiseTrailDesign = (
-  {
-    pitch = 3,
-    /** Seconds for a trail point to cool completely */
-    trailLife = 1.5,
-    /** Width of the heat blob (gaussian sigma), as a ratio of the collider radius */
-    blobRatio = 0.6,
-    /** Feature size of the noise pattern, in world px */
-    noiseScale = 14,
-    /** Largest trail dot, relative to a full body dot — the trail stays dimmed */
-    trailDim = 0.45,
-    /** How fast the noise pattern morphs, in noise features per second (0 = static) */
-    noiseEvolve = 0.3,
-    seed = 7,
-  }: {
-    pitch?: number; trailLife?: number; blobRatio?: number; noiseScale?: number; trailDim?: number;
-    noiseEvolve?: number; seed?: number;
+  {blobRatio = 0.6, ...surfaceOptions}: HalftoneSurfaceOptions & {
+    /** Width of the heat trail (gaussian sigma), as a ratio of the collider radius */
+    blobRatio?: number;
   } = {},
 ): PlayerDesign => {
-  const ink    = "rgb(255,86,160)";
-  const maxDot = pitch * 0.62;
-  /** Recent path of the player, oldest first. */
-  const path: {x: number; y: number; t: number}[] = [];
-  const cellKey = (i: number, j: number) => (i + 32768) * 65536 + (j + 32768);
-  const noiseAt = (i: number, j: number, time: number) =>
-    // fBm bunches around 0.5; stretch it so the pattern has real contrast.
-    clamp((fbm3((i * pitch) / noiseScale, (j * pitch) / noiseScale, time * noiseEvolve, 3, seed) - 0.3) / 0.4, 0, 1);
+  const ink     = "rgb(255,86,160)";
+  const surface = new HalftoneSurface(surfaceOptions);
+  const key     = {};
 
   return {
     name:        "Halftone · noise trail",
     description: "World-grid body leaving a cooling heat trail; a slowly morphing world noise field decides which dimmed dots it reveals.",
     palette:     [ink],
     draw(ctx, state) {
-      const {x, y, radius: r, time} = state;
-      const sigma = r * blobRatio;
-      const field = halftoneBodyField(state, maxDot);
-
-      // Record the path: a new point whenever the player has moved a fraction
-      // of the blob width, and forget points once they've fully cooled.
-      const last = path[path.length - 1];
-      if (!last || Math.hypot(x - last.x, y - last.y) > sigma * 0.3 || time < last.t) {
-        if (last && time < last.t) path.length = 0;
-        path.push({x, y, t: time});
-      }
-      while (path.length && time - path[0].t > trailLife) path.shift();
-
-      // Heat per cell: the hottest nearby path point, each a gaussian blob
-      // cooling with age. Only cells within 3σ of a point are visited.
-      const heat = new Map<number, number>();
-      const extent = sigma * 3;
-      for (const pt of path) {
-        const cool = Math.pow(1 - (time - pt.t) / trailLife, 1.5);
-        if (cool <= 0) continue;
-        const i0 = Math.floor((pt.x - extent) / pitch), i1 = Math.ceil((pt.x + extent) / pitch);
-        const j0 = Math.floor((pt.y - extent) / pitch), j1 = Math.ceil((pt.y + extent) / pitch);
-        for (let i = i0; i <= i1; i++) {
-          for (let j = j0; j <= j1; j++) {
-            const dx = i * pitch - pt.x, dy = j * pitch - pt.y;
-            const h  = Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma)) * cool;
-            const key = cellKey(i, j);
-            if (h > (heat.get(key) ?? 0)) heat.set(key, h);
-          }
-        }
-      }
-
-      // Body: dot size per cell (or FORCED_GAP for the eye).
-      const body = new Map<number, number>();
-      const reach = r * 3.5;
-      const bi0 = Math.floor((x - reach) / pitch), bi1 = Math.ceil((x + reach) / pitch);
-      const bj0 = Math.floor((y - reach) / pitch), bj1 = Math.ceil((y + reach) / pitch);
-      for (let i = bi0; i <= bi1; i++) {
-        for (let j = bj0; j <= bj1; j++) {
-          const size = field(i * pitch, j * pitch);
-          if (size !== 0) body.set(cellKey(i, j), size);
-        }
-      }
-
-      // Trail: a dot lights where the heat beats the local noise, growing with
-      // the margin — so hot, low-noise patches show first and last longest,
-      // and high-noise areas stay dark even in the hottest part of the trail.
-      const trailSize = (h: number, key: number) => {
-        const i = Math.floor(key / 65536) - 32768, j = (key % 65536) - 32768;
-        const margin = h - (0.1 + noiseAt(i, j, time) * 0.85);
-        return margin <= 0 ? 0 : maxDot * trailDim * Math.min(1, margin / 0.45);
-      };
-
-      // Each cell shows the larger of body and trail, so the orb's dim back
-      // side blends straight into the trail instead of dipping below it.
-      const dots: [number, number, number][] = [];
-      const cellPos = (key: number) => [(Math.floor(key / 65536) - 32768) * pitch, ((key % 65536) - 32768) * pitch];
-      const emit = (key: number, size: number) => {
-        if (size <= 0.2) return;
-        const [wx, wy] = cellPos(key);
-        dots.push([wx, wy, size]);
-      };
-      heat.forEach((h, key) => {
-        const b = body.get(key) ?? 0;
-        if (b === FORCED_GAP) return;
-        emit(key, Math.max(b, trailSize(h, key)));
-      });
-      body.forEach((b, key) => {
-        if (!heat.has(key)) emit(key, b);
-      });
-
-      fillDots(ctx, dots, ink);
+      surface.draw(ctx, [{
+        key, x: state.x, y: state.y, reach: state.radius * 3.5, color: ink,
+        field: halftoneBodyField(state, surface.maxDot),
+        trail: {sigma: state.radius * blobRatio},
+      }], state.time);
     },
   };
 };

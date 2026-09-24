@@ -1,6 +1,5 @@
 import {Vector} from 'matter-js';
 
-import debugRender from '../data/debugRender';
 import {HasStep, StepContext} from "../types";
 import {shouldBlink} from "../common/blink";
 import PhysicalItem from "./PhysicalItem";
@@ -38,10 +37,13 @@ export class Throwable extends PhysicalItem implements HasStep {
     this.trigger = trigger;
   }
 
+  /** True during the "off" beats of the fuse blink, which speeds up as the fuse runs down. */
+  get blinking(): boolean {
+    return shouldBlink(this.ttl);
+  }
+
   step(ctx: StepContext) {
     this.ttl -= ctx.event.delta;
-    this.collider.render.strokeStyle = !shouldBlink(this.ttl) ? 'white' : debugRender.strokeStyle;
-    this.collider.render.fillStyle   = !shouldBlink(this.ttl) ? 'white' : debugRender.fillStyle;
     if (this.ttl <= 0) {
       this.trigger({position: {...this.position}, throwable: this, ctx});
       ctx.stage.removeThrowable(this);

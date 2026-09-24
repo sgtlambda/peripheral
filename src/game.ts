@@ -19,8 +19,7 @@ import backgroundLayer from './rendering/layers/backgroundLayer';
 import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
-import {playerLayer} from './rendering/layers/playerLayer';
-import {halftoneNoiseTrailDesign} from './rendering/player/artsyDesigns';
+import {halftoneLayer} from './rendering/layers/halftoneLayer';
 import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
@@ -131,7 +130,7 @@ if ('lastStop' in window) window.lastStop();
     unrotate, // Note this layer MUST be first
 
     backgroundLayer(),
-    playerLayer({player, stage, design: halftoneNoiseTrailDesign()}),
+    halftoneLayer({player, stage}),
     playerInteractionLayer({player, playerState, stage}),
     ...createStageLayers(stage),
     ...uiLayers({gameMouse: mouse.gameMouse, player, playerState}),
