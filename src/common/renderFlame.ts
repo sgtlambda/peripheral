@@ -1,5 +1,5 @@
 import {Vector} from "matter-js";
-import {FlameShape} from "./butaneFlame";
+import {FlameShape} from "./flame";
 
 /** Traces a closed polygon path onto the context. */
 function tracePath(ctx: CanvasRenderingContext2D, path: Vector[], ox: number, oy: number): void {
@@ -27,7 +27,7 @@ function boundsOf(polys: Vector[][]): {minX: number; minY: number; maxX: number;
 }
 
 /**
- * Renders a butane flame shape by filling its body lenses in a single solid
+ * Renders a flame shape by filling its body lenses in a single solid
  * colour, then boolean-subtracting the hole lenses (`destination-out`), the same
  * way the explosion punches out its holes. No gradients — the flame is one flat
  * colour, matching the rest of the game's rendering.

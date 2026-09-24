@@ -1,7 +1,7 @@
 /**
  * Render a procedural effect to an SVG file at a given seed and time.
  *
- * The effects (explosion, butane flame) are pure vector generators, so a seed +
+ * The effects (explosion, flame) are pure vector generators, so a seed +
  * time fully determines the shape. This makes them reproducible and inspectable
  * without launching the game: dump a frame to SVG and open it in a browser.
  *
@@ -19,7 +19,7 @@
 import {writeFileSync} from "fs";
 import {Rng} from "../src/common/Rng";
 import {generateAnimatedExplosion} from "../src/common/explosion";
-import {generateAnimatedFlame} from "../src/common/butaneFlame";
+import {generateAnimatedFlame} from "../src/common/flame";
 import {explosionSvg, flameSvg} from "../src/common/effectSvg";
 import {colorTupleToRgba, getGradientColor} from "../src/common/colorGradient";
 import {fire} from "../src/gradients";

@@ -2,10 +2,10 @@ import {Vector} from "matter-js";
 
 import {StageGraphicsLayer} from "./logic/StageGraphics";
 import {HasStep, StepContext} from "./types";
-import {FlameGenerator, FlameGeneratorConfig, generateAnimatedFlame} from "./common/butaneFlame";
+import {FlameGenerator, FlameGeneratorConfig, generateAnimatedFlame} from "./common/flame";
 import {renderFlame} from "./common/renderFlame";
 
-export type ButaneFlameEffectProps = {
+export type FlameEffectProps = {
   /** Position of the nozzle the flame is emitted from */
   position: Vector;
   /** Emission direction in radians (0 = +x, -π/2 = up) */
@@ -26,14 +26,14 @@ export type ButaneFlameEffectProps = {
 };
 
 /**
- * A continuously burning butane flame, as emitted from a jetpack or torch.
+ * A continuously burning flame, as emitted from a jetpack or torch.
  * Implements both StageGraphicsLayer for rendering and HasStep for animation.
  *
  * Unlike the one-shot ExplosionEffect, a flame has no fixed shape lifecycle: it
  * loops until either its optional `duration` elapses or `stop()` is called, at
  * which point it fades out over `fadeOut` milliseconds before finishing.
  */
-export class ButaneFlameEffect implements StageGraphicsLayer, HasStep {
+export class FlameEffect implements StageGraphicsLayer, HasStep {
   private readonly position: Vector;
   private readonly color: string;
   private readonly duration?: number;
@@ -54,7 +54,7 @@ export class ButaneFlameEffect implements StageGraphicsLayer, HasStep {
       duration,
       fadeOut = 200,
       flameConfig = {},
-    }: ButaneFlameEffectProps) {
+    }: FlameEffectProps) {
     this.position = position;
     this.color    = color;
     this.duration = duration;

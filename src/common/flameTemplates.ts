@@ -1,4 +1,4 @@
-import {FlameGeneratorConfig} from "./butaneFlame";
+import {FlameGeneratorConfig} from "./flame";
 
 /**
  * A named flame preset: a solid colour plus a reach-independent config (all

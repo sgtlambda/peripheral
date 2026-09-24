@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {generateAnimatedFlame, flameDefaults} from "../common/butaneFlame";
+import {generateAnimatedFlame, flameDefaults} from "../common/flame";
 import {renderFlame} from "../common/renderFlame";
 import {flameTemplates} from "../common/flameTemplates";
 import {easingNames, EasingName} from "../common/easings";

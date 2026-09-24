@@ -1,11 +1,11 @@
-import {ButaneFlameEffect, ButaneFlameEffectProps} from "../../ButaneFlameEffect";
+import {FlameEffect, FlameEffectProps} from "../../FlameEffect";
 import Stage from "../Stage";
-import {FlameGeneratorConfig} from "../../common/butaneFlame";
+import {FlameGeneratorConfig} from "../../common/flame";
 
 /**
- * Parameters for creating a butane flame effect
+ * Parameters for creating a flame effect
  */
-export interface ButaneFlameParams {
+export interface FlameParams {
   /** X-coordinate of the nozzle */
   x: number;
   /** Y-coordinate of the nozzle */
@@ -25,12 +25,12 @@ export interface ButaneFlameParams {
 }
 
 /**
- * Creates and adds a butane flame effect to the stage.
+ * Creates and adds a flame effect to the stage.
  *
  * Returns the effect so the caller can `stop()` it (e.g. when the jetpack
  * throttle is released).
  */
-export function butaneFlame(
+export function flame(
   {
     x,
     y,
@@ -40,9 +40,9 @@ export function butaneFlame(
     color,
     duration,
     flameConfig = {},
-  }: ButaneFlameParams): ButaneFlameEffect {
+  }: FlameParams): FlameEffect {
 
-  const effect = new ButaneFlameEffect({
+  const effect = new FlameEffect({
     position: {x, y},
     direction,
     reach,

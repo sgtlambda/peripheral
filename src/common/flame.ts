@@ -4,7 +4,7 @@ import {RandomFn} from "./Rng";
 import {ease, EasingName} from "./easings";
 
 /**
- * Configuration for generating an animated butane flame (as emitted from a
+ * Configuration for generating an animated flame (as emitted from a
  * jetpack nozzle or a sci-fi torch).
  *
  * Sizes are given as ratios of `reach` (so a config is reach-independent) and
@@ -79,7 +79,7 @@ export type FlameGeneratorConfig = {
 }
 
 /**
- * A butane flame at a moment in time, as computed vector polygons: a set of
+ * A flame at a moment in time, as computed vector polygons: a set of
  * body lenses to be filled, and a set of hole lenses to be subtracted from them
  * (exactly like the explosion's main shape and its holes).
  */
@@ -175,7 +175,7 @@ function clipHalfPlane(poly: Vector[], nx: number, ny: number, offset = 0): Vect
 }
 
 /**
- * Generates an animated butane flame as a stop-motion vector shape.
+ * Generates an animated flame as a stop-motion vector shape.
  *
  * Modelled on the explosion: a positive body built from lens primitives emitted
  * across the nozzle and swimming outward (decelerating), minus a set of hole

@@ -1,10 +1,10 @@
 import {Vector} from "matter-js";
-import {FlameShape} from "./butaneFlame";
+import {FlameShape} from "./flame";
 
 /**
  * Serialises effect shapes to standalone SVG documents.
  *
- * Both the explosion and the butane flame are pure vector effects, so a given
+ * Both the explosion and the flame are pure vector effects, so a given
  * seed + time always produces the same geometry. These helpers turn that
  * geometry into an SVG string that can be written to disk and inspected in a
  * browser — no canvas or DOM required — which makes the effects testable
@@ -73,7 +73,7 @@ export type FlameSvgOptions = {
 };
 
 /**
- * Renders a butane flame shape (body lenses minus growing hole lenses) to an SVG
+ * Renders a flame shape (body lenses minus growing hole lenses) to an SVG
  * string, in a single solid colour. The body/hole boolean subtraction is
  * expressed with an SVG `<mask>` (body drawn white = shown, holes drawn black =
  * hidden), which matches the `destination-out` compositing the canvas renderer
