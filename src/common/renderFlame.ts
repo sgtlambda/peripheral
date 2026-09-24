@@ -27,8 +27,8 @@ function boundsOf(polys: Vector[][]): {minX: number; minY: number; maxX: number;
 }
 
 /**
- * Renders a flame shape by filling its body lenses in a single solid
- * colour, then boolean-subtracting the hole lenses (`destination-out`), the same
+ * Renders a flame shape by filling its body polygons in a single solid
+ * colour, then boolean-subtracting the hole polygons (`destination-out`), the same
  * way the explosion punches out its holes. No gradients — the flame is one flat
  * colour, matching the rest of the game's rendering.
  *
@@ -44,7 +44,7 @@ export function renderFlame(
     color: string;
     originX?: number;
     originY?: number;
-    /** Draw the lens outlines instead of filling (useful for debugging) */
+    /** Draw the body and hole outlines instead of filling (useful for debugging) */
     stroke?: boolean;
   },
 ): void {
@@ -74,11 +74,11 @@ export function renderFlame(
     for (const lens of shape.body)  { tracePath(tctx, lens, ox, oy); tctx.stroke(); }
     for (const lens of shape.holes) { tracePath(tctx, lens, ox, oy); tctx.stroke(); }
   } else {
-    // Fill the body lenses as one solid union...
+    // Fill the body polygons as one solid union...
     tctx.fillStyle = color;
     for (const lens of shape.body) { tracePath(tctx, lens, ox, oy); tctx.fill(); }
 
-    // ...then boolean-subtract the hole lenses.
+    // ...then boolean-subtract the holes.
     tctx.globalCompositeOperation = 'destination-out';
     for (const lens of shape.holes) { tracePath(tctx, lens, ox, oy); tctx.fill(); }
     tctx.globalCompositeOperation = 'source-over';

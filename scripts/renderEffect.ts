@@ -8,12 +8,15 @@
  * Usage:
  *   npx tsx scripts/renderEffect.ts explosion --seed 3 --t 0.65 --out expl.svg
  *   npx tsx scripts/renderEffect.ts flame --seed 1 --t 0.4 --out flame.svg
+ *   npx tsx scripts/renderEffect.ts flame --template "Candle" --t 1.2
  *
  * Options (all optional except the effect name):
- *   --seed <n>    RNG seed (default: 1)
- *   --t <n>       Time: explosion 0..1, flame in seconds (default: 0.6 / 0.3)
- *   --out <file>  Output path (default: <effect>.svg)
- *   --size <n>    Canvas size in px (default: 500)
+ *   --seed <n>          RNG seed (default: 1)
+ *   --t <n>             Time: explosion 0..1, flame in seconds (default: 0.6 / 0.3)
+ *   --out <file>        Output path (default: <effect>.svg)
+ *   --size <n>          Canvas size in px (default: 500)
+ *   --template <name>   Flame only: built-in template from flameTemplates.ts (default: none, plain defaults)
+ *   --color <css>       Flame only: fill colour (default: the template's, else rgb(120,170,255))
  */
 
 import {writeFileSync} from "fs";

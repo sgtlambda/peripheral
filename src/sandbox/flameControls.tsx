@@ -116,7 +116,7 @@ export type FlamePreviewProps = {
   reach: number;
   /** Emission direction in degrees (-90 = up) */
   direction: number;
-  /** Draw lens outlines instead of filling */
+  /** Draw body and hole outlines instead of filling */
   outline?: boolean;
   /** Mark each lens's centre — blue for body lenses, red for the subtracted holes */
   showCenters?: boolean;

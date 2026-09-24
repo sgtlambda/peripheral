@@ -73,7 +73,7 @@ export type FlameSvgOptions = {
 };
 
 /**
- * Renders a flame shape (body lenses minus growing hole lenses) to an SVG
+ * Renders a flame shape (body polygons minus hole polygons) to an SVG
  * string, in a single solid colour. The body/hole boolean subtraction is
  * expressed with an SVG `<mask>` (body drawn white = shown, holes drawn black =
  * hidden), which matches the `destination-out` compositing the canvas renderer

@@ -39,13 +39,6 @@ export const subtract = (from: Vector[], remove: Vector[]): Vector[][] => {
 };
 
 /**
- * Boolean-union a list of polygons into their combined outline(s).
- *
- * Returns one path per disjoint region (overlapping inputs collapse into a
- * single path). All intermediate paper.js objects are removed from the active
- * project so this is safe to call every frame.
- */
-/**
  * Boolean-combine polygons: unite all `add` shapes, then subtract each `sub`
  * shape. Returns every resulting contour — outer boundaries and hole contours
  * alike (callers can classify them by containment). All intermediate paper.js
@@ -80,6 +73,13 @@ export const combine = (add: Vector[][], sub: Vector[][]): Vector[][] => {
   return contours;
 };
 
+/**
+ * Boolean-union a list of polygons into their combined outline(s).
+ *
+ * Returns one path per disjoint region (overlapping inputs collapse into a
+ * single path). All intermediate paper.js objects are removed from the active
+ * project so this is safe to call every frame.
+ */
 export const unite = (shapes: Vector[][]): Vector[][] => {
   if (shapes.length === 0) return [];
 

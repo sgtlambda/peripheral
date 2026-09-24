@@ -20,7 +20,7 @@ Remaining findings from the stability/architecture review. Roughly ordered by pr
 
 ## Hygiene
 
-- **ESLint lints nothing.** The script is `eslint ./*.js`, which matches no source files. Point it at `src/` with typescript-eslint.
+- **ESLint lints no source.** The script is `eslint ./*.js`, which only matches `vite.config.js` (the glob skips dotfiles like `.eslintrc.js`). Point it at `src/` with typescript-eslint.
 - **No tests.** `PlayerState`, `SimClock`, `CameraShakeStack`, `GameEventBus`, and `nom()` are pure-ish and trivially unit-testable; a handful of Vitest specs would lock in the refactor.
 - **Audio: use Web Audio, start on gesture.** `new Audio()` per shot churns GC with no concurrency cap, and background music should start on the first user interaction (autoplay TODO in `game.ts`).
 - **Dead code.** The ~50-line commented raycast block in `gun.ts:25-74` and the unused `banana.ts` item: delete both, git remembers.

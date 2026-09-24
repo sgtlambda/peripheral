@@ -1,8 +1,10 @@
 import {FlameGeneratorConfig} from "./flame";
 
 /**
- * A named flame preset: a solid colour plus a reach-independent config (all
- * sizes are ratios of reach, so the same template works at any scale).
+ * A named built-in flame template: a solid colour plus a reach-independent
+ * config (all sizes are ratios of reach, so the same template works at any
+ * scale). Unlike a `FlamePreset`, it only lists the overrides that differ from
+ * the defaults.
  */
 export type FlameTemplate = {
   name: string;

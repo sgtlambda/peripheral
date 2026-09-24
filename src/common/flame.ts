@@ -12,11 +12,11 @@ import {combine} from "./paperOps";
  * everything else is unitless, which makes configs reusable as templates.
  */
 export type FlameGeneratorConfig = {
-  /** How far the lenses travel from the nozzle, in pixels (default: 200) */
+  /** How far the lenses travel from the nozzle, in pixels */
   reach: number;
   /** Emission direction in radians (0 = +x, -π/2 = up on screen) (default: -π/2) */
   direction?: number;
-  /** Global speed multiplier — scales the body, holes and flicker together (default: 1) */
+  /** Global speed multiplier — scales the whole animation clock (body, holes, flicker and cutoff wobble) (default: 1) */
   speed?: number;
   /**
    * The flame repeats exactly every `loopPeriod` seconds (at speed 1). Every
@@ -33,7 +33,7 @@ export type FlameGeneratorConfig = {
   bodyLengthRatio?: number;
   /** Body lens half-width relative to its half-length (default: 0.6) */
   lensAspect?: number;
-  /** Random spread of body lens size, ± this fraction (default: 0.5) */
+  /** Random variation of body lens size: each lens is scaled by 1 ± half this value (default: 0.5) */
   bodySizeVar?: number;
   /**
    * Half-angle of the body emission fan in radians. Every lens is emitted from
@@ -44,33 +44,33 @@ export type FlameGeneratorConfig = {
   bodyTaperStart?: number;
   /**
    * Radius (as a ratio of reach) from the emission point at which the body is
-   * hard-clipped — an arc-shaped far cutoff, mirroring the nozzle mask at 0.
+   * hard-clipped — an arc-shaped far cutoff, the counterpart of the nozzle-plane clip at 0.
    * Set beyond the flame's natural reach (default: 1.2) to leave the tip untouched.
    */
   cutoffDist?: number;
   /** Radial jiggle of the cutoff arc, as a fraction of its radius (default: 0.05) */
   cutoffWobbleAmp?: number;
-  /** Number of jiggle lobes across the arc (default: 3) */
+  /** Jiggle lobes per full turn around the emission point; a 2.3× harmonic is layered on top (default: 3) */
   cutoffWobbleFreq?: number;
-  /** How fast the jiggle lobes drift along the arc, per unit time (default: 1) */
+  /** Phase speed of the jiggle in radians per second — the lobes drift along the arc as it changes (default: 1) */
   cutoffWobbleSpeed?: number;
   /** Easing for how a body lens travels outward over its life (default: "outQuad") */
   bodyDistEasing?: EasingName;
-  /** How fast the body lens stream cycles, in cycles per unit time (default: 1) */
+  /** How fast body lenses cycle through their life, in cycles per second; each lens varies ±15% (default: 1) */
   bodySpeed?: number;
   /** Sideways flicker amplitude for body lenses, as a ratio of reach (default: 0.03) */
   flickerRatio?: number;
-  /** Flicker frequency, in cycles per unit time (default: 2) */
+  /** Flicker frequency, in cycles per second (default: 2) */
   flickerFreq?: number;
 
   // --- Holes (negative lenses, boolean-subtracted) ---
   /** Number of hole lenses (default: 8) */
   holeCount?: number;
-  /** Hole lens size at its asymptote, as a ratio of reach (default: 0.22) */
+  /** Hole lens half-length at full size, as a ratio of reach (default: 0.22) */
   holeSpanRatio?: number;
-  /** Hole lens width relative to its length; 1 = round (default: 0.85) */
+  /** Hole lens width relative to its length; 1 = as wide as it is long (default: 0.85) */
   holeThickness?: number;
-  /** Random spread of hole size, ± this fraction (default: 0.4) */
+  /** Random variation of hole size: each hole is scaled by 1 ± half this value (default: 0.4) */
   holeSizeVar?: number;
   /** Easing for how a hole grows to its full size (default: "outExpo") */
   holeSizeEasing?: EasingName;
@@ -84,7 +84,7 @@ export type FlameGeneratorConfig = {
    * popping in on the same arc (default: 0.15).
    */
   holeSpawnDistVar?: number;
-  /** Exponential rise distance beyond the spawn point, as a ratio of reach (default: 0.5) */
+  /** Eased rise distance beyond the spawn point (see `holeDistEasing`), as a ratio of reach (default: 0.5) */
   holeRiseDist?: number;
   /**
    * Fraction of a hole's life before the rise begins (default: 0.15). Size
@@ -101,7 +101,7 @@ export type FlameGeneratorConfig = {
    * below/above narrows/widens the hole fan relative to the body (default: 1).
    */
   holeSpreadScale?: number;
-  /** How fast the hole stream cycles (default: 1.1) */
+  /** How fast holes cycle through their life, in cycles per second; each hole varies ±15% (default: 1.1) */
   holeSpeed?: number;
   /** Random initial rotation of each hole lens, ± this many radians off its ray (default: 0) */
   holeRotStart?: number;
@@ -111,7 +111,7 @@ export type FlameGeneratorConfig = {
   // --- Island culling (true boolean combine + cull of detached fragments) ---
   /**
    * When true, the body/holes are boolean-combined for real each frame; any
-   * contour no longer touching the mainland (the contour over the emit point)
+   * contour no longer touching the mainland (the contour just past the emit point)
    * is an "island" and must pass the area-vs-distance threshold below to
    * render (default: true).
    */
@@ -123,21 +123,25 @@ export type FlameGeneratorConfig = {
   /** Minimum island area at full ramp strength, as a ratio of reach² (default: 0.02) */
   islandCullArea?: number;
 
-  /** Vertices per lens side; keep low for the faceted, stop-motion look (default: 4) */
+  /** Segments per lens side; keep low for the faceted, stop-motion look (default: 4) */
   lensResolution?: number;
   /** Source of randomness; pass the stage rng when the flame affects the simulation (default: Math.random) */
   random?: RandomFn;
 }
 
 /**
- * A flame at a moment in time, as computed vector polygons: a set of
- * body lenses to be filled, and a set of hole lenses to be subtracted from them
+ * A flame at a moment in time, as computed vector polygons: a set of body
+ * polygons to be filled, and a set of hole polygons to be subtracted from them
  * (exactly like the explosion's main shape and its holes).
+ *
+ * With `cullIslands` off these are the raw lenses. With it on (the default)
+ * they are the already-combined result: `body` holds the mainland and the
+ * surviving islands, `holes` the voids left inside them.
  */
 export type FlameShape = {
-  /** Positive lenses forming the flame body (already clipped at the nozzle plane) */
+  /** Filled polygons: body lenses clipped at the nozzle plane and cutoff arc, or the combined outer contours */
   body: Vector[][];
-  /** Lenses to boolean-subtract from the body (they grow as they age) */
+  /** Polygons to boolean-subtract from the body: hole lenses, or the voids inside the combined contours */
   holes: Vector[][];
   /**
    * Where each lens sits this frame, before any clipping or boolean combine —
@@ -145,7 +149,7 @@ export type FlameShape = {
    * rendering the flame itself.
    */
   centers: {
-    /** Centre of every body lens (including ones fully clipped away) */
+    /** Centre of every live body lens (including ones fully clipped away) */
     body: Vector[];
     /** Centre of every hole lens */
     holes: Vector[];
@@ -269,8 +273,8 @@ function clipRadial(poly: Vector[], radiusAt: (angle: number) => number): Vector
 
 /**
  * Clip a polygon to the half-plane `dot(p, normal) >= offset` (Sutherland–
- * Hodgman against a single line). Used to cut the flame off at the nozzle plane
- * (start) and at the cutoff plane (end).
+ * Hodgman against a single line). Used to cut the body off at the nozzle plane;
+ * the far end is cut by `clipRadial` instead.
  */
 function clipHalfPlane(poly: Vector[], nx: number, ny: number, offset = 0): Vector[] {
   const out: Vector[] = [];
@@ -295,9 +299,11 @@ function clipHalfPlane(poly: Vector[], nx: number, ny: number, offset = 0): Vect
  * Generates an animated flame as a stop-motion vector shape.
  *
  * Modelled on the explosion: a positive body built from lens primitives emitted
- * radially within an angle fan and swimming outward (decelerating), minus a set of hole
- * lenses that shoot up and swell along an exponential-approach curve and then
- * keep drifting slowly. The whole flame is clipped at the nozzle plane.
+ * radially within an angle fan and swimming outward (decelerating, with the
+ * default easing), minus a set of hole lenses that swell and shoot outward along
+ * their own easings and then keep drifting slowly. The body is clipped at the
+ * nozzle plane and at a jiggling far cutoff arc; detached fragments can then be
+ * culled (see `cullIslands`).
  *
  * Each lens has a fixed phase, so `generate(t)` is a pure function of time:
  * given the same `random` source it always produces the same flame, making it
@@ -402,8 +408,8 @@ export function generateAnimatedFlame(config: FlameGeneratorConfig = {reach: 0})
         0.5 * Math.sin(theta * cutoffWobbleFreq * 2.3 + t * quantRad(cutoffWobbleSpeed * 1.7) + cutoffPhase * 2)
       ));
 
-    // Body lenses: emitted along their rays, swimming outward and decelerating,
-    // tapering after `bodyTaperStart` so the flame narrows to its tip.
+    // Body lenses: emitted along their rays, swimming outward along
+    // bodyDistEasing, tapering after `bodyTaperStart` so the flame narrows to its tip.
     const body: Vector[][] = [];
     const centers: FlameShape["centers"] = {body: [], holes: []};
     for (const p of bodyParticles) {
@@ -433,9 +439,9 @@ export function generateAnimatedFlame(config: FlameGeneratorConfig = {reach: 0})
       if (clipped.length >= 3) body.push(clipped);
     }
 
-    // Hole lenses: size and distance both follow an exponential approach (shoot
-    // up and swell fast, then stagger), plus a linear drift so they never fully
-    // stop — they keep creeping outward past the ease.
+    // Hole lenses: size and distance follow their easings (by default an
+    // exponential approach: shoot up and swell fast, then stagger), plus a linear
+    // drift so they never fully stop — they keep creeping outward past the ease.
     const holes: Vector[][] = [];
     for (const p of holeParticles) {
       const hp   = (t * p.rate + p.phase) % 1;
@@ -478,8 +484,8 @@ export function generateAnimatedFlame(config: FlameGeneratorConfig = {reach: 0})
     }
     if (outers.length === 0) return {body, holes, centers};
 
-    // The mainland is the outer contour containing a sample point just above
-    // the nozzle; fall back to the largest outer if the base is fully eaten.
+    // The mainland is the outer contour containing a sample point just past
+    // the nozzle along the emission direction; fall back to the largest outer if the base is fully eaten.
     const sample   = Vector.create(dir.x * reach * 0.05, dir.y * reach * 0.05);
     const mainland = outers.find(c => pointInPolygon(sample, c))
       ?? outers.reduce((a, b) =>
