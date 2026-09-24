@@ -29,6 +29,9 @@ class Player extends Character implements System {
 
     super(props);
 
+    // The player is drawn by `playerLayer`; hide the collider's debug outline.
+    this.collider.render.visible = false;
+
     this.aimAngle = 0;
 
     // globals

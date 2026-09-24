@@ -2,8 +2,6 @@ import {Vertices, Vector} from 'matter-js';
 
 import Layer from '../Layer';
 
-import circle from '../../common/circle';
-
 import {INTENT_BUILD} from '../../data/intents/buildIntent';
 import {PLAYER_AIM_OFFSET} from '../../data/constants';
 
@@ -115,8 +113,5 @@ export const playerInteractionLayer = ({player, playerState, stage}: {
             const vertices = arrowVertices({angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         }
-        context.strokeStyle = 'rgba(255,255,255,.6)';
-        context.lineWidth = 1;
-        circle(context, player.position.x, player.position.y, 16, false, true);
     },
 });
