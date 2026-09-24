@@ -72,7 +72,6 @@ export function renderFlame(
     tctx.strokeStyle = color;
     tctx.lineWidth   = 1;
     for (const lens of shape.body)  { tracePath(tctx, lens, ox, oy); tctx.stroke(); }
-    tctx.strokeStyle = 'red';
     for (const lens of shape.holes) { tracePath(tctx, lens, ox, oy); tctx.stroke(); }
   } else {
     // Fill the body lenses as one solid union...
