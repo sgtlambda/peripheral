@@ -109,7 +109,8 @@ export const playerInteractionLayer = ({player, playerState, stage}: {
             }>(INTENT_BUILD)!.options.buildable;
             const vertices = buildableVertices({buildable, angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
-        } else {
+        } else if (!itemType?.sprite) {
+            // No aim arrow for items drawn in hand: the item itself shows the aim.
             const vertices = arrowVertices({angle: player.aimAngle, ...player.position});
             drawVertices({context, vertices, strokeStyle: 'rgba(255,255,255,0.5)'});
         }

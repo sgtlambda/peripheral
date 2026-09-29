@@ -9,11 +9,7 @@ import {getNearbyNpc, getNearbyStrayItem} from './proximity';
 import {BuildIntentOptions, INTENT_BUILD} from '../data/intents/buildIntent';
 import {INTENT_THROW, ThrowIntentOptions} from '../data/intents/throwIntent';
 import {ApplyIntentOptions, INTENT_APPLY} from '../data/intents/applyIntent';
-import {PLAYER_AIM_OFFSET} from '../data/constants';
-
-export const ITEM_DROP_COOLDOWN_MS = 1000;
-
-export const ITEM_DROP_FORCE = 5;
+import {ITEM_DROP_COOLDOWN_MS, ITEM_DROP_FORCE, PLAYER_AIM_OFFSET} from '../data/constants';
 
 export const ITEM_THROW_FORCE = 12;
 

@@ -13,6 +13,7 @@ import PlayerState from './logic/PlayerState';
 import PlayerActions from './logic/PlayerActions';
 import PlayerInputSystem from './logic/PlayerInputSystem';
 import {InteractionPotentialsSystem} from './logic/proximity';
+import {PlayerHandsSystem} from './logic/PlayerHandsSystem';
 import {wireStageEffects} from './logic/effects/wireStageEffects';
 
 import backgroundLayer from './rendering/layers/backgroundLayer';
@@ -20,6 +21,7 @@ import {createStageLayers} from './rendering/layers/stageLayers';
 import uiLayers from './rendering/layers/uiLayers';
 import {playerInteractionLayer} from './rendering/layers/playerInteractionLayer';
 import {halftoneLayer} from './rendering/layers/halftoneLayer';
+import {itemSpritesLayer} from './rendering/layers/itemSpritesLayer';
 import rotateContext from './rendering/layers/rotateContext';
 
 import Player from './Player';
@@ -112,6 +114,7 @@ if ('lastStop' in window) window.lastStop();
     mouse.system,                       // world-space mouse position
     player,                             // movement forces (aim in afterStep)
     playerInput,                        // queued commands & trigger pacing
+    new PlayerHandsSystem(),            // held item follows the active slot
     stage,                              // entities, effects, sim clock
     new InteractionPotentialsSystem(),  // pickup / NPC proximity hints
     camera,                             // follow & shake
@@ -131,6 +134,7 @@ if ('lastStop' in window) window.lastStop();
 
     backgroundLayer(),
     halftoneLayer({player, stage}),
+    itemSpritesLayer({characters: [player], stage}),
     playerInteractionLayer({player, playerState, stage}),
     ...createStageLayers(stage),
     ...uiLayers({gameMouse: mouse.gameMouse, player, playerState}),

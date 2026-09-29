@@ -94,8 +94,11 @@ export const halftoneLayer = ({player, stage}: {player: Player; stage: Stage}): 
         });
       });
 
-      // Stray items: plain orbs in their item colour (labels are drawn by the stage layer).
+      // Stray items: plain orbs in their item colour (labels are drawn by the
+      // stage layer). Items with a sprite, like guns, are drawn as themselves
+      // by `itemSpritesLayer` instead.
       stage.strayItems.forEach(item => {
+        if (item.itemType.sprite) return;
         const {x, y} = item.position;
         const radius = item.getCollider().circleRadius ?? 8;
         sources.push({

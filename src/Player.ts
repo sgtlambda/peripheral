@@ -4,7 +4,6 @@ import Character, {CharacterConstructorProps} from "./Character";
 
 class Player extends Character implements System {
 
-  public aimAngle: number;
   public keys: KeysOn;
   public mouse: Vector;
 
@@ -28,8 +27,6 @@ class Player extends Character implements System {
     }) {
 
     super(props);
-
-    this.aimAngle = 0;
 
     // globals
     this.keys  = keys;
@@ -55,14 +52,6 @@ class Player extends Character implements System {
 
   afterStep() {
     this.aimAngle = Vector.angle(this.position, this.mouse);
-  }
-
-  getAimVector(size: number) {
-    return Vector.rotate({x: size, y: 0}, this.aimAngle);
-  }
-
-  getAimPosition(offset: number) {
-    return Vector.add(this.position, this.getAimVector(offset));
   }
 }
 
