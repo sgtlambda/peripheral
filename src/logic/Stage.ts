@@ -163,6 +163,7 @@ class Stage implements WorldPart, System {
   step(ctx: StepContext) {
     this.stepping = true;
     try {
+      for (const npc of this.npcs) npc.step(ctx);
       for (const throwable of this.throwables) throwable.step(ctx);
       for (const strayItem of this.strayItems) strayItem.step(ctx);
       for (const stepEffect of this.stepEffects) stepEffect.step(ctx);

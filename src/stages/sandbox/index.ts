@@ -3,6 +3,18 @@ import Planet from "../../logic/Planet";
 import {NPC, ProcessIncomingMessage} from "../../NPC";
 import {CameraShakeStack} from "../../CameraShakeStack";
 import crate from "../../data/buildables/crate";
+import {createGun} from "../../data/itemTypes/gun";
+import {aimAtPlayer} from "../../logic/npc/behaviors/aimAtPlayer";
+import {nervous} from "../../logic/npc/behaviors/nervous";
+
+/**
+ * Arm an NPC and make it a jumpy guard: it holds a gun on the player and
+ * shuffles about when they come close — but doesn't shoot (yet).
+ */
+const armedAndNervous = (npc: NPC): NPC => {
+  npc.equip(createGun());
+  return npc.addBehaviors(aimAtPlayer(), nervous());
+};
 
 // These tags must match the ones the scene context instructs the NPC to emit
 // (see `getSceneContext`): [release], [negotiate], [terminate].
@@ -66,16 +78,16 @@ export default () => {
     name:     'sandbox-planet',
     color:    '#ffffff',
   }));
-  stage.addNPC(new NPC({
+  stage.addNPC(armedAndNervous(new NPC({
     id:                     1, name: 'The Crow', stage, x: 300, y: 0,
     additionalNpcContext:   hostageTakerPrompt,
     processIncomingMessage: processNegotiationTags,
-  }));
-  stage.addNPC(new NPC({
+  })));
+  stage.addNPC(armedAndNervous(new NPC({
     id:                     2, name: 'Jack', stage, x: 600, y: 0,
     additionalNpcContext:   "This NPC appears very eager to talk but is actually quite reserved, and very tough as far as ",
     processIncomingMessage: processNegotiationTags,
-  }));
+  })));
   const crates = `000110
 111110
 111111

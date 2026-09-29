@@ -67,7 +67,7 @@ export const halftoneLayer = ({player, stage}: {player: Player; stage: Stage}): 
         });
       }
 
-      // NPCs: same orb, a different ink, and they keep an eye on the player.
+      // NPCs: same orb and trail as the player, a different ink; they look where they aim.
       stage.npcs.forEach(npc => {
         const {x, y} = npc.position;
         const radius = npc.collider.circleRadius ?? 16;
@@ -76,7 +76,7 @@ export const halftoneLayer = ({player, stage}: {player: Player; stage: Stage}): 
           trail: {sigma: radius * TRAIL_RATIO},
           field: orbField({
             x, y, radius, maxDot,
-            look: Vector.angle(npc.position, player.position),
+            look: npc.aimAngle,
             tilt: tiltFor(npc.collider.velocity, 0.05, 0.3),
           }),
         });
