@@ -32,6 +32,7 @@ import {npcObserver} from "./ui/npcObserver";
 import Layer from "./rendering/Layer";
 
 import {System} from "./types";
+import Stage from "./logic/Stage";
 import {defaultInventory} from "./defaultInventory";
 import {AudioManager} from "./common/AudioManager";
 import {soundEffectPaths, SoundEffectID} from "./data/soundEffects";
@@ -41,6 +42,7 @@ declare global {
     lastStop: any;
     decomp: any;
     audioManager: AudioManager; // Expose for debugging
+    stage: Stage; // Expose for debugging
   }
 }
 
@@ -59,19 +61,13 @@ if ('lastStop' in window) window.lastStop();
   audioManager.init(soundEffectPaths, [SoundEffectID.BACKGROUND_MUSIC]);
   window.audioManager = audioManager; // Expose for debugging
 
-  // Wall-clock timing is acceptable here: audio is not part of the simulation
-  const musicTimeout = setTimeout(() => {
-    // TODO this should only start upon the very first user interaction
-    // Start background music
-    audioManager.playBackgroundMusic(SoundEffectID.BACKGROUND_MUSIC, .5);
-  }, 1000);
-
   const engine = Engine.create();
   const runner = Runner.create({});
   const world  = engine.world;
   const render = createRenderer({element: document.body, engine});
 
   const stage = sandboxStage();
+  window.stage = stage; // Expose for debugging
 
   const unwireStageEffects = wireStageEffects(stage, audioManager);
 
@@ -156,9 +152,6 @@ if ('lastStop' in window) window.lastStop();
   Runner.run(runner, engine);
 
   window.lastStop = () => {
-    // Stop background music when the game stops
-    clearTimeout(musicTimeout);
-    audioManager.stopBackgroundMusic();
 
     Render.stop(render);
     Runner.stop(runner);
