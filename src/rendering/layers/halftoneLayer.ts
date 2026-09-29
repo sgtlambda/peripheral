@@ -12,8 +12,8 @@ const INK = {
   player: 'rgb(255,86,160)',
   npc:    'rgb(110,200,255)',
   throwable: {
-    grenade:       'rgb(255,196,70)',
-    plasmaGrenade: 'rgb(176,120,255)',
+    grenade:       'rgb(255,255,255)',
+    plasmaGrenade: 'rgb(40,150,255)',
     drill:         'rgb(214,160,128)',
   } as Record<string, string>,
   fallback: 'rgb(240,240,244)',
